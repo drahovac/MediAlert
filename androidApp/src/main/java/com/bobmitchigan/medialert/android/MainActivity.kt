@@ -8,10 +8,14 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import com.bobmitchigan.medialert.Greeting
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen().setKeepOnScreenCondition(::showSplash)
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
@@ -24,6 +28,14 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+   private fun showSplash(): Boolean  {
+       var isReady = false
+       lifecycleScope.launchWhenCreated {
+
+       }
+       return isReady
+   }
 }
 
 @Composable
