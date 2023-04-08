@@ -34,20 +34,23 @@ internal class SplashViewModelTest {
 
     @Test
     fun `when medicines empty return create new destination`() {
-        assertEquals(InitialDestination.CREATE_MEDICINE, splashViewModel.nextDestination)
+        assertEquals(InitialDestination.CREATE_MEDICINE, splashViewModel.nextDestination.value)
     }
 
     @Test
     fun `when single medicine return single medicine detail`() {
         allItemsFlow.update { listOf(medicine) }
 
-        assertEquals(InitialDestination.SINGLE_MEDICINE_DETAIL, splashViewModel.nextDestination)
+        assertEquals(
+            InitialDestination.SINGLE_MEDICINE_DETAIL,
+            splashViewModel.nextDestination.value
+        )
     }
 
     @Test
     fun `when multiple medicines return medicine list destination`() {
         allItemsFlow.update { listOf(medicine, medicine) }
 
-        assertEquals(InitialDestination.MEDICINE_LIST, splashViewModel.nextDestination)
+        assertEquals(InitialDestination.MEDICINE_LIST, splashViewModel.nextDestination.value)
     }
 }

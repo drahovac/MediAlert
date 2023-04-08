@@ -37,7 +37,7 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation(Deps.Koin.android)
+                api(Deps.Koin.android)
             }
         }
         val androidUnitTest by getting {
