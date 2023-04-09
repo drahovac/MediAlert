@@ -38,6 +38,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 api(Deps.Koin.android)
+                api(Deps.Koin.compose)
             }
         }
         val androidUnitTest by getting {
@@ -85,6 +86,7 @@ object Deps {
         const val core = "io.insert-koin:koin-core:${Versions.koin}"
         const val test = "io.insert-koin:koin-test:${Versions.koin}"
         const val android = "io.insert-koin:koin-android:${Versions.koin}"
+        const val compose = "io.insert-koin:koin-androidx-compose:${Versions.koin}"
     }
 
 }
