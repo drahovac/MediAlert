@@ -16,6 +16,14 @@ class CreateMedicineViewModel : BaseViewModel(), CreateMedicineActions {
 
     override fun updateAllPacksIdentical() =
         _state.update { it.copy(areAllPacksIdentical = !state.value.areAllPacksIdentical) }
+
+    override fun updateRowCount(count: String) {
+        _state.update { it.copy(rowCount = count.toIntOrNull()) }
+    }
+
+    override fun updateColumnCount(count: String) {
+        _state.update { it.copy(columnCount = count.toIntOrNull()) }
+    }
 }
 
 interface CreateMedicineActions {
@@ -24,4 +32,8 @@ interface CreateMedicineActions {
     fun updateBlisterPacksCount(count: String)
 
     fun updateAllPacksIdentical()
+
+    fun updateRowCount(count: String)
+
+    fun updateColumnCount(count: String)
 }

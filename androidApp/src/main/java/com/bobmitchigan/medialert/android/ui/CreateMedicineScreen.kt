@@ -17,9 +17,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bobmitchigan.medialert.android.R
 import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.viewModel.CreateMedicineActions
 import com.bobmitchigan.medialert.viewModel.CreateMedicineState
@@ -41,7 +43,7 @@ private fun CreateMedicineContent(
 ) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Text(
-            text = "Medication details",
+            text = stringResource(R.string.create_medicine_title),
             style = Typography.h4,
             modifier = Modifier.padding(16.dp)
         )
@@ -52,17 +54,15 @@ private fun CreateMedicineContent(
                 .padding(16.dp),
             value = state.name.orEmpty(),
             onValueChange = { actions.updateName(it) },
-            label = { Text(text = "Name") })
+            label = { Text(text = stringResource(R.string.create_medicine_name)) })
 
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             value = state.blisterPackCount?.toString().orEmpty(),
-            onValueChange = {
-                actions.updateBlisterPacksCount(it)
-            },
-            label = { Text(text = "Blister Pack Count") },
+            onValueChange = actions::updateBlisterPacksCount,
+            label = { Text(text = stringResource(R.string.create_medicine_blister_pack_count)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
 
@@ -78,9 +78,29 @@ private fun CreateMedicineContent(
                 onCheckedChange = { actions.updateAllPacksIdentical() },
                 enabled = true,
             )
-            Text(text = "All blister packs are identical")
+            Text(text = stringResource(R.string.create_medicine_identical))
+        }
 
+        Row(Modifier.fillMaxWidth()) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(16.dp),
+                value = state.rowCount?.toString().orEmpty(),
+                onValueChange = actions::updateRowCount,
+                label = { Text(text = stringResource(R.string.create_medicine_row_count)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            )
 
+            OutlinedTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(16.dp),
+                value = state.columnCount?.toString().orEmpty(),
+                onValueChange = actions::updateColumnCount,
+                label = { Text(text = stringResource(R.string.create_medicine_column_count)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            )
         }
     }
 }
@@ -103,6 +123,12 @@ fun CreateMedicineScreenPreview() {
                 }
 
                 override fun updateAllPacksIdentical() {
+                }
+
+                override fun updateRowCount(count: String) {
+                }
+
+                override fun updateColumnCount(count: String) {
                 }
             }
         )
