@@ -1,6 +1,20 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    id("dev.icerock.mobile.multiplatform-resources")
+}
+
+dependencies {
+    commonMainApi("dev.icerock.moko:resources:0.21.2")
+
+    commonTestImplementation("dev.icerock.moko:resources-test:0.21.2")
+}
+
+multiplatformResources {
+    multiplatformResourcesPackage = "com.bobmitchigan.medialert" // required
+    multiplatformResourcesClassName = "MR" // optional, default MR
+    iosBaseLocalizationRegion = "en" // optional, default "en"
+    multiplatformResourcesSourceSet = "commonMain"  // optional, default "commonMain"
 }
 
 kotlin {
@@ -44,6 +58,7 @@ kotlin {
         val androidUnitTest by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+                implementation("io.mockk:mockk:1.13.5")
             }
         }
         val iosX64Main by getting

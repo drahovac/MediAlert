@@ -22,7 +22,8 @@ internal class SplashViewModelTest {
     private var allItemsFlow: MutableStateFlow<List<Medicine>> = MutableStateFlow(emptyList())
     private val repository: MedicineRepository = object : MedicineRepository {
         override val allItems: Flow<List<Medicine>> = allItemsFlow
-
+        override suspend fun saveMedicine(medicine: Medicine) {
+        }
     }
     private lateinit var splashViewModel: SplashViewModel
 

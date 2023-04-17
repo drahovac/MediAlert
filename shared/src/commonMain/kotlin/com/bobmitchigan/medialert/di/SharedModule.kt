@@ -18,7 +18,7 @@ val sharedModule = module {
 
     baseViewModel { SplashViewModel(get()) }
 
-    baseViewModel { CreateMedicineViewModel() }
+    baseViewModel { CreateMedicineViewModel(get()) }
 }
 
 expect inline fun <reified T : BaseViewModel> Module.baseViewModel(

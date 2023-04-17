@@ -8,10 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Checkbox
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,11 +18,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bobmitchigan.medialert.android.R
+import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.viewModel.CreateMedicineActions
 import com.bobmitchigan.medialert.viewModel.CreateMedicineState
 import com.bobmitchigan.medialert.viewModel.CreateMedicineViewModel
+import com.bobmitchigan.medialert.viewModel.toInputState
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -43,7 +41,7 @@ private fun CreateMedicineContent(
 ) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Text(
-            text = stringResource(R.string.create_medicine_title),
+            text = stringResource(MR.strings.create_medicine_name.resourceId),
             style = Typography.h4,
             modifier = Modifier.padding(16.dp)
         )
@@ -52,17 +50,17 @@ private fun CreateMedicineContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            value = state.name.orEmpty(),
+            value = state.name.value.orEmpty(),
             onValueChange = { actions.updateName(it) },
-            label = { Text(text = stringResource(R.string.create_medicine_name)) })
+            label = { Text(text = stringResource(MR.strings.create_medicine_name.resourceId)) })
 
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            value = state.blisterPackCount?.toString().orEmpty(),
+            value = state.blisterPackCount.value?.toString().orEmpty(),
             onValueChange = actions::updateBlisterPacksCount,
-            label = { Text(text = stringResource(R.string.create_medicine_blister_pack_count)) },
+            label = { Text(text = stringResource(MR.strings.create_medicine_blister_pack_count.resourceId)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
 
@@ -74,11 +72,11 @@ private fun CreateMedicineContent(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Checkbox(
-                checked = state.areAllPacksIdentical,
+                checked = state.areAllPacksIdentical.value ?: false,
                 onCheckedChange = { actions.updateAllPacksIdentical() },
                 enabled = true,
             )
-            Text(text = stringResource(R.string.create_medicine_identical))
+            Text(text = stringResource(MR.strings.create_medicine_identical.resourceId))
         }
 
         Row(Modifier.fillMaxWidth()) {
@@ -86,9 +84,9 @@ private fun CreateMedicineContent(
                 modifier = Modifier
                     .weight(1f)
                     .padding(16.dp),
-                value = state.rowCount?.toString().orEmpty(),
+                value = state.rowCount.value?.toString().orEmpty(),
                 onValueChange = actions::updateRowCount,
-                label = { Text(text = stringResource(R.string.create_medicine_row_count)) },
+                label = { Text(text = stringResource(MR.strings.create_medicine_row_count.resourceId)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
 
@@ -96,11 +94,20 @@ private fun CreateMedicineContent(
                 modifier = Modifier
                     .weight(1f)
                     .padding(16.dp),
-                value = state.columnCount?.toString().orEmpty(),
+                value = state.columnCount.value?.toString().orEmpty(),
                 onValueChange = actions::updateColumnCount,
-                label = { Text(text = stringResource(R.string.create_medicine_column_count)) },
+                label = { Text(text = stringResource(MR.strings.create_medicine_column_count.resourceId)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
+        }
+
+        Button(
+            onClick = actions::submit,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(text = stringResource(id = MR.strings.create_medicine_save.resourceId))
         }
     }
 }
@@ -111,9 +118,9 @@ fun CreateMedicineScreenPreview() {
     MaterialTheme {
         CreateMedicineContent(
             CreateMedicineState(
-                name = "Name",
-                blisterPackCount = 3,
-                areAllPacksIdentical = true,
+                name = "Name".toInputState(),
+                blisterPackCount = 3.toInputState(),
+                areAllPacksIdentical = true.toInputState(),
             ),
             object : CreateMedicineActions {
                 override fun updateName(name: String) {
@@ -129,6 +136,9 @@ fun CreateMedicineScreenPreview() {
                 }
 
                 override fun updateColumnCount(count: String) {
+                }
+
+                override fun submit() {
                 }
             }
         )

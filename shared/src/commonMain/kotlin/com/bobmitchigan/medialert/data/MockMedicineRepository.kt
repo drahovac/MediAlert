@@ -11,4 +11,9 @@ class MockMedicineRepository(
         delay(2000)
         emit(emptyList())
     }
-) : MedicineRepository
+) : MedicineRepository {
+
+    override suspend fun saveMedicine(medicine: Medicine) {
+        delay(1000)
+    }
+}

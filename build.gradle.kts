@@ -9,3 +9,13 @@ plugins {
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
 }
+
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+
+    dependencies {
+        classpath("dev.icerock.moko:resources-generator:0.21.2")
+    }
+}

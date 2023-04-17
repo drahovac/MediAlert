@@ -1,9 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="create_medicine_title">Medication details</string>
-    <string name="create_medicine_name">Name</string>
-    <string name="create_medicine_blister_pack_count">Blister Pack Count</string>
-    <string name="create_medicine_identical">All blister packs are identical</string>
-    <string name="create_medicine_row_count">Row Count</string>
-    <string name="create_medicine_column_count">Column Count</string>
 </resources>
