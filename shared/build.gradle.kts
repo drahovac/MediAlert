@@ -1,7 +1,10 @@
+import Build_gradle.Versions.sqlDelightVersion
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
     id("dev.icerock.mobile.multiplatform-resources")
+    id("com.squareup.sqldelight")
 }
 
 dependencies {
@@ -40,7 +43,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-                implementation("app.cash.sqldelight:coroutines-extensions:2.0.0-alpha05")
+                implementation("com.squareup.sqldelight:runtime:$sqlDelightVersion")
+                implementation("com.squareup.sqldelight:coroutines-extensions:$sqlDelightVersion")
                 implementation(Deps.Koin.core)
             }
         }
@@ -53,6 +57,7 @@ kotlin {
             dependencies {
                 api(Deps.Koin.android)
                 api(Deps.Koin.compose)
+                implementation("com.squareup.sqldelight:android-driver:$sqlDelightVersion")
             }
         }
         val androidUnitTest by getting {
@@ -69,6 +74,9 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+            dependencies {
+                implementation("com.squareup.sqldelight:native-driver:$sqlDelightVersion")
+            }
         }
         val iosX64Test by getting
         val iosArm64Test by getting
@@ -91,8 +99,15 @@ android {
     }
 }
 
+sqldelight {
+    database("AppDatabase") {
+        packageName = "com.bobmitchigan.medialert"
+    }
+}
+
 object Versions {
     const val koin = "3.2.0"
+    const val sqlDelightVersion = "1.5.5"
 }
 
 object Deps {
@@ -103,5 +118,4 @@ object Deps {
         const val android = "io.insert-koin:koin-android:${Versions.koin}"
         const val compose = "io.insert-koin:koin-androidx-compose:${Versions.koin}"
     }
-
 }

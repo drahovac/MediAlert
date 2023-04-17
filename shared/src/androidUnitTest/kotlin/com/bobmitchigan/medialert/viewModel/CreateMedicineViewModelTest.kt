@@ -143,5 +143,4 @@ internal class CreateMedicineViewModelTest {
     }
 
     private fun stateValue() = createMedicineViewModel.state.value
-
 }

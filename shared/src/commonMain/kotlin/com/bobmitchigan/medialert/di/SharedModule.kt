@@ -1,6 +1,7 @@
 package com.bobmitchigan.medialert.di
 
-import com.bobmitchigan.medialert.data.MockMedicineRepository
+import com.bobmitchigan.medialert.data.Database
+import com.bobmitchigan.medialert.data.MedicineRepositoryImpl
 import com.bobmitchigan.medialert.domain.MedicineRepository
 import com.bobmitchigan.medialert.viewModel.BaseViewModel
 import com.bobmitchigan.medialert.viewModel.CreateMedicineViewModel
@@ -9,24 +10,30 @@ import org.koin.core.context.startKoin
 import org.koin.core.definition.Definition
 import org.koin.core.instance.InstanceFactory
 import org.koin.core.module.Module
+import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
-val sharedModule = module {
-    single<MedicineRepository> {
-        MockMedicineRepository()
+internal expect val platformModule: Module
+
+internal val sharedModule = module {
+    factory<MedicineRepository> {
+        MedicineRepositoryImpl(get())
     }
+
+    single { Database(get()) }
 
     baseViewModel { SplashViewModel(get()) }
 
     baseViewModel { CreateMedicineViewModel(get()) }
 }
 
-expect inline fun <reified T : BaseViewModel> Module.baseViewModel(
+internal expect inline fun <reified T : BaseViewModel> Module.baseViewModel(
     noinline definition: Definition<T>
 ): Pair<Module, InstanceFactory<T>>
 
-fun initKoin() {
+fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
     startKoin {
-        modules(sharedModule)
+        appDeclaration()
+        modules(platformModule, sharedModule)
     }
 }

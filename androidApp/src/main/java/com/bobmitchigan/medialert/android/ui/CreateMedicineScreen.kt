@@ -72,7 +72,7 @@ private fun CreateMedicineContent(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Checkbox(
-                checked = state.areAllPacksIdentical.value ?: false,
+                checked = state.areAllPacksIdentical,
                 onCheckedChange = { actions.updateAllPacksIdentical() },
                 enabled = true,
             )
@@ -120,7 +120,7 @@ fun CreateMedicineScreenPreview() {
             CreateMedicineState(
                 name = "Name".toInputState(),
                 blisterPackCount = 3.toInputState(),
-                areAllPacksIdentical = true.toInputState(),
+                areAllPacksIdentical = true,
             ),
             object : CreateMedicineActions {
                 override fun updateName(name: String) {
