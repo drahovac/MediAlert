@@ -1,5 +1,7 @@
 package com.bobmitchigan.medialert.data
 
+import com.bobmitchigan.medialert.data.BlisterPackAdapter.deserializeBlisterPacks
+import com.bobmitchigan.medialert.data.BlisterPackAdapter.serialize
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineRepository
 import kotlinx.coroutines.Dispatchers
@@ -11,12 +13,14 @@ import kotlinx.coroutines.withContext
 internal class MedicineRepositoryImpl(private val database: Database) : MedicineRepository {
 
     override val allItems: Flow<List<Medicine>> = database.getAllMedicines().map { list ->
-        list.map { Medicine(it.name, listOf(), listOf()) }
+        list.map { Medicine(it.name, deserializeBlisterPacks(it.blisterPacks), listOf()) }
     }
 
     override suspend fun saveMedicine(medicine: Medicine) {
         withContext(Dispatchers.Default) {
-            launch { database.insertMedicine(medicine) }
+            launch {
+                database.insertMedicine(medicine.name, medicine.blisterPacks.serialize())
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import com.bobmitchigan.medialert.domain.InitialDestination
 import com.bobmitchigan.medialert.domain.MedicineRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -14,7 +15,7 @@ class SplashViewModel(private val repository: MedicineRepository) : BaseViewMode
 
     init {
         scope.launch {
-            repository.allItems.collect { medicineList ->
+            repository.allItems.first().let { medicineList ->
                 _nextDestination.update {
                     when {
                         medicineList.isEmpty() -> InitialDestination.CREATE_MEDICINE
