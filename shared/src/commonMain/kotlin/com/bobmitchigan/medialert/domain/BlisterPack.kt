@@ -25,9 +25,28 @@ fun createNewBlisterPackRow(columns: Int): BlisterPackRow = BlisterPackRow(List(
  * State of single blister cavity for medicine pill.
  */
 sealed interface BlisterCavity {
+    val shortName: String
+
     @JvmInline
-    value class EATEN(val taken: LocalDateTime) : BlisterCavity// pill was eaten
-    object LOST : BlisterCavity // pill was lost
-    object FILLED : BlisterCavity // pill still in cavity
-    object NONE : BlisterCavity// placeholder for uneven rows, no pill
+    value class EATEN(val taken: LocalDateTime) : BlisterCavity {
+        // pill was eaten
+        override val shortName: String
+            get() = "E"
+    }
+
+    object LOST : BlisterCavity { // pill was lost
+        override val shortName: String
+            get() = "L"
+    }
+
+    object FILLED : BlisterCavity { // pill still in cavity
+        override val shortName: String
+            get() = "F"
+    }
+
+    object NONE : BlisterCavity {
+        // placeholder for uneven rows, no pill
+        override val shortName: String
+            get() = "N"
+    }
 }

@@ -8,4 +8,6 @@
     <string name="create_medicine_column_count">Column Count</string>
     <string name="create_medicine_save">Save Medicine</string>
     <string name="create_medicine_mandatory_field">Mandatory field</string>
+
+    <string name="medicine_detail_pack">Pack</string>
 </resources>

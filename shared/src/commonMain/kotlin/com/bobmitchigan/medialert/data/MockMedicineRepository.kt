@@ -19,6 +19,13 @@ class MockMedicineRepository(
 
     override suspend fun getMedicineDetail(id: Int?): Medicine {
         delay(1000)
-        return Medicine("Mock medicine", listOf(), listOf())
+        return Medicine("Mock medicine", PREVIEW_BLISTER_PACKS, listOf())
+    }
+
+    companion object {
+        val PREVIEW_BLISTER_PACKS = BlisterPackAdapter.deserializeBlisterPacks(
+            "F.F.N.L,E2022-04-03T03:06.E2023-12-25T03:06.F.F;F.F,F.F.F.F,F.F.F.F;" +
+                    "F.F.N.L,E2022-04-03T03:06.E2023-12-25T03:06.F.F"
+        )
     }
 }
