@@ -5,6 +5,7 @@ import com.bobmitchigan.medialert.data.MedicineRepositoryImpl
 import com.bobmitchigan.medialert.domain.MedicineRepository
 import com.bobmitchigan.medialert.viewModel.BaseViewModel
 import com.bobmitchigan.medialert.viewModel.CreateMedicineViewModel
+import com.bobmitchigan.medialert.viewModel.MedicineDetailViewModel
 import com.bobmitchigan.medialert.viewModel.SplashViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.definition.Definition
@@ -25,6 +26,8 @@ internal val sharedModule = module {
     baseViewModel { SplashViewModel(get()) }
 
     baseViewModel { CreateMedicineViewModel(get()) }
+
+    baseViewModel { params -> MedicineDetailViewModel(params.getOrNull()) }
 }
 
 internal expect inline fun <reified T : BaseViewModel> Module.baseViewModel(

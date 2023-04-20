@@ -18,9 +18,9 @@ class SplashViewModel(private val repository: MedicineRepository) : BaseViewMode
             repository.allItems.first().let { medicineList ->
                 _nextDestination.update {
                     when {
-                        medicineList.isEmpty() -> InitialDestination.CREATE_MEDICINE
-                        medicineList.size == 1 -> InitialDestination.SINGLE_MEDICINE_DETAIL
-                        else -> InitialDestination.MEDICINE_LIST
+                        medicineList.isEmpty() -> InitialDestination.CreateMedicine
+                        medicineList.size == 1 -> InitialDestination.SingleMedicine(null)
+                        else -> InitialDestination.MedicineList
                     }
                 }
             }

@@ -13,10 +13,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.bobmitchigan.medialert.android.ui.CreateMedicineScreen
+import com.bobmitchigan.medialert.android.ui.MedicineDetailScreen
 import com.bobmitchigan.medialert.domain.InitialDestination
 import com.bobmitchigan.medialert.viewModel.SplashViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -40,15 +43,24 @@ class MainActivity : ComponentActivity() {
                     nextDestination?.let { dest ->
                         NavHost(
                             navController = navController,
-                            startDestination = dest.name
+                            startDestination = dest.destination()
                         ) {
-                            composable(InitialDestination.CREATE_MEDICINE.name) {
+                            composable(InitialDestination.CreateMedicine.destination()) {
                                 CreateMedicineScreen()
                             }
-                            composable(InitialDestination.SINGLE_MEDICINE_DETAIL.name) {
-                                Text("Medicine detail")
+                            composable(
+                                InitialDestination.SingleMedicine.detailDestination(),
+                                arguments = listOf(navArgument("medicineId") {
+                                    nullable = true
+                                    type = NavType.StringType;defaultValue =
+                                    (dest as? InitialDestination.SingleMedicine)?.medicineId
+                                })
+                            ) {
+                                MedicineDetailScreen(
+                                    it.arguments?.getString("medicineId")?.toIntOrNull()
+                                )
                             }
-                            composable(InitialDestination.MEDICINE_LIST.name) {
+                            composable(InitialDestination.MedicineList.destination()) {
                                 Text("Medicine list")
                             }
                         }
