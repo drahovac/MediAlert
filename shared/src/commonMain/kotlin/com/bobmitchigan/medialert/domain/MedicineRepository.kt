@@ -6,4 +6,6 @@ interface MedicineRepository {
     val allItems: Flow<List<Medicine>>
 
     suspend fun saveMedicine(medicine: Medicine)
+
+    suspend fun getMedicineDetail(id: Int?) : Medicine?
 }

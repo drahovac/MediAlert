@@ -16,4 +16,9 @@ class MockMedicineRepository(
     override suspend fun saveMedicine(medicine: Medicine) {
         delay(1000)
     }
+
+    override suspend fun getMedicineDetail(id: Int?): Medicine {
+        delay(1000)
+        return Medicine("Mock medicine", listOf(), listOf())
+    }
 }

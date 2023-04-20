@@ -1,6 +1,7 @@
 package com.bobmitchigan.medialert.data
 
 import com.bobmitchigan.medialert.AppDatabase
+import com.bobmitchigan.medialert.Medicine
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
@@ -22,5 +23,11 @@ internal class Database(databaseDriverFactory: DatabaseDriver) {
         dbQuery.transaction {
             dbQuery.insertMedicine(name, blisterPacks)
         }
+    }
+
+    internal fun getMedicineByIdOrFirst(id: Int?): Medicine? {
+        val query =
+            id?.let { dbQuery.selectMedicineById(it.toLong()) } ?: dbQuery.selectAllMedicines()
+        return query.executeAsOneOrNull()
     }
 }

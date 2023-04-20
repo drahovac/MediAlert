@@ -14,3 +14,9 @@ DELETE FROM Medicine;
 selectAllMedicines:
 SELECT *
 FROM Medicine;
+
+selectMedicineById:
+SELECT *
+FROM Medicine
+WHERE id = ?
+LIMIT 1;

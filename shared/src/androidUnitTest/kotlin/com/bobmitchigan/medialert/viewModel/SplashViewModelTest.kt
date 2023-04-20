@@ -24,27 +24,34 @@ internal class SplashViewModelTest {
         override val allItems: Flow<List<Medicine>> = allItemsFlow
         override suspend fun saveMedicine(medicine: Medicine) {
         }
+
+        override suspend fun getMedicineDetail(id: Int?): Medicine? {
+            return null
+        }
     }
     private lateinit var splashViewModel: SplashViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
-        splashViewModel = SplashViewModel(repository)
     }
 
     @Test
     fun `when medicines empty return create new destination`() {
-        assertEquals(InitialDestination.CREATE_MEDICINE, splashViewModel.nextDestination.value)
+        splashViewModel = SplashViewModel(repository)
+
+        assertEquals(InitialDestination.CreateMedicine, splashViewModel.nextDestination.value)
     }
 
     @Test
     fun `when single medicine return single medicine detail`() {
         allItemsFlow.update { listOf(medicine) }
 
+        splashViewModel = SplashViewModel(repository)
+
         assertEquals(
-            InitialDestination.SINGLE_MEDICINE_DETAIL,
-            splashViewModel.nextDestination.value
+            InitialDestination.SingleMedicine::class.java,
+            splashViewModel.nextDestination.value!!::class.java
         )
     }
 
@@ -52,6 +59,8 @@ internal class SplashViewModelTest {
     fun `when multiple medicines return medicine list destination`() {
         allItemsFlow.update { listOf(medicine, medicine) }
 
-        assertEquals(InitialDestination.MEDICINE_LIST, splashViewModel.nextDestination.value)
+        splashViewModel = SplashViewModel(repository)
+
+        assertEquals(InitialDestination.MedicineList, splashViewModel.nextDestination.value)
     }
 }

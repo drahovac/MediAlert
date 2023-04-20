@@ -23,4 +23,16 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
             }
         }
     }
+
+    override suspend fun getMedicineDetail(id: Int?): Medicine? {
+        return withContext(Dispatchers.Default) {
+            database.getMedicineByIdOrFirst(id)?.let {
+                Medicine(
+                    it.name,
+                    deserializeBlisterPacks(it.blisterPacks),
+                    listOf()
+                )
+            }
+        }
+    }
 }

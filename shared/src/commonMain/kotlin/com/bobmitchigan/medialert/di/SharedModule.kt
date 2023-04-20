@@ -27,7 +27,7 @@ internal val sharedModule = module {
 
     baseViewModel { CreateMedicineViewModel(get()) }
 
-    baseViewModel { params -> MedicineDetailViewModel(params.getOrNull()) }
+    baseViewModel { params -> MedicineDetailViewModel(get(), params.getOrNull()) }
 }
 
 internal expect inline fun <reified T : BaseViewModel> Module.baseViewModel(
