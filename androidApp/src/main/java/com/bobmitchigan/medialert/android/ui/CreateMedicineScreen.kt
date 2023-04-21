@@ -122,25 +122,7 @@ fun CreateMedicineScreenPreview() {
                 blisterPackCount = 3.toInputState(),
                 areAllPacksIdentical = true,
             ),
-            object : CreateMedicineActions {
-                override fun updateName(name: String) {
-                }
-
-                override fun updateBlisterPacksCount(count: String) {
-                }
-
-                override fun updateAllPacksIdentical() {
-                }
-
-                override fun updateRowCount(count: String) {
-                }
-
-                override fun updateColumnCount(count: String) {
-                }
-
-                override fun submit() {
-                }
-            }
+            ActionsInvocationHandler.createActionsProxy(),
         )
     }
 }

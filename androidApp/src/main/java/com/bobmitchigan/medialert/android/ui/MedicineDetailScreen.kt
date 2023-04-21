@@ -1,11 +1,13 @@
 package com.bobmitchigan.medialert.android.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,23 +23,34 @@ import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.data.MockMedicineRepository.Companion.PREVIEW_BLISTER_PACKS
 import com.bobmitchigan.medialert.domain.BlisterPack
 import com.bobmitchigan.medialert.domain.Medicine
+import com.bobmitchigan.medialert.viewModel.CavityCoordinates
+import com.bobmitchigan.medialert.viewModel.MedicineDetailActions
 import com.bobmitchigan.medialert.viewModel.MedicineDetailViewModel
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun MedicineDetailScreen(
+internal fun MedicineDetailScreen(
     medicineId: Int?,
     viewModel: MedicineDetailViewModel = getViewModel { parametersOf(medicineId) }
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    state?.let { MedicineDetailContent(medicine = it) }
+    state?.selectedCavity?.let {
+        AlertDialog(
+            text = { Text(text = it.shortName) },
+            onDismissRequest = viewModel::clearSelectedCavity,
+            buttons = {})
+    }
+    state?.let { MedicineDetailContent(medicine = it.medicine, viewModel) }
 }
 
 @Composable
-private fun MedicineDetailContent(medicine: Medicine) {
+private fun MedicineDetailContent(
+    medicine: Medicine,
+    actions: MedicineDetailActions
+) {
     Column(
         Modifier
             .padding(horizontal = 16.dp)
@@ -46,29 +59,39 @@ private fun MedicineDetailContent(medicine: Medicine) {
         Text(text = "Medicine: ${medicine.name}", style = Typography.h4)
 
         medicine.blisterPacks.forEachIndexed { index, pack ->
-            BlisterPackView(index, pack)
+            BlisterPackView(index, pack, actions)
         }
     }
 }
 
 @Composable
-private fun BlisterPackView(index: Int, pack: BlisterPack) {
+private fun BlisterPackView(index: Int, pack: BlisterPack, actions: MedicineDetailActions) {
     Column {
         Text(
             text = "${stringResource(MR.strings.medicine_detail_pack.resourceId)} ${index + 1}",
             style = Typography.h4
         )
-        pack.rows.forEach {
+        pack.rows.forEachIndexed { rowIndex, row ->
             Row(Modifier.fillMaxWidth()) {
-                it.value.forEach {
+                row.value.forEachIndexed { cavityIndex, cavity ->
                     Card(
                         Modifier
                             .weight(1f)
                             .padding(8.dp)
                     ) {
                         Text(
-                            text = it.shortName,
-                            modifier = Modifier.padding(8.dp),
+                            text = cavity.shortName,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .clickable {
+                                    actions.selectCavity(
+                                        CavityCoordinates(
+                                            blisterPack = index,
+                                            rowIndex = rowIndex,
+                                            cavityIndex = cavityIndex
+                                        )
+                                    )
+                                },
                             textAlign = TextAlign.Center
                         )
                     }
@@ -87,6 +110,7 @@ internal fun MedicineDetailScreenPreview() {
             name = "Name",
             blisterPacks = PREVIEW_BLISTER_PACKS,
             schedule = listOf()
-        )
+        ),
+        actions = ActionsInvocationHandler.createActionsProxy(),
     )
 }
