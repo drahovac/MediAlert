@@ -13,7 +13,14 @@ import kotlinx.coroutines.withContext
 internal class MedicineRepositoryImpl(private val database: Database) : MedicineRepository {
 
     override val allItems: Flow<List<Medicine>> = database.getAllMedicines().map { list ->
-        list.map { Medicine(it.name, deserializeBlisterPacks(it.blisterPacks), listOf()) }
+        list.map {
+            Medicine(
+                it.name,
+                deserializeBlisterPacks(it.blisterPacks),
+                listOf(),
+                it.id.toInt()
+            )
+        }
     }
 
     override suspend fun saveMedicine(medicine: Medicine) {
@@ -24,13 +31,26 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
         }
     }
 
-    override suspend fun getMedicineDetail(id: Int?): Medicine? {
-        return withContext(Dispatchers.Default) {
-            database.getMedicineByIdOrFirst(id)?.let {
+    override suspend fun updateMedicine(medicine: Medicine) {
+        withContext(Dispatchers.Default) {
+            launch {
+                database.updateMedicine(
+                    medicine.id!!,
+                    medicine.name,
+                    medicine.blisterPacks.serialize()
+                )
+            }
+        }
+    }
+
+    override fun getMedicineDetail(id: Int?): Flow<Medicine?> {
+        return database.getMedicineByIdOrFirst(id).map {
+            it?.let {
                 Medicine(
                     it.name,
                     deserializeBlisterPacks(it.blisterPacks),
-                    listOf()
+                    listOf(),
+                    it.id.toInt()
                 )
             }
         }

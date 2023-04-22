@@ -1,13 +1,11 @@
 package com.bobmitchigan.medialert.android.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.data.MockMedicineRepository.Companion.PREVIEW_BLISTER_PACKS
+import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.BlisterPack
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.viewModel.CavityCoordinates
@@ -38,12 +37,47 @@ internal fun MedicineDetailScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     state?.selectedCavity?.let {
-        AlertDialog(
-            text = { Text(text = it.shortName) },
-            onDismissRequest = viewModel::clearSelectedCavity,
-            buttons = {})
+        DetailDialog(it, viewModel)
     }
     state?.let { MedicineDetailContent(medicine = it.medicine, viewModel) }
+}
+
+@Composable
+private fun DetailDialog(
+    cavity: BlisterCavity,
+    actions: MedicineDetailActions
+) {
+    AlertDialog(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        title = { Text(text = cavity.longName()) },
+        text = { Text(text = "Desc")},
+        onDismissRequest = actions::clearSelectedCavity,
+        buttons = {
+            when(cavity){
+                is BlisterCavity.EATEN -> {}
+                BlisterCavity.FILLED -> {
+                    Button(
+                        modifier = Modifier.padding(16.dp),
+                        onClick = actions::consumeSelected) {
+                        Text(text = "Consume")
+                    }
+                }
+                BlisterCavity.LOST -> {}
+                BlisterCavity.NONE -> {}
+            }
+        })
+}
+
+@Composable
+private fun BlisterCavity.longName(): String {
+    return when (this) {
+        is BlisterCavity.EATEN -> stringResource(id = MR.strings.medicine_detail_eaten.resourceId) + this.taken
+        BlisterCavity.FILLED -> stringResource(id = MR.strings.medicine_detail_filled.resourceId)
+        BlisterCavity.LOST -> stringResource(id = MR.strings.medicine_detail_lost.resourceId)
+        BlisterCavity.NONE -> ""
+    }
 }
 
 @Composable
@@ -112,5 +146,14 @@ internal fun MedicineDetailScreenPreview() {
             schedule = listOf()
         ),
         actions = ActionsInvocationHandler.createActionsProxy(),
+    )
+}
+
+@Preview
+@Composable
+internal fun MedicineDetailDialogPreview() {
+    DetailDialog(
+        cavity = BlisterCavity.FILLED,
+        actions = ActionsInvocationHandler.createActionsProxy()
     )
 }

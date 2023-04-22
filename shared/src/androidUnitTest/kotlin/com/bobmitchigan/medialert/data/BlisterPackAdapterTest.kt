@@ -92,4 +92,28 @@ internal class BlisterPackAdapterTest {
 
         assertEquals(deserialized, listOf(blisterPackA, blisterPackB, blisterPackA))
     }
+
+    @Test
+    fun `ignore nanosecond to not introduce dot separator`() {
+        val dateWithNanos = LocalDateTime(
+            year = 2022,
+            month = Month.APRIL,
+            dayOfMonth = 3,
+            hour = 3,
+            minute = 6,
+            nanosecond = 6
+        )
+        val blisterPack: BlisterPack = BlisterPack(
+            rows = listOf(
+                BlisterPackRow(
+                    listOf(
+                        BlisterCavity.EATEN(dateWithNanos),
+                    )
+                ),
+            )
+        )
+        val serialized = listOf(blisterPack).serialize()
+
+        assertEquals("E2022-04-03T03:06:00", serialized)
+    }
 }

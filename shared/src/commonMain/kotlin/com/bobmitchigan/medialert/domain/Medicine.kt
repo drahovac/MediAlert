@@ -15,6 +15,5 @@ data class Medicine(
     val name: String,
     val blisterPacks: List<BlisterPack>,
     val schedule: List<LocalDateTime>,
-) {
     val id: Int? = null
-}
+)

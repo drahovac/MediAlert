@@ -1,12 +1,14 @@
 package com.bobmitchigan.medialert.viewModel
 
-import com.bobmitchigan.medialert.domain.BlisterCavity
-import com.bobmitchigan.medialert.domain.BlisterPack
-import com.bobmitchigan.medialert.domain.MedicineRepository
+import com.bobmitchigan.medialert.domain.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class MedicineDetailViewModel(
     private val medicineRepository: MedicineRepository,
@@ -19,11 +21,13 @@ class MedicineDetailViewModel(
 
     init {
         scope.launch {
-            _state.value = medicineRepository.getMedicineDetail(medicineId)?.run {
-                MedicineDetailState(
-                    medicine = this,
-                    selectedCavity = null
-                )
+            medicineRepository.getMedicineDetail(medicineId).collect {
+                it?.let {
+                    _state.value = MedicineDetailState(
+                        medicine = it,
+                        selectedCavity = null
+                    )
+                }
             }
         }
     }
@@ -39,11 +43,54 @@ class MedicineDetailViewModel(
         _state.update { it?.copy(selectedCavity = null) }
     }
 
+    override fun consumeSelected() {
+        selectedCoordinates?.let {
+            scope.launch {
+                val cavity = BlisterCavity.EATEN(
+                    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+                )
+                updateCavity(it, cavity)?.let { medicineRepository.updateMedicine(it) }
+                clearSelectedCavity()
+            }
+        }
+        clearSelectedCavity()
+    }
+
     private fun findCavity(
         blisterPacks: List<BlisterPack>,
         coordinates: CavityCoordinates
     ): BlisterCavity {
         return blisterPacks[coordinates.blisterPack].rows[coordinates.rowIndex].value[coordinates.cavityIndex]
+    }
+
+    private fun updateCavity(coordinates: CavityCoordinates, cavity: BlisterCavity): Medicine? {
+        return state.value?.medicine?.let {
+            it.copy(
+                blisterPacks = it.blisterPacks.update(coordinates, cavity)
+            )
+        }
+    }
+}
+
+/**
+ * Copy blister packs and replace cavity in coordinates, returns updated blister packs
+ */
+private fun List<BlisterPack>.update(
+    coordinates: CavityCoordinates,
+    cavity: BlisterCavity
+): List<BlisterPack> {
+    return mapIndexed { index, blisterPack ->
+        if (index == coordinates.blisterPack) {
+            BlisterPack(blisterPack.rows.mapIndexed { rowIndex, blisterPackRow ->
+                if (rowIndex == coordinates.rowIndex) {
+                    BlisterPackRow(blisterPackRow.value.mapIndexed { cavityIndex, blisterCavity ->
+                        if (cavityIndex == coordinates.cavityIndex) {
+                            cavity
+                        } else blisterCavity
+                    })
+                } else blisterPackRow
+            })
+        } else blisterPack
     }
 }
 
@@ -57,4 +104,9 @@ interface MedicineDetailActions {
     Clear cavity selected by user
      */
     fun clearSelectedCavity()
+
+    /*
+    Set selected as consumed
+     */
+    fun consumeSelected()
 }

@@ -10,4 +10,7 @@
     <string name="create_medicine_mandatory_field">Mandatory field</string>
 
     <string name="medicine_detail_pack">Pack</string>
+    <string name="medicine_detail_eaten">Consumed</string>
+    <string name="medicine_detail_lost">Lost</string>
+    <string name="medicine_detail_filled">Filled</string>
 </resources>

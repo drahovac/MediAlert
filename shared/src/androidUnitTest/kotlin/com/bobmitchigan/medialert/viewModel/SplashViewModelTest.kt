@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
@@ -25,8 +26,11 @@ internal class SplashViewModelTest {
         override suspend fun saveMedicine(medicine: Medicine) {
         }
 
-        override suspend fun getMedicineDetail(id: Int?): Medicine? {
-            return null
+        override suspend fun updateMedicine(medicine: Medicine) {
+        }
+
+        override fun getMedicineDetail(id: Int?): Flow<Medicine?> {
+            return flowOf(null)
         }
     }
     private lateinit var splashViewModel: SplashViewModel

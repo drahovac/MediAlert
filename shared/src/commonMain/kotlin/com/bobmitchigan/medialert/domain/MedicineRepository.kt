@@ -7,5 +7,7 @@ interface MedicineRepository {
 
     suspend fun saveMedicine(medicine: Medicine)
 
-    suspend fun getMedicineDetail(id: Int?) : Medicine?
+    suspend fun updateMedicine(medicine: Medicine)
+
+    fun getMedicineDetail(id: Int?): Flow<Medicine?>
 }

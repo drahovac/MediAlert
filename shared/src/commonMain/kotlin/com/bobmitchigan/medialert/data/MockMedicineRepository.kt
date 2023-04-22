@@ -17,9 +17,15 @@ class MockMedicineRepository(
         delay(1000)
     }
 
-    override suspend fun getMedicineDetail(id: Int?): Medicine {
+    override suspend fun updateMedicine(medicine: Medicine) {
         delay(1000)
-        return Medicine("Mock medicine", PREVIEW_BLISTER_PACKS, listOf())
+    }
+
+    override fun getMedicineDetail(id: Int?): Flow<Medicine?> {
+        return flow {
+            delay(1000)
+            Medicine("Mock medicine", PREVIEW_BLISTER_PACKS, listOf())
+        }
     }
 
     companion object {

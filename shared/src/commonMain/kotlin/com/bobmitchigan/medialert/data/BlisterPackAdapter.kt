@@ -37,7 +37,7 @@ object BlisterPackAdapter {
 
     private fun BlisterCavity.serializeCavity(): String {
         return when (this) {
-            is BlisterCavity.EATEN -> "E${this.taken}"
+            is BlisterCavity.EATEN -> "E${this.taken.toString().substringBefore(".")}"
             BlisterCavity.FILLED -> "F"
             BlisterCavity.LOST -> "L"
             BlisterCavity.NONE -> "N"
@@ -50,7 +50,7 @@ object BlisterPackAdapter {
             this == "L" -> BlisterCavity.LOST
             this == "N" -> BlisterCavity.NONE
             this.startsWith("E") -> BlisterCavity.EATEN(this.substring(1).toLocalDateTime())
-            else -> throw IllegalArgumentException()
+            else -> throw IllegalArgumentException("Unknown cavity type: $this")
         }
     }
 

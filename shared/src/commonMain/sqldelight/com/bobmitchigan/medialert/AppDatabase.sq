@@ -8,6 +8,11 @@ insertMedicine:
 INSERT INTO Medicine(name, blisterPacks)
 VALUES(?, ?);
 
+updateMedicine:
+UPDATE Medicine
+SET name = ?, blisterPacks = ?
+WHERE id = ?;
+
 removeAllMedicines:
 DELETE FROM Medicine;
 
