@@ -7,7 +7,6 @@ import com.bobmitchigan.medialert.domain.MedicineRepository
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
@@ -85,6 +84,28 @@ internal class MedicineDetailViewModelTest {
             assertEquals(MEDICINE.name, it.name)
             assertEquals(MEDICINE.id, it.id)
             assertTrue { it.blisterPacks[0].rows[0].value[0] is BlisterCavity.EATEN }
+        }
+    }
+
+    @Test
+    fun `mark as lost selected cavity`() {
+        val slot = slot<Medicine>()
+        medicineDetailViewModel.selectCavity(
+            CavityCoordinates(0, 0, 0)
+        )
+
+        medicineDetailViewModel.setLostSelected()
+
+        assertEquals(MEDICINE, medicineDetailViewModel.state.value!!.medicine)
+        assertNull(medicineDetailViewModel.state.value!!.selectedCavity)
+        coVerify { medicineRepository.updateMedicine(capture(slot)) }
+        slot.captured.let {
+            assertEquals(MEDICINE.name, it.name)
+            assertEquals(MEDICINE.id, it.id)
+            assertEquals(
+                BlisterCavity.LOST,
+                it.blisterPacks[0].rows[0].value[0]
+            )
         }
     }
 

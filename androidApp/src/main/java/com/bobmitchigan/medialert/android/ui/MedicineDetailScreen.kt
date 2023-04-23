@@ -1,7 +1,10 @@
 package com.bobmitchigan.medialert.android.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
@@ -25,8 +28,10 @@ import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.viewModel.CavityCoordinates
 import com.bobmitchigan.medialert.viewModel.MedicineDetailActions
 import com.bobmitchigan.medialert.viewModel.MedicineDetailViewModel
+import kotlinx.datetime.toJavaLocalDateTime
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
+import java.time.format.DateTimeFormatter
 
 @Composable
 internal fun MedicineDetailScreen(
@@ -52,16 +57,23 @@ private fun DetailDialog(
             .fillMaxWidth()
             .padding(vertical = 16.dp),
         title = { Text(text = cavity.longName()) },
-        text = { Text(text = "Desc")},
+        text = { Text(text = cavity.desc()) },
         onDismissRequest = actions::clearSelectedCavity,
         buttons = {
-            when(cavity){
+            when (cavity) {
                 is BlisterCavity.EATEN -> {}
                 BlisterCavity.FILLED -> {
                     Button(
                         modifier = Modifier.padding(16.dp),
-                        onClick = actions::consumeSelected) {
-                        Text(text = "Consume")
+                        onClick = actions::consumeSelected
+                    ) {
+                        Text(text = stringResource(id = MR.strings.medicine_detail_consume.resourceId))
+                    }
+                    Button(
+                        modifier = Modifier.padding(16.dp),
+                        onClick = actions::setLostSelected
+                    ) {
+                        Text(text = stringResource(id = MR.strings.medicine_detail_lost.resourceId))
                     }
                 }
                 BlisterCavity.LOST -> {}
@@ -71,9 +83,20 @@ private fun DetailDialog(
 }
 
 @Composable
+private fun BlisterCavity.desc(): String {
+    return when (this) {
+        is BlisterCavity.EATEN -> this.taken.toJavaLocalDateTime()
+            .format(DateTimeFormatter.ISO_DATE_TIME)
+        BlisterCavity.FILLED -> ""
+        BlisterCavity.LOST -> stringResource(id = MR.strings.medicine_detail_marked_as_lost.resourceId)
+        BlisterCavity.NONE -> ""
+    }
+}
+
+@Composable
 private fun BlisterCavity.longName(): String {
     return when (this) {
-        is BlisterCavity.EATEN -> stringResource(id = MR.strings.medicine_detail_eaten.resourceId) + this.taken
+        is BlisterCavity.EATEN -> stringResource(id = MR.strings.medicine_detail_eaten.resourceId)
         BlisterCavity.FILLED -> stringResource(id = MR.strings.medicine_detail_filled.resourceId)
         BlisterCavity.LOST -> stringResource(id = MR.strings.medicine_detail_lost.resourceId)
         BlisterCavity.NONE -> ""

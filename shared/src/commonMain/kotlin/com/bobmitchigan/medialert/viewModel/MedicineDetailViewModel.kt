@@ -44,17 +44,25 @@ class MedicineDetailViewModel(
     }
 
     override fun consumeSelected() {
+        updateSelectedAndClear(
+            BlisterCavity.EATEN(
+                Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+            )
+        )
+    }
+
+    private fun updateSelectedAndClear(cavity: BlisterCavity) {
         selectedCoordinates?.let {
             scope.launch {
-                val cavity = BlisterCavity.EATEN(
-                    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-                )
                 updateCavity(it, cavity)?.let { medicineRepository.updateMedicine(it) }
                 clearSelectedCavity()
             }
         }
         clearSelectedCavity()
     }
+
+    override fun setLostSelected() = updateSelectedAndClear(BlisterCavity.LOST)
+
 
     private fun findCavity(
         blisterPacks: List<BlisterPack>,
@@ -109,4 +117,9 @@ interface MedicineDetailActions {
     Set selected as consumed
      */
     fun consumeSelected()
+
+    /*
+   Set selected as lost
+    */
+    fun setLostSelected()
 }
