@@ -1,29 +1,28 @@
 package com.bobmitchigan.medialert.android.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.bobmitchigan.medialert.MR
+import com.bobmitchigan.medialert.android.R
 import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.data.MockMedicineRepository.Companion.PREVIEW_BLISTER_PACKS
 import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.BlisterPack
+import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.viewModel.CavityCoordinates
 import com.bobmitchigan.medialert.viewModel.MedicineDetailActions
@@ -36,6 +35,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 internal fun MedicineDetailScreen(
     medicineId: Int?,
+    navigationController: NavHostController,
     viewModel: MedicineDetailViewModel = getViewModel { parametersOf(medicineId) }
 ) {
 
@@ -44,7 +44,11 @@ internal fun MedicineDetailScreen(
     state?.selectedCavity?.let {
         DetailDialog(it, viewModel)
     }
-    state?.let { MedicineDetailContent(medicine = it.medicine, viewModel) }
+    state?.let {
+        MedicineDetailContent(medicine = it.medicine, viewModel) {
+            navigationController.navigate(Destination.CreateMedicine.destination())
+        }
+    }
 }
 
 @Composable
@@ -106,18 +110,36 @@ private fun BlisterCavity.longName(): String {
 @Composable
 private fun MedicineDetailContent(
     medicine: Medicine,
-    actions: MedicineDetailActions
+    actions: MedicineDetailActions,
+    navigate: () -> Unit
 ) {
-    Column(
-        Modifier
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-        Text(text = "Medicine: ${medicine.name}", style = Typography.h4)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .padding(top = 16.dp, bottom = 96.dp)
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(text = "Medicine: ${medicine.name}", style = Typography.h4)
 
-        medicine.blisterPacks.forEachIndexed { index, pack ->
-            BlisterPackView(index, pack, actions)
+            medicine.blisterPacks.forEachIndexed { index, pack ->
+                BlisterPackView(index, pack, actions)
+            }
         }
+
+        ExtendedFloatingActionButton(
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_add_24),
+                    contentDescription = null
+                )
+            },
+            modifier = Modifier
+                .padding(bottom = 32.dp, end = 16.dp)
+                .align(Alignment.BottomEnd),
+            text = { Text(text = stringResource(id = MR.strings.medicine_detail_add_new.resourceId)) },
+            onClick = navigate,
+        )
     }
 }
 
@@ -169,6 +191,7 @@ internal fun MedicineDetailScreenPreview() {
             schedule = listOf()
         ),
         actions = ActionsInvocationHandler.createActionsProxy(),
+        navigate = {}
     )
 }
 

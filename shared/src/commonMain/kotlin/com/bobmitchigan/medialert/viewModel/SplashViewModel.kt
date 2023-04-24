@@ -1,6 +1,6 @@
 package com.bobmitchigan.medialert.viewModel
 
-import com.bobmitchigan.medialert.domain.InitialDestination
+import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.domain.MedicineRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,17 +10,17 @@ import kotlinx.coroutines.launch
 
 class SplashViewModel(private val repository: MedicineRepository) : BaseViewModel() {
 
-    private var _nextDestination = MutableStateFlow<InitialDestination?>(null)
-    var nextDestination: StateFlow<InitialDestination?> = _nextDestination
+    private var _nextDestination = MutableStateFlow<Destination?>(null)
+    var nextDestination: StateFlow<Destination?> = _nextDestination
 
     init {
         scope.launch {
             repository.allItems.first().let { medicineList ->
                 _nextDestination.update {
                     when {
-                        medicineList.isEmpty() -> InitialDestination.CreateMedicine
-                        medicineList.size == 1 -> InitialDestination.SingleMedicine(null)
-                        else -> InitialDestination.MedicineList
+                        medicineList.isEmpty() -> Destination.CreateMedicine
+                        medicineList.size == 1 -> Destination.SingleMedicine(null)
+                        else -> Destination.MedicineList
                     }
                 }
             }

@@ -1,13 +1,13 @@
 package com.bobmitchigan.medialert.domain
 
 /**
- * Initial destination where to navigate after splashcreen.
+ * Destination where to navigate.
  */
-sealed interface InitialDestination {
+sealed interface Destination {
 
-    object CreateMedicine : InitialDestination
+    object CreateMedicine : Destination
 
-    data class SingleMedicine(val medicineId: Int?) : InitialDestination {
+    data class SingleMedicine(val medicineId: Int?) : Destination {
 
         override fun destination(): String =
             detailDestination(medicineId?.toString() ?: MEDICINE_ID)
@@ -18,7 +18,7 @@ sealed interface InitialDestination {
         }
     }
 
-    object MedicineList : InitialDestination
+    object MedicineList : Destination
 
     fun destination(): String = this::class.qualifiedName.orEmpty()
 

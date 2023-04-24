@@ -63,7 +63,6 @@ class MedicineDetailViewModel(
 
     override fun setLostSelected() = updateSelectedAndClear(BlisterCavity.LOST)
 
-
     private fun findCavity(
         blisterPacks: List<BlisterPack>,
         coordinates: CavityCoordinates

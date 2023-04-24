@@ -15,4 +15,5 @@
     <string name="medicine_detail_filled">Filled</string>
     <string name="medicine_detail_consume">Consume</string>
     <string name="medicine_detail_marked_as_lost">Marked as lost.</string>
+    <string name="medicine_detail_add_new">Add new medicine</string>
 </resources>

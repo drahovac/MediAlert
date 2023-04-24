@@ -2,7 +2,7 @@
 
 package com.bobmitchigan.medialert.viewModel
 
-import com.bobmitchigan.medialert.domain.InitialDestination
+import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineRepository
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +44,7 @@ internal class SplashViewModelTest {
     fun `when medicines empty return create new destination`() {
         splashViewModel = SplashViewModel(repository)
 
-        assertEquals(InitialDestination.CreateMedicine, splashViewModel.nextDestination.value)
+        assertEquals(Destination.CreateMedicine, splashViewModel.nextDestination.value)
     }
 
     @Test
@@ -54,7 +54,7 @@ internal class SplashViewModelTest {
         splashViewModel = SplashViewModel(repository)
 
         assertEquals(
-            InitialDestination.SingleMedicine::class.java,
+            Destination.SingleMedicine::class.java,
             splashViewModel.nextDestination.value!!::class.java
         )
     }
@@ -65,6 +65,6 @@ internal class SplashViewModelTest {
 
         splashViewModel = SplashViewModel(repository)
 
-        assertEquals(InitialDestination.MedicineList, splashViewModel.nextDestination.value)
+        assertEquals(Destination.MedicineList, splashViewModel.nextDestination.value)
     }
 }

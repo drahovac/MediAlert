@@ -4,8 +4,8 @@ import com.bobmitchigan.medialert.AppDatabase
 import com.bobmitchigan.medialert.Medicine
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
-import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 internal class Database(databaseDriverFactory: DatabaseDriver) {
     private val database = AppDatabase(databaseDriverFactory.createDriver())
@@ -35,6 +35,6 @@ internal class Database(databaseDriverFactory: DatabaseDriver) {
     internal fun getMedicineByIdOrFirst(id: Int?): Flow<Medicine?> {
         val query =
             id?.let { dbQuery.selectMedicineById(it.toLong()) } ?: dbQuery.selectAllMedicines()
-        return query.asFlow().mapToOneOrNull()
+        return query.asFlow().mapToList().map { it.firstOrNull() }
     }
 }
