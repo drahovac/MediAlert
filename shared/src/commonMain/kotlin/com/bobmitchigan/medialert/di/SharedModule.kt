@@ -3,10 +3,7 @@ package com.bobmitchigan.medialert.di
 import com.bobmitchigan.medialert.data.Database
 import com.bobmitchigan.medialert.data.MedicineRepositoryImpl
 import com.bobmitchigan.medialert.domain.MedicineRepository
-import com.bobmitchigan.medialert.viewModel.BaseViewModel
-import com.bobmitchigan.medialert.viewModel.CreateMedicineViewModel
-import com.bobmitchigan.medialert.viewModel.MedicineDetailViewModel
-import com.bobmitchigan.medialert.viewModel.SplashViewModel
+import com.bobmitchigan.medialert.viewModel.*
 import org.koin.core.context.startKoin
 import org.koin.core.definition.Definition
 import org.koin.core.instance.InstanceFactory
@@ -26,6 +23,8 @@ internal val sharedModule = module {
     baseViewModel { SplashViewModel(get()) }
 
     baseViewModel { CreateMedicineViewModel(get()) }
+
+    baseViewModel { MedicineListViewModel(get()) }
 
     baseViewModel { params -> MedicineDetailViewModel(get(), params.getOrNull()) }
 }

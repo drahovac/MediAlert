@@ -16,4 +16,7 @@
     <string name="medicine_detail_consume">Consume</string>
     <string name="medicine_detail_marked_as_lost">Marked as lost.</string>
     <string name="medicine_detail_add_new">Add new medicine</string>
+
+    <string name="medicine_list_eaten">Eaten pills:</string>
+    <string name="medicine_list_remaining">Remaining pills:</string>
 </resources>

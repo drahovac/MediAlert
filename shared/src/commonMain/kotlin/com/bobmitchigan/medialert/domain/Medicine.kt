@@ -16,4 +16,23 @@ data class Medicine(
     val blisterPacks: List<BlisterPack>,
     val schedule: List<LocalDateTime>,
     val id: Int? = null
-)
+) {
+    fun eatenCount(): Int = sumCavity(::increaseIfEaten)
+
+    fun remainingCount(): Int = sumCavity(::increaseIfFilled)
+
+    private fun sumCavity(increase: (BlisterCavity) -> Int): Int {
+        return blisterPacks.sumOf { blisterPack ->
+            blisterPack.rows.sumOf { row ->
+                row.value.sumOf(increase)
+            }
+        }
+    }
+
+    private fun increaseIfEaten(cavity: BlisterCavity): Int =
+        if (cavity is BlisterCavity.EATEN) 1 else 0
+
+    private fun increaseIfFilled(cavity: BlisterCavity): Int =
+        if (cavity is BlisterCavity.FILLED) 1 else 0
+
+}

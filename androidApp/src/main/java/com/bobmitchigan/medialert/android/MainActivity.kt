@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.bobmitchigan.medialert.android.ui.CreateMedicineScreen
 import com.bobmitchigan.medialert.android.ui.MedicineDetailScreen
+import com.bobmitchigan.medialert.android.ui.MedicineListScreen
 import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.viewModel.SplashViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -62,7 +63,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable(Destination.MedicineList.destination()) {
-                                Text("Medicine list")
+                                MedicineListScreen(navController)
                             }
                         }
                     }

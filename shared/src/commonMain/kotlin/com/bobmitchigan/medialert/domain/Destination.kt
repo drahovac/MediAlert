@@ -23,6 +23,6 @@ sealed interface Destination {
     fun destination(): String = this::class.qualifiedName.orEmpty()
 
     private companion object {
-        const val MEDICINE_ID = "medicineId"
+        const val MEDICINE_ID = "{medicineId}"
     }
 }
