@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,8 +19,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.android.design.theme.Typography
+import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.viewModel.CreateMedicineActions
 import com.bobmitchigan.medialert.viewModel.CreateMedicineState
 import com.bobmitchigan.medialert.viewModel.CreateMedicineViewModel
@@ -27,17 +31,29 @@ import com.bobmitchigan.medialert.viewModel.toInputState
 import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun CreateMedicineScreen(viewModel: CreateMedicineViewModel = getViewModel()) {
-
+fun CreateMedicineScreen(
+    navController: NavController,
+    viewModel: CreateMedicineViewModel = getViewModel(),
+) {
     val state: CreateMedicineState by viewModel.state.collectAsStateWithLifecycle()
+    val navEvent: Boolean by viewModel.navigationEvent.collectAsStateWithLifecycle()
 
     CreateMedicineContent(state, viewModel)
+    LaunchedEffect(key1 = navEvent) {
+        if (navEvent) {
+            navController.navigate(Destination.MedicineList.destination(), navOptions {
+                launchSingleTop = true
+                popUpTo(Destination.MedicineList.destination())
+            })
+            viewModel.clearEvent()
+        }
+    }
 }
 
 @Composable
 private fun CreateMedicineContent(
     state: CreateMedicineState,
-    actions: CreateMedicineActions
+    actions: CreateMedicineActions,
 ) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Text(
@@ -102,7 +118,7 @@ private fun CreateMedicineContent(
         }
 
         Button(
-            onClick = actions::submit,
+            onClick = { actions.submit() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)

@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 internal class CreateMedicineViewModelTest {
 
@@ -140,6 +141,18 @@ internal class CreateMedicineViewModelTest {
                 )
             )
         }
+    }
+
+    @Test
+    fun `set navigation event on submit`() {
+        createMedicineViewModel.updateRowCount("2")
+        createMedicineViewModel.updateColumnCount("3")
+        createMedicineViewModel.updateBlisterPacksCount("4")
+        createMedicineViewModel.updateName("Name")
+
+        createMedicineViewModel.submit()
+
+        assertTrue { createMedicineViewModel.navigationEvent.value }
     }
 
     private fun stateValue() = createMedicineViewModel.state.value

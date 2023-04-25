@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 
 class CreateMedicineViewModel(
     private val medicineRepository: MedicineRepository
-) : BaseViewModel(), CreateMedicineActions {
+) : NavigationViewModel(), CreateMedicineActions {
 
     private val _state = MutableStateFlow(CreateMedicineState())
     val state = _state.asStateFlow()
@@ -35,6 +35,7 @@ class CreateMedicineViewModel(
         _state.update { it.validate() }
         scope.launch {
             _state.value.toMedicine()?.let { medicineRepository.saveMedicine(it) }
+            navigate()
         }
     }
 }

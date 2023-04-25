@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
                             startDestination = dest.destination()
                         ) {
                             composable(Destination.CreateMedicine.destination()) {
-                                CreateMedicineScreen()
+                                CreateMedicineScreen(navController)
                             }
                             composable(
                                 Destination.SingleMedicine.detailDestination(),
