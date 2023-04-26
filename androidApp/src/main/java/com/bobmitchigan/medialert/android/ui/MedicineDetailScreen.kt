@@ -4,12 +4,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.bobmitchigan.medialert.MR
-import com.bobmitchigan.medialert.android.R
 import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.data.MockMedicineRepository.Companion.PREVIEW_BLISTER_PACKS
 import com.bobmitchigan.medialert.domain.BlisterCavity
@@ -127,19 +127,7 @@ private fun MedicineDetailContent(
             }
         }
 
-        ExtendedFloatingActionButton(
-            icon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_add_24),
-                    contentDescription = null
-                )
-            },
-            modifier = Modifier
-                .padding(bottom = 32.dp, end = 16.dp)
-                .align(Alignment.BottomEnd),
-            text = { Text(text = stringResource(id = MR.strings.medicine_detail_add_new.resourceId)) },
-            onClick = navigate,
-        )
+        CreateMedicineFab(navigate)
     }
 }
 

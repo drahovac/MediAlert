@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.android.R
 import com.bobmitchigan.medialert.android.design.theme.Typography
+import com.bobmitchigan.medialert.android.navigate
 import com.bobmitchigan.medialert.data.MockMedicineRepository
 import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.domain.Medicine
@@ -41,29 +42,40 @@ fun MedicineListScreen(
     MedicineListContent(medicines = state,
         showDeleteDialog = {
             showDeleteDialog = it
-        }) {
-        navigationController.navigate(Destination.SingleMedicine(it).destination())
-    }
+        },
+        navigateToCreate = { navigationController.navigate(Destination.CreateMedicine) },
+        navigateToDetail = {
+            navigationController.navigate(Destination.SingleMedicine(it))
+        })
     showDeleteDialog?.let {
-        AlertDialog(
-            text = { Text(stringResource(id = MR.strings.medicine_list_delete_dialog.resourceId)) },
-            onDismissRequest = { showDeleteDialog = null },
-            dismissButton = {
-                Button(onClick = {
-                    showDeleteDialog = null
-                }) {
-                    Text(text = stringResource(id = MR.strings.medicine_list_cancel.resourceId))
-                }
-            },
-            confirmButton = {
-                Button(onClick = {
-                    viewModel.deleteMedicine(it)
-                    showDeleteDialog = null
-                }) {
-                    Text(text = stringResource(id = MR.strings.medicine_list_delete.resourceId))
-                }
-            })
+        ConfirmDeleteDialog(viewModel, it) {
+            showDeleteDialog = null
+        }
     }
+}
+
+@Composable
+private fun ConfirmDeleteDialog(
+    viewModel: MedicineListViewModel,
+    medicineId: Int,
+    dismiss: () -> Unit,
+) {
+    AlertDialog(
+        text = { Text(stringResource(id = MR.strings.medicine_list_delete_dialog.resourceId)) },
+        onDismissRequest = dismiss,
+        dismissButton = {
+            Button(onClick = dismiss) {
+                Text(text = stringResource(id = MR.strings.medicine_list_cancel.resourceId))
+            }
+        },
+        confirmButton = {
+            Button(onClick = {
+                viewModel.deleteMedicine(medicineId)
+                dismiss()
+            }) {
+                Text(text = stringResource(id = MR.strings.medicine_list_delete.resourceId))
+            }
+        })
 }
 
 @Composable
@@ -71,53 +83,60 @@ private fun MedicineListContent(
     medicines: List<Medicine>,
     showDeleteDialog: (Int) -> Unit,
     navigateToDetail: (id: Int) -> Unit,
+    navigateToCreate: () -> Unit,
 ) {
-    LazyColumn {
-        spacerItem(24.dp)
-        items(medicines, key = { it.id!! }) { medicine ->
-            Card(
-                Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp)
-                    .fillMaxWidth()
-                    .clickable { navigateToDetail(medicine.id!!) }
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = medicine.name,
-                            style = Typography.h4,
-                            modifier = Modifier.weight(1f)
-                        )
-                        IconButton(onClick = { showDeleteDialog(medicine.id!!) }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_delete_24),
-                                contentDescription = stringResource(
-                                    id = MR.strings.medicine_list_delete.resourceId
+    Box(Modifier.fillMaxSize()) {
+        LazyColumn {
+            spacerItem(24.dp)
+            items(medicines, key = { it.id!! }) { medicine ->
+                Card(
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 16.dp)
+                        .fillMaxWidth()
+                        .clickable { navigateToDetail(medicine.id!!) }
+                ) {
+                    Column(Modifier.padding(16.dp)) {
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = medicine.name,
+                                style = Typography.h4,
+                                modifier = Modifier.weight(1f)
+                            )
+                            IconButton(onClick = { showDeleteDialog(medicine.id!!) }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_delete_24),
+                                    contentDescription = stringResource(
+                                        id = MR.strings.medicine_list_delete.resourceId
+                                    )
                                 )
-                            )
+                            }
                         }
+                        Text(
+                            text = "${
+                                stringResource(
+                                    id = MR.strings.medicine_list_eaten.resourceId
+                                )
+                            } ${medicine.eatenCount()}",
+                            style = Typography.body1
+                        )
+                        Text(
+                            text = "${
+                                stringResource(
+                                    id = MR.strings.medicine_list_remaining.resourceId
+                                )
+                            } ${medicine.remainingCount()}",
+                            style = Typography.body1
+                        )
                     }
-                    Text(
-                        text = "${
-                            stringResource(
-                                id = MR.strings.medicine_list_eaten.resourceId
-                            )
-                        } ${medicine.eatenCount()}",
-                        style = Typography.body1
-                    )
-                    Text(
-                        text = "${
-                            stringResource(
-                                id = MR.strings.medicine_list_remaining.resourceId
-                            )
-                        } ${medicine.remainingCount()}",
-                        style = Typography.body1
-                    )
                 }
             }
+            spacerItem(96.dp)
         }
-        spacerItem(32.dp)
+        CreateMedicineFab(navigateToCreate)
     }
 }
 
@@ -136,5 +155,5 @@ private fun LazyListScope.spacerItem(height: Dp) {
 fun MedicineListScreenPreview() {
     MedicineListContent((0..1).map {
         Medicine("Name $it", MockMedicineRepository.PREVIEW_BLISTER_PACKS, listOf())
-    }, {}, {})
+    }, {}, {}, {})
 }
