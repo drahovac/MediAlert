@@ -37,4 +37,10 @@ internal class Database(databaseDriverFactory: DatabaseDriver) {
             id?.let { dbQuery.selectMedicineById(it.toLong()) } ?: dbQuery.selectAllMedicines()
         return query.asFlow().mapToList().map { it.firstOrNull() }
     }
+
+    fun deleteMedicine(id: Int) {
+        dbQuery.transaction {
+            dbQuery.deleteMedicine(id.toLong())
+        }
+    }
 }

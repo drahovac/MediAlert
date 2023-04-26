@@ -10,4 +10,6 @@ interface MedicineRepository {
     suspend fun updateMedicine(medicine: Medicine)
 
     fun getMedicineDetail(id: Int?): Flow<Medicine?>
+
+    suspend fun deleteMedicine(medicineId: Int)
 }

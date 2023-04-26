@@ -28,6 +28,10 @@ class MockMedicineRepository(
         }
     }
 
+    override suspend fun deleteMedicine(medicineId: Int) {
+        delay(1000)
+    }
+
     companion object {
         // Used in preview and in tests
         val PREVIEW_BLISTER_PACKS = BlisterPackAdapter.deserializeBlisterPacks(

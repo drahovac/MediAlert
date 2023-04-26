@@ -5,9 +5,10 @@ import com.bobmitchigan.medialert.domain.MedicineRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class MedicineListViewModel(
-    medicineRepository: MedicineRepository
+    private val medicineRepository: MedicineRepository
 ) : BaseViewModel() {
 
     val state: StateFlow<List<Medicine>> =
@@ -16,4 +17,8 @@ class MedicineListViewModel(
             started = SharingStarted.WhileSubscribed(),
             initialValue = listOf()
         )
+
+    fun deleteMedicine(medicineId: Int) {
+        scope.launch { medicineRepository.deleteMedicine(medicineId) }
+    }
 }

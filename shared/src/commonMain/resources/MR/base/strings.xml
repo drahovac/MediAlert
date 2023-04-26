@@ -19,4 +19,11 @@
 
     <string name="medicine_list_eaten">Eaten pills:</string>
     <string name="medicine_list_remaining">Remaining pills:</string>
+    <string name="medicine_list_delete">Delete medicine</string>
+    <string name="medicine_list_delete_dialog">Are you sure you want to delete this medicine? This
+        action cannot be undone and all records related to this medicine will be permanently
+        deleted.
+    </string>
+    <string name="medicine_list_cancel">Cancel</string>
+    <string name="medicine_list_delete">Delete</string>
 </resources>

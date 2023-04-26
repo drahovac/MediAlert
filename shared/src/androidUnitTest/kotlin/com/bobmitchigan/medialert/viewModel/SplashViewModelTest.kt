@@ -32,6 +32,9 @@ internal class SplashViewModelTest {
         override fun getMedicineDetail(id: Int?): Flow<Medicine?> {
             return flowOf(null)
         }
+
+        override suspend fun deleteMedicine(medicineId: Int) {
+        }
     }
     private lateinit var splashViewModel: SplashViewModel
 

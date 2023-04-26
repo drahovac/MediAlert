@@ -2,6 +2,7 @@ package com.bobmitchigan.medialert.viewModel
 
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineRepository
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class MedicineListViewModelTest {
 
-    private val medicineRepository: MedicineRepository = mockk()
+    private val medicineRepository: MedicineRepository = mockk(relaxUnitFun = true)
     private lateinit var medicineListViewModel: MedicineListViewModel
 
     @Before
@@ -37,6 +38,13 @@ internal class MedicineListViewModelTest {
         job.cancel()
     }
 
+    @Test
+    fun `delete medicine`() {
+        medicineListViewModel.deleteMedicine(MEDICINE_ID)
+
+        coVerify { medicineRepository.deleteMedicine(MEDICINE_ID) }
+    }
+
     private companion object {
         val MEDICINE_1 = Medicine(
             "Name1",
@@ -49,5 +57,7 @@ internal class MedicineListViewModelTest {
             listOf(),
             listOf()
         )
+
+        const val MEDICINE_ID = 2
     }
 }

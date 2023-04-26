@@ -55,4 +55,12 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
             }
         }
     }
+
+    override suspend fun deleteMedicine(medicineId: Int) {
+        withContext(Dispatchers.Default) {
+            launch {
+                database.deleteMedicine(medicineId)
+            }
+        }
+    }
 }
