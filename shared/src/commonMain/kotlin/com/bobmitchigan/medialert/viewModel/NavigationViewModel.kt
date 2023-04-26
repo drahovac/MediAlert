@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.update
 ViewModel responsible for handling navigation events.
 Event is just boolean flag, true means navigate, should be cleared after navigation is performed.
  */
-open class NavigationViewModel() : BaseViewModel() {
+open class NavigationViewModel : BaseViewModel() {
 
     private val _navigationEvent = MutableStateFlow(false)
     val navigationEvent = _navigationEvent.asStateFlow()

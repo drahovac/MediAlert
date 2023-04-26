@@ -10,6 +10,10 @@ import kotlinx.datetime.toLocalDateTime
  */
 object BlisterPackAdapter {
 
+    private const val BLISTER_PACK_SEPARATOR = ";"
+    private const val BLISTER_ROW_SEPARATOR = ","
+    private const val BLISTER_CAVITY_SEPARATOR = "."
+
     fun List<BlisterPack>.serialize() =
         joinToString(separator = BLISTER_PACK_SEPARATOR) {
             it.serializeRows()
@@ -53,8 +57,4 @@ object BlisterPackAdapter {
             else -> throw IllegalArgumentException("Unknown cavity type: $this")
         }
     }
-
-    private const val BLISTER_PACK_SEPARATOR = ";"
-    private const val BLISTER_ROW_SEPARATOR = ","
-    private const val BLISTER_CAVITY_SEPARATOR = "."
 }

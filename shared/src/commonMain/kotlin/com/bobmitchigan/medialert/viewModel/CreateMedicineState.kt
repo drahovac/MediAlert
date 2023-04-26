@@ -23,9 +23,16 @@ data class CreateMedicineState(
 
     fun validate() = CreateMedicineState(
         name.copy(error = MR.strings.create_medicine_mandatory_field.takeIf { name.value.isNullOrEmpty() }),
-        blisterPackCount.copy(error = MR.strings.create_medicine_mandatory_field.takeIf { blisterPackCount.value == null }),
+        blisterPackCount.copy(
+            error = MR.strings.create_medicine_mandatory_field.takeIf {
+                blisterPackCount.value == null
+            }),
         areAllPacksIdentical,
-        rowCount.copy(error = MR.strings.create_medicine_mandatory_field.takeIf { rowCount.value == null }),
-        columnCount.copy(error = MR.strings.create_medicine_mandatory_field.takeIf { columnCount.value == null })
+        rowCount.copy(error = MR.strings.create_medicine_mandatory_field.takeIf {
+            rowCount.value == null
+        }),
+        columnCount.copy(error = MR.strings.create_medicine_mandatory_field.takeIf {
+            columnCount.value == null
+        })
     )
 }

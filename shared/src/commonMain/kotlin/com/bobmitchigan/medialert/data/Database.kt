@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 internal class Database(databaseDriverFactory: DatabaseDriver) {
-    private val database = AppDatabase(databaseDriverFactory.createDriver())
-    private val dbQuery = database.appDatabaseQueries
+    private val dbDriver = AppDatabase(databaseDriverFactory.createDriver())
+    private val dbQuery = dbDriver.appDatabaseQueries
 
     internal fun clearDatabase() {
         dbQuery.transaction {

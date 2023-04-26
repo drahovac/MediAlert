@@ -12,7 +12,6 @@ value class BlisterPack(val rows: List<BlisterPackRow>)
 @JvmInline
 value class BlisterPackRow(val value: List<BlisterCavity>)
 
-
 fun createNewBlisterPack(rows: Int, columns: Int): BlisterPack = BlisterPack(List(rows) {
     createNewBlisterPackRow(columns)
 })

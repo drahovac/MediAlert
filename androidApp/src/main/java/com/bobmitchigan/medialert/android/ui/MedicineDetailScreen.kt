@@ -174,7 +174,6 @@ private fun BlisterPackView(index: Int, pack: BlisterPack, actions: MedicineDeta
                             textAlign = TextAlign.Center
                         )
                     }
-
                 }
             }
         }

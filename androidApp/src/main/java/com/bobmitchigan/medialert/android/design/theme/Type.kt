@@ -6,6 +6,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
+@Suppress("MagicNumber")
 val Typography = Typography(
     h1 = TextStyle(
         fontFamily = FontFamily.SansSerif,

@@ -6,6 +6,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
+@Suppress("MagicNumber")
 class MockMedicineRepository(
     override val allItems: Flow<List<Medicine>> = flow {
         delay(2000)

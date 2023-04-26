@@ -28,6 +28,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : ComponentActivity() {
 
     private val viewModel: SplashViewModel by viewModel()
+    private val showSplash: Boolean
+        get() = viewModel.nextDestination.value == null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition(::showSplash)
@@ -53,8 +55,8 @@ class MainActivity : ComponentActivity() {
                                 Destination.SingleMedicine.detailDestination(),
                                 arguments = listOf(navArgument("medicineId") {
                                     nullable = true
-                                    type = NavType.StringType;defaultValue =
-                                    (dest as? Destination.SingleMedicine)?.medicineId
+                                    type = NavType.StringType
+                                    defaultValue = (dest as? Destination.SingleMedicine)?.medicineId
                                 })
                             ) {
                                 MedicineDetailScreen(
@@ -71,10 +73,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    private val showSplash: Boolean
-        get() = viewModel.nextDestination.value == null
-
 }
 
 @Composable

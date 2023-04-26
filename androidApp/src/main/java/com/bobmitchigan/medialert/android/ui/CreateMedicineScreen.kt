@@ -95,27 +95,7 @@ private fun CreateMedicineContent(
             Text(text = stringResource(MR.strings.create_medicine_identical.resourceId))
         }
 
-        Row(Modifier.fillMaxWidth()) {
-            OutlinedTextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp),
-                value = state.rowCount.value?.toString().orEmpty(),
-                onValueChange = actions::updateRowCount,
-                label = { Text(text = stringResource(MR.strings.create_medicine_row_count.resourceId)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            )
-
-            OutlinedTextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp),
-                value = state.columnCount.value?.toString().orEmpty(),
-                onValueChange = actions::updateColumnCount,
-                label = { Text(text = stringResource(MR.strings.create_medicine_column_count.resourceId)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            )
-        }
+        BlisterCountInputs(state, actions)
 
         Button(
             onClick = { actions.submit() },
@@ -125,6 +105,34 @@ private fun CreateMedicineContent(
         ) {
             Text(text = stringResource(id = MR.strings.create_medicine_save.resourceId))
         }
+    }
+}
+
+@Composable
+private fun BlisterCountInputs(
+    state: CreateMedicineState,
+    actions: CreateMedicineActions
+) {
+    Row(Modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(16.dp),
+            value = state.rowCount.value?.toString().orEmpty(),
+            onValueChange = actions::updateRowCount,
+            label = { Text(text = stringResource(MR.strings.create_medicine_row_count.resourceId)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        )
+
+        OutlinedTextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(16.dp),
+            value = state.columnCount.value?.toString().orEmpty(),
+            onValueChange = actions::updateColumnCount,
+            label = { Text(text = stringResource(MR.strings.create_medicine_column_count.resourceId)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        )
     }
 }
 

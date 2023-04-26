@@ -34,5 +34,4 @@ data class Medicine(
 
     private fun increaseIfFilled(cavity: BlisterCavity): Int =
         if (cavity is BlisterCavity.FILLED) 1 else 0
-
 }
