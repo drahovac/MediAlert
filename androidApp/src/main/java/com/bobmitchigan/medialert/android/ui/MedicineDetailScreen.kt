@@ -3,10 +3,9 @@ package com.bobmitchigan.medialert.android.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -119,7 +118,11 @@ private fun MedicineDetailContent(
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text(text = "Medicine: ${medicine.name}", style = Typography.h4)
+            Text(
+                text = medicine.name,
+                style = Typography.h4,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
             medicine.blisterPacks.forEachIndexed { index, pack ->
                 BlisterPackView(index, pack, actions)
@@ -132,34 +135,41 @@ private fun MedicineDetailContent(
 
 @Composable
 private fun BlisterPackView(index: Int, pack: BlisterPack, actions: MedicineDetailActions) {
-    Column {
-        Text(
-            text = "${stringResource(MR.strings.medicine_detail_pack.resourceId)} ${index + 1}",
-            style = Typography.h4
-        )
-        pack.rows.forEachIndexed { rowIndex, row ->
-            Row(Modifier.fillMaxWidth()) {
-                row.value.forEachIndexed { cavityIndex, cavity ->
-                    Card(
-                        Modifier
-                            .weight(1f)
-                            .padding(8.dp)
-                    ) {
-                        Text(
-                            text = cavity.shortName,
+    Surface(
+        shape = RoundedCornerShape(4.dp),
+        modifier = Modifier
+            .padding(bottom = 16.dp)
+    ) {
+        Column(Modifier.padding(8.dp)) {
+            Text(
+                text = "${stringResource(MR.strings.medicine_detail_pack.resourceId)} ${index + 1}",
+                style = Typography.subtitle1
+            )
+            pack.rows.forEachIndexed { rowIndex, row ->
+                Row(Modifier.fillMaxWidth()) {
+                    row.value.forEachIndexed { cavityIndex, cavity ->
+                        Card(
                             modifier = Modifier
-                                .padding(8.dp)
-                                .clickable {
-                                    actions.selectCavity(
-                                        CavityCoordinates(
-                                            blisterPack = index,
-                                            rowIndex = rowIndex,
-                                            cavityIndex = cavityIndex
+                                .weight(1f)
+                                .padding(8.dp),
+                            backgroundColor = MaterialTheme.colors.background,
+                        ) {
+                            Text(
+                                text = cavity.shortName,
+                                modifier = Modifier
+                                    .clickable {
+                                        actions.selectCavity(
+                                            CavityCoordinates(
+                                                blisterPack = index,
+                                                rowIndex = rowIndex,
+                                                cavityIndex = cavityIndex
+                                            )
                                         )
-                                    )
-                                },
-                            textAlign = TextAlign.Center
-                        )
+                                    }
+                                    .padding(8.dp),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }

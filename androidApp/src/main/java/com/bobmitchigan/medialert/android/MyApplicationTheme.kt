@@ -2,11 +2,7 @@ package com.bobmitchigan.medialert.android
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Shapes
-import androidx.compose.material.Typography
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -24,13 +20,14 @@ fun MyApplicationTheme(
         darkColors(
             primary = Color(0xFFBB86FC),
             primaryVariant = Color(0xFF3700B3),
-            secondary = Color(0xFF03DAC5)
+            secondary = Color(0xFF03DAC5),
         )
     } else {
         lightColors(
             primary = Color(0xFF6200EE),
             primaryVariant = Color(0xFF3700B3),
-            secondary = Color(0xFF03DAC5)
+            secondary = Color(0xFF03DAC5),
+            background = Color(0xFFEEEEEE),
         )
     }
     val typography = Typography(
