@@ -10,11 +10,17 @@
     <string name="create_medicine_column_count">Column Count</string>
     <string name="create_medicine_save">Save Medicine</string>
     <string name="create_medicine_mandatory_field">Mandatory field</string>
+    <string name="create_medicine_all_dimension">Blister pack grid dimensions</string>
+    <string name="create_medicine_dimension">Blister pack %d grid dimensions</string>
 
     <string name="medicine_detail_pack">Pack</string>
     <string name="medicine_detail_eaten">Consumed</string>
+    <string name="medicine_detail_eaten">Consumed</string>
+    <string name="medicine_detail_eaten_desc">Medicine was consumed on %s </string>
     <string name="medicine_detail_lost">Lost</string>
+    <string name="medicine_detail_mark_lost">Mark as lost</string>
     <string name="medicine_detail_filled">Filled</string>
+    <string name="medicine_detail_filled_desc">Medicine is ready to be consumed.</string>
     <string name="medicine_detail_consume">Consume</string>
     <string name="medicine_detail_marked_as_lost">Marked as lost.</string>
     <string name="medicine_detail_add_new">Add new medicine</string>

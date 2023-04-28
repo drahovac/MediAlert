@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -27,10 +28,11 @@ internal class CreateMedicineViewModelTest {
     }
 
     @Test
-    fun `update blister pack count with valid number`() {
+    fun `update blister pack count with valid number and set number of empty dimensions if previously empty`() {
         createMedicineViewModel.updateBlisterPacksCount("6")
 
         assertEquals(6, stateValue().blisterPackCount.value)
+        assertEquals(List(6) { BlisterPackDimension() }, stateValue().dimensions)
     }
 
     @Test
@@ -48,17 +50,63 @@ internal class CreateMedicineViewModelTest {
     }
 
     @Test
-    fun `update blister pack row count `() {
+    fun `update first blister pack row count if all packs same`() {
+        createMedicineViewModel.updateBlisterPacksCount("3")
         createMedicineViewModel.updateRowCount("2")
 
-        assertEquals(2, stateValue().rowCount.value)
+        assertEquals(2, stateValue().dimensions.first().rowCount.value)
     }
 
     @Test
-    fun `update blister pack column count `() {
+    fun `update first blister pack column count if all pack same`() {
+        createMedicineViewModel.updateBlisterPacksCount("5")
         createMedicineViewModel.updateColumnCount("10")
 
-        assertEquals(10, stateValue().columnCount.value)
+        assertEquals(10, stateValue().dimensions.first().columnCount.value)
+    }
+
+    @Test
+    fun `clear dimensions if count set to zero`() {
+        createMedicineViewModel.updateBlisterPacksCount("6")
+        createMedicineViewModel.updateBlisterPacksCount("unknown")
+
+        assertTrue(createMedicineViewModel.state.value.dimensions.isEmpty())
+    }
+
+    @Test
+    fun `add additional dimensions if count of packs increased`() {
+        createMedicineViewModel.updateBlisterPacksCount("2")
+        createMedicineViewModel.updateRowCount("3", 1)
+        createMedicineViewModel.updateRowCount("2", 0)
+        createMedicineViewModel.updateColumnCount("3", 0)
+
+        createMedicineViewModel.updateBlisterPacksCount("4")
+
+        assertEquals(4, stateValue().dimensions.size)
+        assertEquals(BlisterPackDimension(), stateValue().dimensions[2])
+        assertEquals(BlisterPackDimension(), stateValue().dimensions[3])
+        assertEquals(2, stateValue().dimensions[0].rowCount.value)
+        assertEquals(3, stateValue().dimensions[0].columnCount.value)
+        assertEquals(3, stateValue().dimensions[1].rowCount.value)
+        assertNull(stateValue().dimensions[1].columnCount.value)
+    }
+
+    @Test
+    fun `remove additional dimensions if count of packs decreased`() {
+        createMedicineViewModel.updateBlisterPacksCount("4")
+        createMedicineViewModel.updateRowCount("3", 1)
+        createMedicineViewModel.updateRowCount("2", 0)
+        createMedicineViewModel.updateColumnCount("3", 0)
+        createMedicineViewModel.updateRowCount("4", 3)
+        createMedicineViewModel.updateColumnCount("5", 3)
+
+        createMedicineViewModel.updateBlisterPacksCount("2")
+
+        assertEquals(2, stateValue().dimensions.size)
+        assertEquals(2, stateValue().dimensions[0].rowCount.value)
+        assertEquals(3, stateValue().dimensions[0].columnCount.value)
+        assertEquals(3, stateValue().dimensions[1].rowCount.value)
+        assertNull(stateValue().dimensions[1].columnCount.value)
     }
 
     @Test
@@ -71,16 +119,9 @@ internal class CreateMedicineViewModelTest {
         )
         assertEquals(
             MR.strings.create_medicine_mandatory_field,
-            stateValue().rowCount.error
-        )
-        assertEquals(
-            MR.strings.create_medicine_mandatory_field,
-            stateValue().columnCount.error
-        )
-        assertEquals(
-            MR.strings.create_medicine_mandatory_field,
             stateValue().blisterPackCount.error
         )
+        assertTrue(stateValue().dimensions.isEmpty())
     }
 
     @Test
@@ -92,8 +133,10 @@ internal class CreateMedicineViewModelTest {
         createMedicineViewModel.updateBlisterPacksCount("3")
         createMedicineViewModel.updateName("Name")
 
-        assertNull(stateValue().rowCount.error)
-        assertNull(stateValue().columnCount.error)
+        stateValue().dimensions.forEach {
+            assertNull(it.rowCount.error)
+            assertNull(it.columnCount.error)
+        }
         assertNull(stateValue().blisterPackCount.error)
         assertNull(stateValue().name.error)
     }
@@ -103,6 +146,10 @@ internal class CreateMedicineViewModelTest {
         createMedicineViewModel.updateRowCount("3")
         createMedicineViewModel.updateColumnCount("4")
         createMedicineViewModel.updateBlisterPacksCount("3")
+        (0..3).forEach {
+            createMedicineViewModel.updateRowCount("3", it)
+            createMedicineViewModel.updateColumnCount("3", it)
+        }
         createMedicineViewModel.updateName("")
 
         createMedicineViewModel.submit()
@@ -111,19 +158,148 @@ internal class CreateMedicineViewModelTest {
             MR.strings.create_medicine_mandatory_field,
             stateValue().name.error
         )
-        assertNull(stateValue().rowCount.error)
-        assertNull(stateValue().columnCount.error)
+        stateValue().dimensions.forEach {
+            assertNull(it.rowCount.error)
+            assertNull(it.columnCount.error)
+        }
         assertNull(stateValue().blisterPackCount.error)
     }
 
     @Test
-    fun `save medicine on submit if all filled`() {
-        createMedicineViewModel.updateRowCount("2")
-        createMedicineViewModel.updateColumnCount("3")
-        createMedicineViewModel.updateBlisterPacksCount("4")
+    fun `set error on submit if blister count zero`() {
+        createMedicineViewModel.updateRowCount("3")
+        createMedicineViewModel.updateColumnCount("4")
+        createMedicineViewModel.updateBlisterPacksCount("0")
         createMedicineViewModel.updateName("Name")
+
+        createMedicineViewModel.submit()
+
+        assertEquals(
+            MR.strings.create_medicine_mandatory_field,
+            stateValue().blisterPackCount.error
+        )
+        assertFalse { createMedicineViewModel.navigationEvent.value }
+    }
+
+    @Test
+    fun `set error on submit if only some dimensions not filled`() {
+        createMedicineViewModel.updateName("Name")
+        createMedicineViewModel.updateBlisterPacksCount("5")
+        (0..2).forEach {
+            createMedicineViewModel.updateRowCount("3", it)
+            createMedicineViewModel.updateColumnCount("3", it)
+        }
+        createMedicineViewModel.updateAllPacksIdentical()
+
+        createMedicineViewModel.submit()
+
+        assertNull(stateValue().name.error)
+        stateValue().dimensions.forEachIndexed { index, dimen ->
+            if (index <= 2) {
+                assertNull(dimen.rowCount.error)
+                assertNull(dimen.columnCount.error)
+            } else {
+                assertEquals(
+                    MR.strings.create_medicine_mandatory_field,
+                    dimen.rowCount.error
+                )
+                assertEquals(
+                    MR.strings.create_medicine_mandatory_field,
+                    dimen.columnCount.error
+                )
+            }
+        }
+        assertNull(stateValue().blisterPackCount.error)
+        coVerify(exactly = 0) { medicineRepository.saveMedicine(any()) }
+        assertFalse(createMedicineViewModel.navigationEvent.value)
+    }
+
+    @Test
+    fun `submit if only first dimensions filled and all pack same true`() {
+        createMedicineViewModel.updateName("Name")
+        createMedicineViewModel.updateBlisterPacksCount("5")
+        (0..2).forEach {
+            createMedicineViewModel.updateRowCount("3", it)
+            createMedicineViewModel.updateColumnCount("6", it)
+        }
+        createMedicineViewModel.updateRowCount("2", 0)
+        createMedicineViewModel.updateColumnCount("3", 0)
         val blisterPackRow =
             BlisterPackRow(listOf(BlisterCavity.FILLED, BlisterCavity.FILLED, BlisterCavity.FILLED))
+
+        createMedicineViewModel.submit()
+
+        assertNull(stateValue().name.error)
+        assertNull(stateValue().blisterPackCount.error)
+        coVerify { medicineRepository.saveMedicine(any()) }
+        assertTrue(createMedicineViewModel.navigationEvent.value)
+        coVerify {
+            medicineRepository.saveMedicine(
+                Medicine(
+                    name = "Name",
+                    blisterPacks = listOf(
+                        BlisterPack(listOf(blisterPackRow, blisterPackRow)),
+                        BlisterPack(listOf(blisterPackRow, blisterPackRow)),
+                        BlisterPack(listOf(blisterPackRow, blisterPackRow)),
+                        BlisterPack(listOf(blisterPackRow, blisterPackRow)),
+                        BlisterPack(listOf(blisterPackRow, blisterPackRow)),
+                    ),
+                    listOf()
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `set error on submit if zero dimensions not filled`() {
+        createMedicineViewModel.updateName("Name")
+        createMedicineViewModel.updateBlisterPacksCount("5")
+        stateValue().dimensions.forEachIndexed { index, _ ->
+            createMedicineViewModel.updateRowCount("0", index)
+            createMedicineViewModel.updateColumnCount("0", index)
+        }
+        createMedicineViewModel.updateAllPacksIdentical()
+
+        createMedicineViewModel.submit()
+
+        assertNull(stateValue().name.error)
+        stateValue().dimensions.forEach {
+            assertEquals(
+                MR.strings.create_medicine_mandatory_field,
+                it.rowCount.error
+            )
+            assertEquals(
+                MR.strings.create_medicine_mandatory_field,
+                it.columnCount.error
+            )
+        }
+        assertNull(stateValue().blisterPackCount.error)
+        coVerify(exactly = 0) { medicineRepository.saveMedicine(any()) }
+        assertFalse(createMedicineViewModel.navigationEvent.value)
+    }
+
+    @Test
+    fun `save medicine on submit if all filled and not all packs same`() {
+        createMedicineViewModel.updateBlisterPacksCount("4")
+        createMedicineViewModel.updateName("Name")
+        createMedicineViewModel.updateAllPacksIdentical()
+        val blisterPackRow =
+            BlisterPackRow(listOf(BlisterCavity.FILLED, BlisterCavity.FILLED, BlisterCavity.FILLED))
+        val blisterPackRowLarge =
+            BlisterPackRow(
+                listOf(
+                    BlisterCavity.FILLED,
+                    BlisterCavity.FILLED,
+                    BlisterCavity.FILLED,
+                    BlisterCavity.FILLED
+                )
+            )
+        stateValue().dimensions.forEachIndexed { index, _ ->
+            createMedicineViewModel.updateColumnCount("3", index)
+            createMedicineViewModel.updateRowCount("2", index)
+        }
+        createMedicineViewModel.updateColumnCount("4", 2)
+        createMedicineViewModel.updateRowCount("1", 2)
 
         createMedicineViewModel.submit()
 
@@ -134,7 +310,7 @@ internal class CreateMedicineViewModelTest {
                     blisterPacks = listOf(
                         BlisterPack(listOf(blisterPackRow, blisterPackRow)),
                         BlisterPack(listOf(blisterPackRow, blisterPackRow)),
-                        BlisterPack(listOf(blisterPackRow, blisterPackRow)),
+                        BlisterPack(listOf(blisterPackRowLarge)),
                         BlisterPack(listOf(blisterPackRow, blisterPackRow)),
                     ),
                     listOf()
@@ -148,6 +324,10 @@ internal class CreateMedicineViewModelTest {
         createMedicineViewModel.updateRowCount("2")
         createMedicineViewModel.updateColumnCount("3")
         createMedicineViewModel.updateBlisterPacksCount("4")
+        stateValue().dimensions.forEachIndexed { index, _ ->
+            createMedicineViewModel.updateColumnCount("1", index)
+            createMedicineViewModel.updateRowCount("1", index)
+        }
         createMedicineViewModel.updateName("Name")
 
         createMedicineViewModel.submit()
