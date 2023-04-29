@@ -10,6 +10,7 @@ data class CreateMedicineState(
     val blisterPackCount: InputState<Int> = InputState(),
     val areAllPacksIdentical: Boolean = true,
     val dimensions: List<BlisterPackDimension> = listOf(),
+    val timesPerDay: InputState<Int> = InputState(),
 ) {
     fun toMedicine() = runCatching {
         Medicine(

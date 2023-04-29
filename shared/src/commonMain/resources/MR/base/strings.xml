@@ -12,6 +12,7 @@
     <string name="create_medicine_mandatory_field">Mandatory field</string>
     <string name="create_medicine_all_dimension">Blister pack grid dimensions</string>
     <string name="create_medicine_dimension">Blister pack %d grid dimensions</string>
+    <string name="create_medicine_daily_intake">Daily Intake</string>
 
     <string name="medicine_detail_pack">Pack</string>
     <string name="medicine_detail_eaten">Consumed</string>

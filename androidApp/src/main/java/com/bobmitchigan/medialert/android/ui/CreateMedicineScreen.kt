@@ -7,11 +7,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -27,7 +24,8 @@ import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.android.design.theme.Typography
-import com.bobmitchigan.medialert.android.ui.component.ErrorLabel
+import com.bobmitchigan.medialert.android.ui.component.OutlinedIntInput
+import com.bobmitchigan.medialert.android.ui.component.OutlinedStringInput
 import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.viewModel.*
 import org.koin.androidx.compose.getViewModel
@@ -66,6 +64,7 @@ private fun CreateMedicineContent(
         BaseInfoInputs(state, actions)
         AllIdenticalCheckBox(actions, state)
         DimensionInputs(state, actions)
+        ScheduleInputs(state, actions)
         SubmitButton(actions)
     }
 }
@@ -104,26 +103,21 @@ private fun BaseInfoInputs(
             .background(MaterialTheme.colors.surface)
             .padding(vertical = 4.dp)
     ) {
-        OutlinedTextField(
+        OutlinedStringInput(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
-            value = state.name.value.orEmpty(),
-            onValueChange = { actions.updateName(it) },
-            isError = state.name.error != null,
-            supportingText = { state.name.error?.let { ErrorLabel(it) } },
-            label = { Text(text = stringResource(MR.strings.create_medicine_name.resourceId)) })
-
-        OutlinedTextField(
+            state = state.name,
+            label = stringResource(MR.strings.create_medicine_name.resourceId),
+            onValueChanged = actions::updateName,
+        )
+        OutlinedIntInput(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
-            value = state.blisterPackCount.value?.toString().orEmpty(),
-            onValueChange = actions::updateBlisterPacksCount,
-            isError = state.blisterPackCount.error != null,
-            supportingText = { state.blisterPackCount.error?.let { ErrorLabel(it) } },
-            label = { Text(text = stringResource(MR.strings.create_medicine_blister_pack_count.resourceId)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            state = state.blisterPackCount,
+            label = stringResource(MR.strings.create_medicine_blister_pack_count.resourceId),
+            onValueChanged = actions::updateBlisterPacksCount,
         )
     }
 }
@@ -191,35 +185,43 @@ private fun BlisterCountInputs(
     ) {
         val dimension = state.dimensions[packIndex]
 
-        OutlinedTextField(
-            modifier = Modifier
-                .weight(1f),
-            value = dimension.rowCount.value?.toString().orEmpty(),
-            onValueChange = { actions.updateRowCount(it, packIndex) },
-            label = { Text(text = stringResource(MR.strings.create_medicine_row_count.resourceId)) },
-            isError = dimension.rowCount.error != null,
-            supportingText = { dimension.rowCount.error?.let { ErrorLabel(it) } },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        OutlinedIntInput(
+            modifier = Modifier.weight(1f),
+            state = dimension.rowCount,
+            onValueChanged = { actions.updateRowCount(it, packIndex) },
+            label = stringResource(MR.strings.create_medicine_row_count.resourceId)
         )
 
         Spacer(modifier = Modifier.width(4.dp))
 
-        OutlinedTextField(
-            modifier = Modifier
-                .weight(1f),
-            value = dimension.columnCount.value?.toString().orEmpty(),
-            onValueChange = { actions.updateColumnCount(it, packIndex) },
-            isError = dimension.columnCount.error != null,
-            supportingText = { dimension.columnCount.error?.let { ErrorLabel(it) } },
-            label = { Text(text = stringResource(MR.strings.create_medicine_column_count.resourceId)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        OutlinedIntInput(
+            modifier = Modifier.weight(1f),
+            state = dimension.columnCount,
+            onValueChanged = { actions.updateColumnCount(it, packIndex) },
+            label = stringResource(MR.strings.create_medicine_column_count.resourceId)
         )
     }
 }
 
 @Composable
-fun InputState<*>.ErrorText() {
-    error?.let { ErrorLabel(it) }
+fun ScheduleInputs(state: CreateMedicineState, actions: CreateMedicineActions) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colors.surface)
+    ) {
+        OutlinedIntInput(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
+                .padding(bottom = 8.dp),
+            state = state.timesPerDay,
+            onValueChanged = actions::updateTimesPerDay,
+            label = stringResource(id = MR.strings.create_medicine_daily_intake.resourceId)
+        )
+    }
 }
 
 @Preview

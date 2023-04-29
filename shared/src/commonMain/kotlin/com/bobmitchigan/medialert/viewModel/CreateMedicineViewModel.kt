@@ -45,6 +45,10 @@ class CreateMedicineViewModel(
         }
     }
 
+    override fun updateTimesPerDay(times: String) {
+        // TODO
+    }
+
     private fun updateDimension(
         packIndex: Int,
         dimUpdate: (BlisterPackDimension) -> BlisterPackDimension
@@ -88,6 +92,8 @@ interface CreateMedicineActions {
     fun updateRowCount(count: String, packIndex: Int = 0)
 
     fun updateColumnCount(count: String, packIndex: Int = 0)
+
+    fun updateTimesPerDay(times: String)
 
     fun submit()
 }
