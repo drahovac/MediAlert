@@ -2,9 +2,11 @@
 
 package com.bobmitchigan.medialert.android.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -15,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,11 +63,51 @@ private fun CreateMedicineContent(
             style = Typography.h4,
             modifier = Modifier.padding(16.dp)
         )
+        BaseInfoInputs(state, actions)
+        AllIdenticalCheckBox(actions, state)
+        DimensionInputs(state, actions)
+        SubmitButton(actions)
+    }
+}
 
+@Composable
+private fun AllIdenticalCheckBox(
+    actions: CreateMedicineActions,
+    state: CreateMedicineState
+) {
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 8.dp)
+            .fillMaxWidth()
+            .clickable { actions.updateAllPacksIdentical() },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Checkbox(
+            checked = state.areAllPacksIdentical,
+            onCheckedChange = { actions.updateAllPacksIdentical() },
+            enabled = true,
+        )
+        Text(text = stringResource(MR.strings.create_medicine_identical.resourceId))
+    }
+}
+
+@Composable
+private fun BaseInfoInputs(
+    state: CreateMedicineState,
+    actions: CreateMedicineActions
+) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colors.surface)
+            .padding(vertical = 4.dp)
+    ) {
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 8.dp),
             value = state.name.value.orEmpty(),
             onValueChange = { actions.updateName(it) },
             isError = state.name.error != null,
@@ -74,7 +117,7 @@ private fun CreateMedicineContent(
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 8.dp),
             value = state.blisterPackCount.value?.toString().orEmpty(),
             onValueChange = actions::updateBlisterPacksCount,
             isError = state.blisterPackCount.error != null,
@@ -82,36 +125,44 @@ private fun CreateMedicineContent(
             label = { Text(text = stringResource(MR.strings.create_medicine_blister_pack_count.resourceId)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
+    }
+}
 
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth()
-                .clickable { actions.updateAllPacksIdentical() },
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Checkbox(
-                checked = state.areAllPacksIdentical,
-                onCheckedChange = { actions.updateAllPacksIdentical() },
-                enabled = true,
-            )
-            Text(text = stringResource(MR.strings.create_medicine_identical.resourceId))
-        }
+@Composable
+private fun SubmitButton(actions: CreateMedicineActions) {
+    Button(
+        onClick = { actions.submit() },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(text = stringResource(id = MR.strings.create_medicine_save.resourceId))
+    }
+}
 
+@Composable
+private fun DimensionInputs(
+    state: CreateMedicineState,
+    actions: CreateMedicineActions
+) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colors.surface)
+    ) {
         val packCount = state.blisterPackCount.value ?: 0
         if (state.areAllPacksIdentical && packCount > 0) {
             BlisterCountInputs(state, actions)
         } else {
-            (0 until packCount).forEach { BlisterCountInputs(state = state, actions = actions, it) }
-        }
-
-        Button(
-            onClick = { actions.submit() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(text = stringResource(id = MR.strings.create_medicine_save.resourceId))
+            (0 until packCount).forEach {
+                BlisterCountInputs(
+                    state = state,
+                    actions = actions,
+                    it
+                )
+            }
         }
     }
 }
@@ -135,7 +186,7 @@ private fun BlisterCountInputs(
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 8.dp)
             .padding(bottom = 8.dp)
     ) {
         val dimension = state.dimensions[packIndex]
