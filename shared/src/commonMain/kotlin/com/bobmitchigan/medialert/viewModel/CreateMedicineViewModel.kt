@@ -46,7 +46,9 @@ class CreateMedicineViewModel(
     }
 
     override fun updateTimesPerDay(times: String) {
-        // TODO
+        _state.update {
+            it.copy(timesPerDay = times.toIntOrNull().toInputState())
+        }
     }
 
     private fun updateDimension(

@@ -49,5 +49,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
     implementation("androidx.core:core-splashscreen:1.0.0")
     implementation("androidx.navigation:navigation-compose:2.5.3")
-    implementation("androidx.compose.material3:material3:1.0.1")
+    implementation("androidx.compose.material3:material3:1.1.0-rc01")
 }

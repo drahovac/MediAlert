@@ -10,6 +10,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -211,16 +213,37 @@ fun ScheduleInputs(state: CreateMedicineState, actions: CreateMedicineActions) {
             .padding(horizontal = 8.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colors.surface)
+            .padding(horizontal = 8.dp)
     ) {
         OutlinedIntInput(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp)
                 .padding(bottom = 8.dp),
             state = state.timesPerDay,
             onValueChanged = actions::updateTimesPerDay,
             label = stringResource(id = MR.strings.create_medicine_daily_intake.resourceId)
         )
+
+        (1..(state.timesPerDay.value ?: 0)).forEach {
+
+            val ordinal = "$it." // TODO ordinal numbers
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(
+                        id = MR.strings.create_medicine_daily_time.resourceId,
+                        ordinal,
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(bottom = 32.dp),
+                    style = Typography.overline
+                )
+                TimeInput(
+                    state = TimePickerState(0, 0, true)
+                )
+            }
+        }
     }
 }
 

@@ -110,6 +110,13 @@ internal class CreateMedicineViewModelTest {
     }
 
     @Test
+    fun `update times per day`() {
+        createMedicineViewModel.updateTimesPerDay("6")
+
+        assertEquals(6, stateValue().timesPerDay.value)
+    }
+
+    @Test
     fun `set error on submit if all not filled`() {
         createMedicineViewModel.submit()
 
