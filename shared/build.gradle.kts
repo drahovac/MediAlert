@@ -106,7 +106,7 @@ sqldelight {
 }
 
 object Versions {
-    const val koin = "3.2.0"
+    const val koin = "3.4.0"
     const val sqlDelightVersion = "1.5.5"
 }
 
