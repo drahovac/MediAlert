@@ -35,7 +35,7 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun CreateMedicineScreen(
     navController: NavController,
-    viewModel: CreateMedicineViewModel = getViewModel(),
+    viewModel: CreateMedicineSaveStateViewModel = getViewModel(),
 ) {
     val state: CreateMedicineState by viewModel.state.collectAsStateWithLifecycle()
     val navEvent: Boolean by viewModel.navigationEvent.collectAsStateWithLifecycle()

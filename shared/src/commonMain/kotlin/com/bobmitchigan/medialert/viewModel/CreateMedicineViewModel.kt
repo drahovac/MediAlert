@@ -6,17 +6,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CreateMedicineViewModel(
+open class CreateMedicineViewModel(
     private val medicineRepository: MedicineRepository
 ) : NavigationViewModel(), CreateMedicineActions {
 
     private val _state = MutableStateFlow(CreateMedicineState())
-    val state = _state.asStateFlow()
+    open val state = _state.asStateFlow()
 
-    override fun updateName(name: String) = _state.update { it.copy(name = name.toInputState()) }
+    override fun updateName(name: String) = updateState { it.copy(name = name.toInputState()) }
 
     override fun updateBlisterPacksCount(count: String) =
-        _state.update { state ->
+        updateState { state ->
             val countInt = count.toIntOrNull()
             state.copy(
                 blisterPackCount = countInt.toInputState(),
@@ -29,7 +29,7 @@ class CreateMedicineViewModel(
         }
 
     override fun updateAllPacksIdentical() =
-        _state.update {
+        updateState {
             it.copy(areAllPacksIdentical = it.areAllPacksIdentical.not())
         }
 
@@ -46,7 +46,7 @@ class CreateMedicineViewModel(
     }
 
     override fun updateTimesPerDay(times: String) {
-        _state.update {
+        updateState {
             it.copy(timesPerDay = times.toIntOrNull().toInputState())
         }
     }
@@ -55,7 +55,7 @@ class CreateMedicineViewModel(
         packIndex: Int,
         dimUpdate: (BlisterPackDimension) -> BlisterPackDimension
     ) {
-        _state.update {
+        updateState {
             it.copy(dimensions = it.dimensions.mapItemWithIndex(packIndex) { dimen ->
                 dimUpdate(dimen)
             })
@@ -63,9 +63,9 @@ class CreateMedicineViewModel(
     }
 
     override fun submit() {
-        _state.update { it.validate() }
+        updateState { it.validate() }
         scope.launch {
-            _state.value.toMedicine()?.let {
+            state.value.toMedicine()?.let {
                 medicineRepository.saveMedicine(it)
                 navigate()
             }
@@ -75,12 +75,16 @@ class CreateMedicineViewModel(
     /**
      * Copies list of items and maps item with index, allows copying previous item in update.
      */
-    fun <T> List<T>.mapItemWithIndex(index: Int, update: (T) -> T): List<T> {
+    private fun <T> List<T>.mapItemWithIndex(index: Int, update: (T) -> T): List<T> {
         return this.mapIndexed { i, item ->
             if (i == index) {
                 update(item)
             } else item
         }
+    }
+
+    protected open fun updateState(update: (CreateMedicineState) -> CreateMedicineState) {
+        _state.update { update(it) }
     }
 }
 

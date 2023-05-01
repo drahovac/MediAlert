@@ -4,14 +4,16 @@ import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.domain.BlisterPack
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.createNewBlisterPack
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CreateMedicineState(
     val name: InputState<String> = InputState(),
     val blisterPackCount: InputState<Int> = InputState(),
     val areAllPacksIdentical: Boolean = true,
     val dimensions: List<BlisterPackDimension> = listOf(),
     val timesPerDay: InputState<Int> = InputState(),
-) {
+) : CommonSerializable {
     fun toMedicine() = runCatching {
         Medicine(
             name = name.value!!,
@@ -60,7 +62,8 @@ private fun List<BlisterPack>.isValid(): Boolean {
 
 private fun Int?.isNullOrZero() = this == null || this == 0
 
+@Serializable
 data class BlisterPackDimension(
     val rowCount: InputState<Int> = InputState(),
     val columnCount: InputState<Int> = InputState(),
-)
+) : CommonSerializable

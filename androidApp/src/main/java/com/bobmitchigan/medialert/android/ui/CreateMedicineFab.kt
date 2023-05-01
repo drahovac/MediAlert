@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.android.R
+import java.io.Serializable
 
 @Composable
 fun BoxScope.CreateMedicineFab(navigate: () -> Unit) {
@@ -40,3 +41,6 @@ fun CreateMedicineFabPreview() {
         CreateMedicineFab {}
     }
 }
+
+
+class Test: Serializable

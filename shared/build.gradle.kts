@@ -5,6 +5,7 @@ plugins {
     id("com.android.library")
     id("dev.icerock.mobile.multiplatform-resources")
     id("com.squareup.sqldelight")
+    kotlin("plugin.serialization") version "1.8.10"
 }
 
 dependencies {
@@ -45,6 +46,7 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
                 implementation("com.squareup.sqldelight:runtime:$sqlDelightVersion")
                 implementation("com.squareup.sqldelight:coroutines-extensions:$sqlDelightVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
                 implementation(Deps.Koin.core)
             }
         }

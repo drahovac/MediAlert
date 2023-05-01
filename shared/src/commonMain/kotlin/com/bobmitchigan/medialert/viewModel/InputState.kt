@@ -1,10 +1,13 @@
 package com.bobmitchigan.medialert.viewModel
 
 import dev.icerock.moko.resources.StringResource
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
+@Serializable
 data class InputState<T>(
     val value: T? = null,
-    val error: StringResource? = null
-)
+    @Transient @kotlin.jvm.Transient val error: StringResource? = null
+) : CommonSerializable
 
-fun <T>T?.toInputState() = InputState(value = this)
+fun <T> T?.toInputState() = InputState(value = this)
