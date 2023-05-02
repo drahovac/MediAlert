@@ -36,13 +36,13 @@ data class CreateMedicineState(
     }.apply { require(isNotEmpty() && isValid()) }
 
     fun validate() = CreateMedicineState(
-        name.copy(error = MR.strings.create_medicine_mandatory_field.takeIf { name.value.isNullOrEmpty() }),
-        blisterPackCount.copy(
+        name = name.copy(error = MR.strings.create_medicine_mandatory_field.takeIf { name.value.isNullOrEmpty() }),
+        blisterPackCount = blisterPackCount.copy(
             error = MR.strings.create_medicine_mandatory_field.takeIf {
                 blisterPackCount.value.isNullOrZero()
             }),
-        areAllPacksIdentical,
-        dimensions.map { dimension ->
+        areAllPacksIdentical = areAllPacksIdentical,
+        dimensions = dimensions.map { dimension ->
             BlisterPackDimension(
                 dimension.rowCount.copy(
                     error = MR.strings.create_medicine_mandatory_field.takeIf {
@@ -52,7 +52,8 @@ data class CreateMedicineState(
                     dimension.columnCount.value.isNullOrZero()
                 })
             )
-        }
+        },
+        timesPerDay = timesPerDay
     )
 }
 

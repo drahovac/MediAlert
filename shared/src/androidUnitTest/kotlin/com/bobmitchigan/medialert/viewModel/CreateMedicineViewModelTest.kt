@@ -157,6 +157,7 @@ internal class CreateMedicineViewModelTest {
             createMedicineViewModel.updateRowCount("3", it)
             createMedicineViewModel.updateColumnCount("3", it)
         }
+        createMedicineViewModel.updateTimesPerDay("6")
         createMedicineViewModel.updateName("")
 
         createMedicineViewModel.submit()
@@ -170,6 +171,7 @@ internal class CreateMedicineViewModelTest {
             assertNull(it.columnCount.error)
         }
         assertNull(stateValue().blisterPackCount.error)
+        assertEquals(6, stateValue().timesPerDay.value)
     }
 
     @Test
