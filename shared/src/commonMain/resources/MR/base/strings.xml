@@ -14,6 +14,7 @@
     <string name="create_medicine_dimension">Blister pack %d grid dimensions</string>
     <string name="create_medicine_daily_intake">Daily Intake</string>
     <string name="create_medicine_daily_time">Time of the %s dose</string>
+    <string name="create_medicine_pills">Number of pills</string>
 
     <string name="medicine_detail_pack">Pack</string>
     <string name="medicine_detail_eaten">Consumed</string>

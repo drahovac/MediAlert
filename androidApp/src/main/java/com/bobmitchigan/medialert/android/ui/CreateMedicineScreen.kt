@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,6 +31,7 @@ import com.bobmitchigan.medialert.android.ui.component.OutlinedIntInput
 import com.bobmitchigan.medialert.android.ui.component.OutlinedStringInput
 import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.viewModel.*
+import kotlinx.datetime.LocalTime
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -224,10 +226,15 @@ fun ScheduleInputs(state: CreateMedicineState, actions: CreateMedicineActions) {
             label = stringResource(id = MR.strings.create_medicine_daily_intake.resourceId)
         )
 
-        (1..(state.timesPerDay.value ?: 0)).forEach {
-
-            val ordinal = "$it." // TODO ordinal numbers
-
+        state.timeSchedule.forEachIndexed { index, time ->
+            val ordinal = "${index + 1}" // TODO ordinal numbers
+            val timePickerState =
+                rememberTimePickerState(
+                    time.value?.hour ?: 0,
+                    time.value?.minute ?: 0,
+                    is24Hour = true
+                )
+            observeTimeSelected(timePickerState, actions, index)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = stringResource(
@@ -240,10 +247,24 @@ fun ScheduleInputs(state: CreateMedicineState, actions: CreateMedicineActions) {
                     style = Typography.overline
                 )
                 TimeInput(
-                    state = TimePickerState(0, 0, true)
+                    state = timePickerState
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun observeTimeSelected(
+    timePickerState: TimePickerState,
+    actions: CreateMedicineActions,
+    index: Int
+) {
+    LaunchedEffect(key1 = timePickerState.hour, timePickerState.minute) {
+        actions.updateTimeSchedule(
+            index,
+            LocalTime(timePickerState.hour, timePickerState.minute)
+        )
     }
 }
 

@@ -117,6 +117,13 @@ internal class CreateMedicineViewModelTest {
     }
 
     @Test
+    fun `set time input states on times per day`() {
+        createMedicineViewModel.updateTimesPerDay("5")
+
+        assertEquals(5, createMedicineViewModel.state.value.timeSchedule.size)
+    }
+
+    @Test
     fun `set error on submit if all not filled`() {
         createMedicineViewModel.submit()
 

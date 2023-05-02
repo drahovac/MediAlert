@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalTime
 
 open class CreateMedicineViewModel(
     private val medicineRepository: MedicineRepository
@@ -47,7 +48,10 @@ open class CreateMedicineViewModel(
 
     override fun updateTimesPerDay(times: String) {
         updateState {
-            it.copy(timesPerDay = times.toIntOrNull().toInputState())
+            it.copy(timesPerDay = times.toIntOrNull().toInputState(),
+                timeSchedule = List(times.toIntOrNull() ?: 0) {
+                    LocalTime(0, 0).toInputState()
+                })
         }
     }
 
@@ -69,6 +73,14 @@ open class CreateMedicineViewModel(
                 medicineRepository.saveMedicine(it)
                 navigate()
             }
+        }
+    }
+
+    override fun updateTimeSchedule(index: Int, value: LocalTime) {
+        updateState {
+            it.copy(
+                timeSchedule = it.timeSchedule.mapItemWithIndex(index) { value.toInputState() }
+            )
         }
     }
 
@@ -102,4 +114,6 @@ interface CreateMedicineActions {
     fun updateTimesPerDay(times: String)
 
     fun submit()
+
+    fun updateTimeSchedule(index: Int, value: LocalTime)
 }
