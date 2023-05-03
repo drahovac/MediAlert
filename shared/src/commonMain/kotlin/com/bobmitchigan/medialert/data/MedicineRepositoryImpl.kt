@@ -2,6 +2,7 @@ package com.bobmitchigan.medialert.data
 
 import com.bobmitchigan.medialert.data.BlisterPackAdapter.deserializeBlisterPacks
 import com.bobmitchigan.medialert.data.BlisterPackAdapter.serialize
+import com.bobmitchigan.medialert.data.ScheduleAdapter.serialize
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineRepository
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +27,11 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
     override suspend fun saveMedicine(medicine: Medicine) {
         withContext(Dispatchers.Default) {
             launch {
-                database.insertMedicine(medicine.name, medicine.blisterPacks.serialize())
+                database.insertMedicine(
+                    medicine.name,
+                    medicine.blisterPacks.serialize(),
+                    medicine.schedule.serialize()
+                )
             }
         }
     }

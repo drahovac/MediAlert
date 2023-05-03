@@ -234,7 +234,7 @@ fun ScheduleInputs(state: CreateMedicineState, actions: CreateMedicineActions) {
                     time.value?.minute ?: 0,
                     is24Hour = true
                 )
-            observeTimeSelected(timePickerState, actions, index)
+            ObserveTimeSelected(timePickerState, actions, index)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = stringResource(
@@ -255,7 +255,7 @@ fun ScheduleInputs(state: CreateMedicineState, actions: CreateMedicineActions) {
 }
 
 @Composable
-private fun observeTimeSelected(
+private fun ObserveTimeSelected(
     timePickerState: TimePickerState,
     actions: CreateMedicineActions,
     index: Int
