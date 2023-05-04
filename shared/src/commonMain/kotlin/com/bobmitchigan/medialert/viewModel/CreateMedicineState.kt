@@ -20,7 +20,7 @@ data class CreateMedicineState(
         Medicine(
             name = name.value!!,
             blisterPacks = if (areAllPacksIdentical) mapFirstDimension() else mapDimensionsToFilledPacks(),
-            schedule = listOf()
+            schedule = timeSchedule.mapNotNull { it.value }
         )
     }.getOrNull()
 

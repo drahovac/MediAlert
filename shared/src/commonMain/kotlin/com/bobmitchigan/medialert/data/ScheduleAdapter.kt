@@ -1,16 +1,16 @@
 package com.bobmitchigan.medialert.data
 
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 
 object ScheduleAdapter {
 
     private const val SEPARATOR = ";"
 
-    fun List<LocalDateTime>.serialize(): String {
+    fun List<LocalTime>.serialize(): String {
         return joinToString(SEPARATOR) { it.toString() }
     }
 
-    fun deserialize(value: String): List<LocalDateTime> {
-        return value.split(SEPARATOR).map { LocalDateTime.parse(it) }
+    fun deserialize(value: String): List<LocalTime> {
+        return value.split(SEPARATOR).map { LocalTime.parse(it) }
     }
 }

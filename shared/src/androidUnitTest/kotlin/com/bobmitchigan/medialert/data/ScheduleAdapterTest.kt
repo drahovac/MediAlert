@@ -2,7 +2,7 @@ package com.bobmitchigan.medialert.data
 
 import com.bobmitchigan.medialert.data.ScheduleAdapter.deserialize
 import com.bobmitchigan.medialert.data.ScheduleAdapter.serialize
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -10,10 +10,10 @@ internal class ScheduleAdapterTest {
 
     @Test
     fun `serialize dates list`() {
-        val list = listOf(DATE_1, DATE_2, DATE_3, DATE_4)
+        val list = listOf(TIME_1, TIME_2, TIME_3, TIME_4)
 
         assertEquals(
-            "2021-12-26T01:04;2023-11-01T03:34;2025-04-04T15:06;2023-03-23T15:55",
+            "01:04;03:34;04:15:06;15:55",
             list.serialize()
         )
     }
@@ -21,15 +21,15 @@ internal class ScheduleAdapterTest {
     @Test
     fun `deserialize dates list`() {
         val list =
-            deserialize("2021-12-26T01:04;2023-11-01T03:34;2025-04-04T15:06;2023-03-23T15:55")
+            deserialize("01:04;03:34;04:15:06;15:55")
 
-        assertEquals(listOf(DATE_1, DATE_2, DATE_3, DATE_4), list)
+        assertEquals(listOf(TIME_1, TIME_2, TIME_3, TIME_4), list)
     }
 
     private companion object {
-        val DATE_1 = LocalDateTime(2021, 12, 26, 1, 4)
-        val DATE_2 = LocalDateTime(2023, 11, 1, 3, 34)
-        val DATE_3 = LocalDateTime(2025, 4, 4, 15, 6)
-        val DATE_4 = LocalDateTime(2023, 3, 23, 15, 55)
+        val TIME_1 = LocalTime(1, 4)
+        val TIME_2 = LocalTime(3, 34)
+        val TIME_3 = LocalTime(4, 15, 6)
+        val TIME_4 = LocalTime(15, 55)
     }
 }

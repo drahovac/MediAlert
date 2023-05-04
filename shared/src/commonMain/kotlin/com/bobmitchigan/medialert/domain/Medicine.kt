@@ -1,6 +1,6 @@
 package com.bobmitchigan.medialert.domain
 
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 
 /**
  * Represent medicine packaging.
@@ -14,7 +14,7 @@ import kotlinx.datetime.LocalDateTime
 data class Medicine(
     val name: String,
     val blisterPacks: List<BlisterPack>,
-    val schedule: List<LocalDateTime>,
+    val schedule: List<LocalTime>,
     val id: Int? = null
 ) {
     fun eatenCount(): Int = sumCavity(::increaseIfEaten)

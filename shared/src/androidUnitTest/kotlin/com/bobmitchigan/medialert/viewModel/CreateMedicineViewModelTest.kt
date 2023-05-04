@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalTime
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -316,6 +317,10 @@ internal class CreateMedicineViewModelTest {
         }
         createMedicineViewModel.updateColumnCount("4", 2)
         createMedicineViewModel.updateRowCount("1", 2)
+        createMedicineViewModel.updateTimesPerDay("3")
+        createMedicineViewModel.updateTimeSchedule(0, TIME_1)
+        createMedicineViewModel.updateTimeSchedule(1, TIME_2)
+        createMedicineViewModel.updateTimeSchedule(2, TIME_2)
 
         createMedicineViewModel.submit()
 
@@ -329,7 +334,7 @@ internal class CreateMedicineViewModelTest {
                         BlisterPack(listOf(blisterPackRowLarge)),
                         BlisterPack(listOf(blisterPackRow, blisterPackRow)),
                     ),
-                    listOf()
+                    listOf(TIME_1, TIME_2, TIME_3)
                 )
             )
         }
@@ -352,4 +357,10 @@ internal class CreateMedicineViewModelTest {
     }
 
     private fun stateValue() = createMedicineViewModel.state.value
+
+    private companion object {
+        val TIME_1 = LocalTime(10, 30)
+        val TIME_2 = LocalTime(10, 30)
+        val TIME_3 = LocalTime(10, 30)
+    }
 }
