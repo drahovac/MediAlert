@@ -16,6 +16,7 @@ data class CreateMedicineState(
     val timesPerDay: InputState<Int> = InputState(),
     val timeSchedule: List<InputState<LocalTime>> = emptyList()
 ) : CommonSerializable {
+
     fun toMedicine() = runCatching {
         Medicine(
             name = name.value!!,
@@ -58,6 +59,12 @@ data class CreateMedicineState(
         timesPerDay = timesPerDay,
         timeSchedule = timeSchedule,
     )
+
+    companion object {
+        fun initCreateMedicineState(): CreateMedicineState {
+            return CreateMedicineState()
+        }
+    }
 }
 
 private fun List<BlisterPack>.isValid(): Boolean {

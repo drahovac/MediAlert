@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-data class InputState<T>(
+data class InputState<T : Any>(
     val value: T? = null,
     @Transient @kotlin.jvm.Transient val error: StringResource? = null
 ) : CommonSerializable
 
-fun <T> T?.toInputState() = InputState(value = this)
+fun <T : Any> T?.toInputState() = InputState(value = this)

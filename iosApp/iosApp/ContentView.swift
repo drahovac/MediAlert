@@ -2,10 +2,14 @@ import SwiftUI
 import shared
 
 struct ContentView: View {
+    let viewModel: CreateMedicineObservableViewModel = CreateMedicineObservableViewModel()    
+    
 	let greet = Greeting().greet()
 
 	var body: some View {
-		Text(greet)
+        TextField("Medicine name", text: Binding<String>(
+                        get: {String(viewModel.state.name.value ?? "")},
+                        set: {viewModel.viewModel.updateName(name:  $0)}))
 	}
 }
 
