@@ -6,6 +6,8 @@ plugins {
     id("dev.icerock.mobile.multiplatform-resources")
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization") version "1.8.10"
+    id("com.google.devtools.ksp") version "1.8.21-1.0.11"
+    id("com.rickclephas.kmp.nativecoroutines") version "1.0.0-ALPHA-9"
 }
 
 dependencies {
@@ -28,6 +30,10 @@ kotlin {
                 jvmTarget = "1.8"
             }
         }
+    }
+
+    sourceSets.all {
+        languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
     }
 
     listOf(

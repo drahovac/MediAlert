@@ -1,6 +1,7 @@
 package com.bobmitchigan.medialert.viewModel
 
 import com.bobmitchigan.medialert.domain.MedicineRepository
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -12,6 +13,7 @@ open class CreateMedicineViewModel(
 ) : NavigationViewModel(), CreateMedicineActions {
 
     private val _state = MutableStateFlow(CreateMedicineState())
+    @NativeCoroutines
     open val state = _state.asStateFlow()
 
     override fun updateName(name: String) = updateState { it.copy(name = name.toInputState()) }
