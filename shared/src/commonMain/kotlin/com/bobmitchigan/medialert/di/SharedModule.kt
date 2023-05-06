@@ -8,6 +8,7 @@ import com.bobmitchigan.medialert.viewModel.CreateMedicineViewModel
 import com.bobmitchigan.medialert.viewModel.MedicineDetailViewModel
 import com.bobmitchigan.medialert.viewModel.MedicineListViewModel
 import com.bobmitchigan.medialert.viewModel.SplashViewModel
+import com.rickclephas.kmm.viewmodel.KMMViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.definition.Definition
 import org.koin.core.definition.KoinDefinition
@@ -26,7 +27,7 @@ internal val sharedModule = module {
 
     baseViewModel { SplashViewModel(get()) }
 
-    baseViewModel { CreateMedicineViewModel(get()) }
+    kmmViewModel { CreateMedicineViewModel(get()) }
 
     baseViewModel { MedicineListViewModel(get()) }
 
@@ -34,6 +35,10 @@ internal val sharedModule = module {
 }
 
 internal expect inline fun <reified T : BaseViewModel> Module.baseViewModel(
+    noinline definition: Definition<T>
+): KoinDefinition<T>
+
+internal expect inline fun <reified T : KMMViewModel> Module.kmmViewModel(
     noinline definition: Definition<T>
 ): KoinDefinition<T>
 

@@ -9,9 +9,7 @@
 import Foundation
 import shared
 
-class CreateMedicineObservableViewModel : ObservableObject {
-    let viewModel : CreateMedicineViewModel = CreateMedicineViewModelHelper().viewModel
-    @Published var state: CreateMedicineState = CreateMedicineState.companion.doInitCreateMedicineState()
-    
+class CreateMedicineObservableViewModel : CreateMedicineViewModel {
+   
     
 }

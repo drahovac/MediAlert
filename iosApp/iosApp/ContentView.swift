@@ -1,15 +1,15 @@
 import SwiftUI
+import KMMViewModelSwiftUI
 import shared
 
 struct ContentView: View {
-    let viewModel: CreateMedicineObservableViewModel = CreateMedicineObservableViewModel()    
-    
+    @StateViewModel var viewModel: CreateMedicineObservableViewModel = CreateMedicineObservableViewModel(medicineRepository: CreateMedicineViewModelHelper().medicineRepository)
 	let greet = Greeting().greet()
 
 	var body: some View {
         TextField("Medicine name", text: Binding<String>(
-                        get: {String(viewModel.state.name.value ?? "")},
-                        set: {viewModel.viewModel.updateName(name:  $0)}))
+                        get: {String(viewModel.stateValue.name.value ?? "")},
+                        set: {viewModel.updateName(name:  $0)}))
 	}
 }
 

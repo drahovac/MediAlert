@@ -1,6 +1,7 @@
 package com.bobmitchigan.medialert.viewModel
 
 import com.bobmitchigan.medialert.domain.MedicineRepository
+import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,6 +14,7 @@ open class CreateMedicineViewModel(
 ) : NavigationViewModel(), CreateMedicineActions {
 
     private val _state = MutableStateFlow(CreateMedicineState())
+
     @NativeCoroutines
     open val state = _state.asStateFlow()
 
@@ -70,7 +72,7 @@ open class CreateMedicineViewModel(
 
     override fun submit() {
         updateState { it.validate() }
-        scope.launch {
+        viewModelScope.coroutineScope.launch {
             state.value.toMedicine()?.let {
                 medicineRepository.saveMedicine(it)
                 navigate()

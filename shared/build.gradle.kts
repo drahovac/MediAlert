@@ -54,6 +54,7 @@ kotlin {
                 implementation("com.squareup.sqldelight:coroutines-extensions:$sqlDelightVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
                 implementation(Deps.Koin.core)
+                api("com.rickclephas.kmm:kmm-viewmodel-core:1.0.0-ALPHA-8")
             }
         }
         val commonTest by getting {
