@@ -11,7 +11,6 @@
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
-		B23D9D032A04413D0000CE57 /* CreateMedicineObservableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23D9D022A04413D0000CE57 /* CreateMedicineObservableViewModel.swift */; };
 		B23D9D062A06E52D0000CE57 /* KMPNativeCoroutinesAsync in Frameworks */ = {isa = PBXBuildFile; productRef = B23D9D052A06E52D0000CE57 /* KMPNativeCoroutinesAsync */; };
 		B23D9D082A06E52D0000CE57 /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = B23D9D072A06E52D0000CE57 /* KMPNativeCoroutinesCombine */; };
 		B23D9D0A2A06E52D0000CE57 /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = B23D9D092A06E52D0000CE57 /* KMPNativeCoroutinesCore */; };
@@ -40,7 +39,6 @@
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B23D9D022A04413D0000CE57 /* CreateMedicineObservableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateMedicineObservableViewModel.swift; sourceTree = "<group>"; };
 		B23D9D102A06EEC70000CE57 /* KMMViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KMMViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -108,7 +106,6 @@
 		B23D9D012A04410F0000CE57 /* viewModel */ = {
 			isa = PBXGroup;
 			children = (
-				B23D9D022A04413D0000CE57 /* CreateMedicineObservableViewModel.swift */,
 				B23D9D102A06EEC70000CE57 /* KMMViewModel.swift */,
 			);
 			path = viewModel;
@@ -218,7 +215,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
-				B23D9D032A04413D0000CE57 /* CreateMedicineObservableViewModel.swift in Sources */,
 				B23D9D112A06EEC70000CE57 /* KMMViewModel.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 			);

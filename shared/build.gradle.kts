@@ -11,7 +11,7 @@ plugins {
 }
 
 dependencies {
-    commonMainApi("dev.icerock.moko:resources:0.21.2")
+    commonMainApi("dev.icerock.moko:resources:0.22.0")
 
     commonTestImplementation("dev.icerock.moko:resources-test:0.21.2")
 }
@@ -42,6 +42,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
+            export("dev.icerock.moko:resources:0.22.0")
             baseName = "shared"
         }
     }

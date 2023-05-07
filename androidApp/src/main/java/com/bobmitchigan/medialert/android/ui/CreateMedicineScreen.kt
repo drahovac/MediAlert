@@ -61,7 +61,7 @@ private fun CreateMedicineContent(
 ) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Text(
-            text = stringResource(MR.strings.create_medicine_name.resourceId),
+            text = stringResource(MR.strings.create_medicine_title.resourceId),
             style = Typography.h4,
             modifier = Modifier.padding(16.dp)
         )
