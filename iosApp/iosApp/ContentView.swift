@@ -31,13 +31,16 @@ struct ContentView: View {
                 binding: Binding<String>(
                     get: {String(viewModel.stateValue.blisterPackCount.value?.description ?? "")},
                     set: {viewModel.updateBlisterPacksCount(count:  $0)}))
+            Toggle(MR.strings().create_medicine_identical.desc().localized(),
+                   isOn: Binding<Bool>(
+                    get: { viewModel.stateValue.areAllPacksIdentical },
+                    set: {_ in viewModel.updateAllPacksIdentical()}))
         }
         .frame(
             maxWidth: .infinity,
             maxHeight: .infinity,
             alignment: .topLeading)
         .padding(16)
-        
     }
 }
 
