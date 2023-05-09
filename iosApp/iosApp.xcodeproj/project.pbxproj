@@ -17,6 +17,8 @@
 		B23D9D0D2A06EE010000CE57 /* KMMViewModelCore in Frameworks */ = {isa = PBXBuildFile; productRef = B23D9D0C2A06EE010000CE57 /* KMMViewModelCore */; };
 		B23D9D0F2A06EE010000CE57 /* KMMViewModelSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = B23D9D0E2A06EE010000CE57 /* KMMViewModelSwiftUI */; };
 		B23D9D112A06EEC70000CE57 /* KMMViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23D9D102A06EEC70000CE57 /* KMMViewModel.swift */; };
+		B23D9D152A098B4E0000CE57 /* StringInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = B23D9D142A098B4E0000CE57 /* StringInput.swift */; };
+		B265D2682A0AD26E001A9DD6 /* IntInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = B265D2672A0AD26E001A9DD6 /* IntInput.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -40,6 +42,8 @@
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B23D9D102A06EEC70000CE57 /* KMMViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KMMViewModel.swift; sourceTree = "<group>"; };
+		B23D9D142A098B4E0000CE57 /* StringInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringInput.swift; sourceTree = "<group>"; };
+		B265D2672A0AD26E001A9DD6 /* IntInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntInput.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +90,7 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				B23D9D132A098B360000CE57 /* ui */,
 				B23D9D012A04410F0000CE57 /* viewModel */,
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
 				7555FF82242A565900829871 /* ContentView.swift */,
@@ -109,6 +114,15 @@
 				B23D9D102A06EEC70000CE57 /* KMMViewModel.swift */,
 			);
 			path = viewModel;
+			sourceTree = "<group>";
+		};
+		B23D9D132A098B360000CE57 /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				B23D9D142A098B4E0000CE57 /* StringInput.swift */,
+				B265D2672A0AD26E001A9DD6 /* IntInput.swift */,
+			);
+			path = ui;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -215,8 +229,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
+				B265D2682A0AD26E001A9DD6 /* IntInput.swift in Sources */,
 				B23D9D112A06EEC70000CE57 /* KMMViewModel.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
+				B23D9D152A098B4E0000CE57 /* StringInput.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
