@@ -40,4 +40,6 @@
     </string>
     <string name="medicine_list_cancel">Cancel</string>
     <string name="medicine_list_delete">Delete</string>
+    <string name="medicine_list">Medicines</string>
+    <string name="medicine_calendar">Calendar</string>
 </resources>

@@ -1,11 +1,23 @@
 package com.bobmitchigan.medialert.android.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +55,6 @@ fun MedicineListScreen(
         showDeleteDialog = {
             showDeleteDialog = it
         },
-        navigateToCreate = { navigationController.navigate(Destination.CreateMedicine) },
         navigateToDetail = {
             navigationController.navigate(Destination.SingleMedicine(it))
         })
@@ -83,7 +94,6 @@ private fun MedicineListContent(
     medicines: List<Medicine>,
     showDeleteDialog: (Int) -> Unit,
     navigateToDetail: (id: Int) -> Unit,
-    navigateToCreate: () -> Unit,
 ) {
     Box(Modifier.fillMaxSize()) {
         LazyColumn {
@@ -136,7 +146,6 @@ private fun MedicineListContent(
             }
             spacerItem(96.dp)
         }
-        CreateMedicineFab(navigateToCreate)
     }
 }
 
@@ -153,7 +162,10 @@ private fun LazyListScope.spacerItem(height: Dp) {
 @Preview
 @Composable
 fun MedicineListScreenPreview() {
-    MedicineListContent((0..1).map {
-        Medicine("Name $it", MockMedicineRepository.PREVIEW_BLISTER_PACKS, listOf())
-    }, {}, {}, {})
+    MedicineListContent(
+        (0..1).map {
+            Medicine("Name $it", MockMedicineRepository.PREVIEW_BLISTER_PACKS, listOf())
+        },
+        {}, {},
+    )
 }
