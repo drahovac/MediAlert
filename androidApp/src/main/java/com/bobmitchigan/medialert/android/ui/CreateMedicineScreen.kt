@@ -31,6 +31,8 @@ import com.bobmitchigan.medialert.android.ui.component.OutlinedIntInput
 import com.bobmitchigan.medialert.android.ui.component.OutlinedStringInput
 import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.viewModel.*
+import com.bobmitchigan.medialert.viewModel.state.CreateMedicineState
+import com.bobmitchigan.medialert.viewModel.state.toInputState
 import kotlinx.datetime.LocalTime
 import org.koin.androidx.compose.getViewModel
 

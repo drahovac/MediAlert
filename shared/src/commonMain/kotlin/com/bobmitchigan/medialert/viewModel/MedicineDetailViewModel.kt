@@ -1,6 +1,8 @@
 package com.bobmitchigan.medialert.viewModel
 
 import com.bobmitchigan.medialert.domain.*
+import com.bobmitchigan.medialert.viewModel.state.CavityCoordinates
+import com.bobmitchigan.medialert.viewModel.state.MedicineDetailState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect

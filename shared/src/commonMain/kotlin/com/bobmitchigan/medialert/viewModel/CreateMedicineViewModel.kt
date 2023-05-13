@@ -1,6 +1,9 @@
 package com.bobmitchigan.medialert.viewModel
 
 import com.bobmitchigan.medialert.domain.MedicineRepository
+import com.bobmitchigan.medialert.viewModel.state.BlisterPackDimension
+import com.bobmitchigan.medialert.viewModel.state.CreateMedicineState
+import com.bobmitchigan.medialert.viewModel.state.toInputState
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.flow.MutableStateFlow

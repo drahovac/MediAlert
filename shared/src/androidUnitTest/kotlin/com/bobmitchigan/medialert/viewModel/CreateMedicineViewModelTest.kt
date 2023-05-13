@@ -2,6 +2,7 @@ package com.bobmitchigan.medialert.viewModel
 
 import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.domain.*
+import com.bobmitchigan.medialert.viewModel.state.BlisterPackDimension
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers

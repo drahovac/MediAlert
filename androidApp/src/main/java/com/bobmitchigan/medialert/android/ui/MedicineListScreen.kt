@@ -35,7 +35,7 @@ import androidx.navigation.NavHostController
 import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.android.R
 import com.bobmitchigan.medialert.android.design.theme.Typography
-import com.bobmitchigan.medialert.android.navigate
+import com.bobmitchigan.medialert.android.ui.component.navigate
 import com.bobmitchigan.medialert.data.MockMedicineRepository
 import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.domain.Medicine

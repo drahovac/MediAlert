@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.bobmitchigan.medialert.MR
-import com.bobmitchigan.medialert.viewModel.InputState
+import com.bobmitchigan.medialert.viewModel.state.InputState
 
 @Composable
 fun OutlinedStringInput(

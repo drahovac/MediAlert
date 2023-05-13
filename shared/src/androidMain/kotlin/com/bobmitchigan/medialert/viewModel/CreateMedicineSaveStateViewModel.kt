@@ -2,6 +2,7 @@ package com.bobmitchigan.medialert.viewModel
 
 import androidx.lifecycle.SavedStateHandle
 import com.bobmitchigan.medialert.domain.MedicineRepository
+import com.bobmitchigan.medialert.viewModel.state.CreateMedicineState
 import kotlinx.coroutines.flow.StateFlow
 
 class CreateMedicineSaveStateViewModel(

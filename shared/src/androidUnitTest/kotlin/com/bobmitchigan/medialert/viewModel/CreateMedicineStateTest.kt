@@ -1,6 +1,10 @@
 package com.bobmitchigan.medialert.viewModel
 
 import com.bobmitchigan.medialert.MR
+import com.bobmitchigan.medialert.viewModel.state.BlisterPackDimension
+import com.bobmitchigan.medialert.viewModel.state.CreateMedicineState
+import com.bobmitchigan.medialert.viewModel.state.InputState
+import com.bobmitchigan.medialert.viewModel.state.toInputState
 import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream

@@ -1,4 +1,4 @@
-package com.bobmitchigan.medialert.viewModel
+package com.bobmitchigan.medialert.viewModel.state
 
 import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.Medicine

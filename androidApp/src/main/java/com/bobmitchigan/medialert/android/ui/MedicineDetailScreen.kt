@@ -35,7 +35,7 @@ import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.BlisterPack
 import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.domain.Medicine
-import com.bobmitchigan.medialert.viewModel.CavityCoordinates
+import com.bobmitchigan.medialert.viewModel.state.CavityCoordinates
 import com.bobmitchigan.medialert.viewModel.MedicineDetailActions
 import com.bobmitchigan.medialert.viewModel.MedicineDetailViewModel
 import kotlinx.datetime.toJavaLocalDateTime

@@ -1,9 +1,10 @@
-package com.bobmitchigan.medialert.viewModel
+package com.bobmitchigan.medialert.viewModel.state
 
 import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.domain.BlisterPack
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.createNewBlisterPack
+import com.bobmitchigan.medialert.viewModel.CommonSerializable
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.Serializable
 

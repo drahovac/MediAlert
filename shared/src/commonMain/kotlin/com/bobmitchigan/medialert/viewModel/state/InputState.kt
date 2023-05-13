@@ -1,5 +1,6 @@
-package com.bobmitchigan.medialert.viewModel
+package com.bobmitchigan.medialert.viewModel.state
 
+import com.bobmitchigan.medialert.viewModel.CommonSerializable
 import dev.icerock.moko.resources.StringResource
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient

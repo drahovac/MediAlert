@@ -4,6 +4,7 @@ import com.bobmitchigan.medialert.data.Database
 import com.bobmitchigan.medialert.data.MedicineRepositoryImpl
 import com.bobmitchigan.medialert.domain.MedicineRepository
 import com.bobmitchigan.medialert.viewModel.BaseViewModel
+import com.bobmitchigan.medialert.viewModel.CalendarViewModel
 import com.bobmitchigan.medialert.viewModel.CreateMedicineViewModel
 import com.bobmitchigan.medialert.viewModel.MedicineDetailViewModel
 import com.bobmitchigan.medialert.viewModel.MedicineListViewModel
@@ -30,6 +31,8 @@ internal val sharedModule = module {
     kmmViewModel { CreateMedicineViewModel(get()) }
 
     baseViewModel { MedicineListViewModel(get()) }
+
+    baseViewModel { CalendarViewModel() }
 
     baseViewModel { params -> MedicineDetailViewModel(get(), params.getOrNull()) }
 }

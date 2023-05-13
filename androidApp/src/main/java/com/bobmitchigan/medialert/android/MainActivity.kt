@@ -26,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -35,9 +34,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.bobmitchigan.medialert.MR
+import com.bobmitchigan.medialert.android.ui.CalendarScreen
 import com.bobmitchigan.medialert.android.ui.CreateMedicineScreen
 import com.bobmitchigan.medialert.android.ui.MedicineDetailScreen
 import com.bobmitchigan.medialert.android.ui.MedicineListScreen
+import com.bobmitchigan.medialert.android.ui.component.navigateSingleTop
 import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.viewModel.SplashViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -60,11 +61,11 @@ class MainActivity : ComponentActivity() {
                     isFloatingActionButtonDocked = true,
                     floatingActionButtonPosition = FabPosition.Center,
                     floatingActionButton = {
-                        if (shouldShowBottomNavigation(navController = navController)) {
+                        if (isBottomNavigationVisible(navController = navController)) {
                             FloatingActionButton(
                                 shape = CircleShape,
                                 contentColor = MaterialTheme.colors.primary,
-                                onClick = { navController.navigate(Destination.CreateMedicine) }) {
+                                onClick = { navController.navigateSingleTop(Destination.CreateMedicine) }) {
                                 Icon(
                                     Icons.Default.Add,
                                     contentDescription = stringResource(
@@ -93,7 +94,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun BottomNavigation(navController: NavHostController) {
-        if (shouldShowBottomNavigation(navController = navController)) {
+        if (isBottomNavigationVisible(navController = navController)) {
             BottomNavigation(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = 8.dp,
@@ -120,8 +121,8 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     label = { Text(stringResource(id = MR.strings.medicine_calendar.resourceId)) },
-                    selected = false,
-                    onClick = { /*TODO*/ })
+                    selected = isCalendar(navController = navController),
+                    onClick = { navController.navigateSingleTop(Destination.Calendar) })
             }
         }
     }
@@ -133,8 +134,11 @@ class MainActivity : ComponentActivity() {
      * @return True if the navigation should be shown, false otherwise.
      */
     @Composable
-    private fun shouldShowBottomNavigation(navController: NavHostController): Boolean {
-        return currentRouteAsState(navController) == Destination.MedicineList.destination()
+    private fun isBottomNavigationVisible(navController: NavHostController): Boolean {
+        return currentRouteAsState(navController) in listOf(
+            Destination.MedicineList,
+            Destination.Calendar
+        ).map { it.destination() }
     }
 
     /**
@@ -146,6 +150,16 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun isMedicineList(navController: NavHostController) =
         currentRouteAsState(navController = navController) == Destination.MedicineList.destination()
+
+    /**
+     * Determines whether the current destination is calendar.
+     *
+     * @param navController The navigation controller.
+     * @return True if the current destination is calendar.
+     */
+    @Composable
+    private fun isCalendar(navController: NavHostController) =
+        currentRouteAsState(navController = navController) == Destination.Calendar.destination()
 
     @Composable
     private fun currentRouteAsState(navController: NavHostController) =
@@ -180,11 +194,10 @@ class MainActivity : ComponentActivity() {
                 composable(Destination.MedicineList.destination()) {
                     MedicineListScreen(navController)
                 }
+                composable(Destination.Calendar.destination()) {
+                    CalendarScreen()
+                }
             }
         }
     }
 }
-
-fun NavController.navigate(destination: Destination) = navigate(
-    destination.destination()
-)

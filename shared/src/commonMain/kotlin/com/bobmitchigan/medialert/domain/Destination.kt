@@ -20,6 +20,11 @@ sealed interface Destination {
 
     object MedicineList : Destination
 
+    object Calendar : Destination
+
+    /**
+     * String representation of destination used as route in navigation.
+     */
     fun destination(): String = this::class.qualifiedName.orEmpty()
 
     private companion object {
