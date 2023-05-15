@@ -4,9 +4,11 @@ package com.bobmitchigan.medialert.android.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -22,6 +24,7 @@ import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.viewModel.CalendarViewModel
+import com.bobmitchigan.medialert.viewModel.state.CalendarCell
 import com.bobmitchigan.medialert.viewModel.state.CalendarState
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -31,7 +34,6 @@ import java.text.DateFormatSymbols
 import java.time.format.TextStyle
 import java.time.temporal.WeekFields
 import java.util.Locale
-
 
 @Composable
 fun CalendarScreen(
@@ -49,27 +51,39 @@ private fun CalendarContent(state: CalendarState) {
             .padding(16.dp)
     ) {
         Text(
+            modifier = Modifier.padding(start = 48.dp),
             style = Typography.h5,
             text = state.startingWeekDay.month.getDisplayName(TextStyle.FULL, getLocale())
         )
         HorizontalPager(pageCount = 10000) {
-            Column {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(start = 48.dp)
-                ) {
-                    getShortWeekDays().forEach {
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = it,
-                            style = Typography.subtitle1
-                        )
-                    }
+            Grid(state.cells)
+        }
+    }
+}
+
+@Composable
+fun Grid(cells: List<CalendarCell>) {
+    LazyVerticalGrid(columns = GridCells.Fixed(8), content = {
+        item {} // skip cell
+        getShortWeekDays().forEach {
+            item {
+                Text(
+                    text = it,
+                    style = Typography.subtitle1
+                )
+            }
+        }
+        cells.map { cell ->
+            when (cell) {
+                is CalendarCell.SlotCell -> item { }
+                is CalendarCell.TimeCell -> item {
+                    cell.hour?.let { Text(text = "${cell.hour}:00") } ?: Spacer(
+                        modifier = Modifier.height(24.dp)
+                    )
                 }
             }
         }
-    }
+    })
 }
 
 @Composable
@@ -86,6 +100,7 @@ fun getLocale(): Locale {
  *
  * @return A list of short weekday names for the current locale.
  */
+@Suppress("MagicNumber")
 fun getShortWeekDays(): List<String> {
     WeekFields.of(Locale.getDefault()).firstDayOfWeek.isoDayNumber.let { firstDay ->
         val shortWeekdays = DateFormatSymbols().shortWeekdays

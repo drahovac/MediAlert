@@ -8,7 +8,7 @@ internal class CalendarScreenKtTest {
 
     @Test
     fun `return weekdays for czech locale`() {
-        Locale.setDefault(Locale("cs","CZ"))
+        Locale.setDefault(Locale("cs", "CZ"))
 
         val weekDays = getShortWeekDays().joinToString()
 
