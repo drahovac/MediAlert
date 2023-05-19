@@ -36,9 +36,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.viewModel.CalendarViewModel
 import com.bobmitchigan.medialert.viewModel.state.CalendarState
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
+import kotlinx.datetime.todayIn
 import org.koin.androidx.compose.getViewModel
 import java.text.DateFormatSymbols
 import java.time.format.TextStyle
@@ -61,11 +66,12 @@ private fun CalendarContent(state: CalendarState) {
             .padding(start = 16.dp, top = 16.dp)
     ) {
         val verticalScroll = rememberScrollState()
+        val startingWeekDay: LocalDate = getFirstWeekDay(state.startingWeekIndex)
 
         Text(
             modifier = Modifier.padding(start = 48.dp),
             style = Typography.h5,
-            text = state.startingWeekDay.month.getDisplayName(TextStyle.FULL, getLocale())
+            text = startingWeekDay.month.getDisplayName(TextStyle.FULL, getLocale())
         )
         CellsContent(verticalScroll)
     }
@@ -185,11 +191,11 @@ fun getLocale(): Locale {
  */
 @Suppress("MagicNumber")
 fun getShortWeekDays(): List<String> {
-    WeekFields.of(Locale.getDefault()).firstDayOfWeek.isoDayNumber.let { firstDay ->
+    firstDayIsoNumber().let { firstDay ->
         val shortWeekdays = DateFormatSymbols().shortWeekdays
         val adjustedShortWeekdays = mutableListOf<String>()
         for (i in 0..6) {
-            adjustedShortWeekdays.add(shortWeekdays[((i + firstDay) % 7) + 1])
+            adjustedShortWeekdays.add(shortWeekdays[getFirstDayOffset(i, firstDay)])
         }
         return adjustedShortWeekdays.map { weekDay ->
             weekDay.replaceFirstChar {
@@ -201,17 +207,45 @@ fun getShortWeekDays(): List<String> {
     }
 }
 
+private fun getFirstDayOffset(currentDay: Int, firstDay: Int) =
+    ((currentDay + firstDay) % DAYS_IN_WEEK) + 1
+
+private fun firstDayIsoNumber() = WeekFields.of(Locale.getDefault()).firstDayOfWeek.isoDayNumber
+
+/**
+ * Retrieves the first day of the week based on the starting week index counted.
+ *
+ * @param startingWeekIndex The index of the week. Today week = 0 - future week +1, past -1.
+ * @param clock (Optional) The clock used to determine the current date and time. It defaults to the system clock.
+ *
+ * @return The [LocalDate] representing the first day of the week.
+ */
+fun getFirstWeekDay(startingWeekIndex: Int, clock: Clock = Clock.System): LocalDate {
+    return clock.todayIn(TimeZone.currentSystemDefault()).run {
+        when {
+            dayOfWeek.isoDayNumber == firstDayIsoNumber() -> this
+            dayOfWeek.isoDayNumber > firstDayIsoNumber() -> minus(
+                dayOfWeek.isoDayNumber - firstDayIsoNumber(),
+                DateTimeUnit.DAY
+            )
+
+            else -> minus(
+                dayOfWeek.isoDayNumber,
+                DateTimeUnit.DAY
+            ) // probably not working for different than sunday, but who cares
+        }.plus(startingWeekIndex * DAYS_IN_WEEK, DateTimeUnit.DAY)
+    }
+}
+
 private const val LINE_COUNT = 23
+private const val DAYS_IN_WEEK = 7
 
 @Preview
 @Composable
 fun CalendarScreenPreview() {
     MaterialTheme {
         CalendarContent(
-            CalendarState(
-                LocalDate(2022, 3, 3),
-                LocalDateTime(2022, 3, 3, 12, 45)
-            )
+            CalendarState()
         )
     }
 }
