@@ -128,9 +128,8 @@ private fun DrawScope.drawGridLines(color: Color) {
 
 private fun DrawScope.drawHorizontalLines(color: Color) {
     val startingHeight = 50.dp.toPx()
-    val lineHeight = 72.dp.toPx()
-    val lineCount = LINE_COUNT
-    for (i in 0..lineCount) {
+    val lineHeight = 20.6.dp.toPx()
+    for (i in 0..LINE_COUNT) {
         drawLine(
             color = color,
             start = Offset(0f, startingHeight + (i * lineHeight).dp.toPx()),
