@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -66,39 +67,38 @@ private fun CalendarContent(state: CalendarState) {
             .padding(start = 16.dp, top = 16.dp)
     ) {
         val verticalScroll = rememberScrollState()
-        val startingWeekDay: LocalDate = getFirstWeekDay(state.startingWeekIndex)
+        val pagerState = rememberPagerState(initialPage = PAGE_OFFSET)
+        val currentWeek = pagerState.currentPage - PAGE_OFFSET
+        val startingWeekDay: LocalDate = getFirstWeekDay(currentWeek)
 
         Text(
             modifier = Modifier.padding(start = 48.dp),
             style = Typography.h5,
             text = startingWeekDay.month.getDisplayName(TextStyle.FULL, getLocale())
         )
-        CellsContent(verticalScroll)
+        CellsContent(pagerState, verticalScroll)
     }
 }
 
 @Composable
-private fun CellsContent(verticalScroll: ScrollState) {
+private fun CellsContent(
+    pagerState: PagerState,
+    verticalScroll: ScrollState
+) {
     Row {
         TimeLabelColumn(verticalScroll)
         HorizontalPager(
             pageCount = 10000,
-            state = rememberPagerState(initialPage = 5000)
+            state = pagerState,
         ) {
+            val firstWeekDay = getFirstWeekDay(it - PAGE_OFFSET)
             Column(
                 Modifier
                     .fillMaxWidth()
             ) {
-                Row {
-                    getShortWeekDays().forEach {
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = it,
-                            style = Typography.subtitle1,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
+                ShortWeekDays()
+                GetDays(firstWeekDay)
+
                 val color = MaterialTheme.colors.onBackground
                 Column(
                     Modifier
@@ -117,6 +117,34 @@ private fun CellsContent(verticalScroll: ScrollState) {
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun GetDays(firstWeekDay: LocalDate) {
+    Row {
+        for (day in 0..6) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = firstWeekDay.plus(day, DateTimeUnit.DAY).dayOfMonth.toString(),
+                style = Typography.subtitle1,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ShortWeekDays() {
+    Row {
+        getShortWeekDays().forEach {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = it,
+                style = Typography.subtitle1,
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
@@ -236,6 +264,7 @@ fun getFirstWeekDay(startingWeekIndex: Int, clock: Clock = Clock.System): LocalD
     }
 }
 
+private const val PAGE_OFFSET = 5000
 private const val LINE_COUNT = 23
 private const val DAYS_IN_WEEK = 7
 
@@ -243,8 +272,6 @@ private const val DAYS_IN_WEEK = 7
 @Composable
 fun CalendarScreenPreview() {
     MaterialTheme {
-        CalendarContent(
-            CalendarState()
-        )
+        CalendarContent(CalendarState())
     }
 }

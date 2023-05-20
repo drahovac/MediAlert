@@ -6,12 +6,10 @@ import kotlinx.datetime.LocalDateTime
 /**
  * A data class representing the state of the calendar.
  *
- * @property startingWeekDay First day of selected week.
  * @property selectedHour The hour that is currently selected in the calendar.
  * @property cells A list of calendar cells.
  */
 data class CalendarState(
-    val startingWeekIndex: Int = 0,
     val selectedHour: LocalDateTime? = null,
     val cells: List<CalendarCell> = emptyList()
 )
