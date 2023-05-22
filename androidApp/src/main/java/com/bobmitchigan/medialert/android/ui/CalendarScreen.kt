@@ -4,9 +4,11 @@ package com.bobmitchigan.medialert.android.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -64,6 +66,7 @@ fun CalendarScreen(
 private fun CalendarContent(state: CalendarState) {
     Column(
         Modifier
+            .background(MaterialTheme.colors.background)
             .padding(start = 16.dp, top = 16.dp)
     ) {
         val verticalScroll = rememberScrollState()
@@ -98,11 +101,17 @@ private fun CellsContent(
             ) {
                 ShortWeekDays()
                 GetDays(firstWeekDay)
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                )
 
                 val color = MaterialTheme.colors.onBackground
                 Column(
                     Modifier
                         .verticalScroll(verticalScroll)
+                        .background(MaterialTheme.colors.surface)
                         .drawBehind {
                             drawGridLines(color)
                         }) {
@@ -155,13 +164,13 @@ private fun DrawScope.drawGridLines(color: Color) {
 }
 
 private fun DrawScope.drawHorizontalLines(color: Color) {
-    val startingHeight = 50.dp.toPx()
-    val lineHeight = 20.6.dp.toPx()
-    for (i in 0..LINE_COUNT) {
+    val startingHeight = 52.dp.toPx()
+    val lineHeight = 80.dp.toPx() // TODO fix
+    for (i in 0..LINE_COUNT + 1) { // on more line for end
         drawLine(
             color = color,
-            start = Offset(0f, startingHeight + (i * lineHeight).dp.toPx()),
-            end = Offset(size.width, startingHeight + (i * lineHeight).dp.toPx())
+            start = Offset(0f, startingHeight + (i * lineHeight)),
+            end = Offset(size.width, startingHeight + (i * lineHeight))
         )
     }
 }
@@ -182,16 +191,16 @@ private fun DrawScope.drawVerticalLines(color: Color) {
 private fun TimeLabelColumn(verticalScroll: ScrollState) {
     Column(
         Modifier
-            .padding(top = 24.dp)
+            .padding(top = 52.dp)
             .width(48.dp)
             .verticalScroll(verticalScroll)
     ) {
-        for (i in 1..23) {
+        for (i in 1..LINE_COUNT) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 24.dp)
-                    .height(48.dp)
+                    .height(56.dp)
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
@@ -199,6 +208,7 @@ private fun TimeLabelColumn(verticalScroll: ScrollState) {
                 )
             }
         }
+        Spacer(modifier = Modifier.height(72.dp))
     }
 }
 
