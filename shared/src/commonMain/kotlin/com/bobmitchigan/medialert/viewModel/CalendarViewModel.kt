@@ -5,7 +5,7 @@ import com.bobmitchigan.medialert.viewModel.state.CalendarState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class CalendarViewModel : BaseViewModel() {
+class CalendarViewModel : BaseViewModel(), CalendarActions {
 
     private val _state: MutableStateFlow<CalendarState> =
         MutableStateFlow(
@@ -14,6 +14,10 @@ class CalendarViewModel : BaseViewModel() {
             )
         )
     val state = _state.asStateFlow()
+
+    override fun selectCell(row: Int, column: Int) {
+        println("Index $row")
+    }
 
     private fun initialCells(): List<CalendarCell> {
         return List(CELLS_COUNT) {
@@ -27,4 +31,9 @@ class CalendarViewModel : BaseViewModel() {
         private const val CELLS_COUNT =
             (HOURS_PER_DAY) * 2 * COLUMN_COUNT // two rows per hour, 8 columns (1 per day and spacer)
     }
+}
+
+interface CalendarActions {
+
+    fun selectCell(row: Int, column: Int)
 }

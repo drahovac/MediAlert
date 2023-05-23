@@ -5,10 +5,12 @@ package com.bobmitchigan.medialert.android.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,6 +39,8 @@ import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bobmitchigan.medialert.android.design.theme.Typography
+import com.bobmitchigan.medialert.android.ui.ActionsInvocationHandler.Companion.createActionsProxy
+import com.bobmitchigan.medialert.viewModel.CalendarActions
 import com.bobmitchigan.medialert.viewModel.CalendarViewModel
 import com.bobmitchigan.medialert.viewModel.state.CalendarState
 import kotlinx.datetime.Clock
@@ -59,11 +63,11 @@ fun CalendarScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    CalendarContent(state)
+    CalendarContent(state, viewModel)
 }
 
 @Composable
-private fun CalendarContent(state: CalendarState) {
+private fun CalendarContent(state: CalendarState, actions: CalendarActions) {
     Column(
         Modifier
             .background(MaterialTheme.colors.background)
@@ -79,14 +83,15 @@ private fun CalendarContent(state: CalendarState) {
             style = Typography.h5,
             text = startingWeekDay.month.getDisplayName(TextStyle.FULL, getLocale())
         )
-        CellsContent(pagerState, verticalScroll)
+        CellsContent(pagerState, verticalScroll, actions)
     }
 }
 
 @Composable
 private fun CellsContent(
     pagerState: PagerState,
-    verticalScroll: ScrollState
+    verticalScroll: ScrollState,
+    actions: CalendarActions
 ) {
     Row {
         TimeLabelColumn(verticalScroll)
@@ -115,15 +120,33 @@ private fun CellsContent(
                         .drawBehind {
                             drawGridLines(color)
                         }) {
-                    for (i in 0..96) {
+                    for (row in 0..48) {
                         Row(
                             Modifier
                                 .fillMaxWidth()
-                                .height(24.dp)
+                                .height(if (row == 0) FIRST_ROW_HEIGHT.dp else ROW_HEIGHT.dp)
                         ) {
-                            // TODO
+                            for (column in 0..6) {
+                                Box(modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                                    .then(if (row != 0) {
+                                        Modifier.clickable {
+                                            actions.selectCell(
+                                                row,
+                                                column
+                                            )
+                                        }
+                                    } else Modifier)
+                                )
+                            }
                         }
                     }
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(24.dp)
+                    )
                 }
             }
         }
@@ -164,7 +187,7 @@ private fun DrawScope.drawGridLines(color: Color) {
 }
 
 private fun DrawScope.drawHorizontalLines(color: Color) {
-    val startingHeight = 52.dp.toPx()
+    val startingHeight = FIRST_ROW_HEIGHT.dp.toPx()
     val lineHeight = 80.dp.toPx() // TODO fix
     for (i in 0..LINE_COUNT + 1) { // on more line for end
         drawLine(
@@ -191,11 +214,11 @@ private fun DrawScope.drawVerticalLines(color: Color) {
 private fun TimeLabelColumn(verticalScroll: ScrollState) {
     Column(
         Modifier
-            .padding(top = 52.dp)
+            .padding(top = 48.dp)
             .width(48.dp)
             .verticalScroll(verticalScroll)
     ) {
-        for (i in 1..LINE_COUNT) {
+        for (i in 0..LINE_COUNT) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -208,7 +231,7 @@ private fun TimeLabelColumn(verticalScroll: ScrollState) {
                 )
             }
         }
-        Spacer(modifier = Modifier.height(72.dp))
+        Spacer(modifier = Modifier.height(200.dp))
     }
 }
 
@@ -277,11 +300,13 @@ fun getFirstWeekDay(startingWeekIndex: Int, clock: Clock = Clock.System): LocalD
 private const val PAGE_OFFSET = 5000
 private const val LINE_COUNT = 23
 private const val DAYS_IN_WEEK = 7
+private const val FIRST_ROW_HEIGHT = 48
+private const val ROW_HEIGHT = 40
 
 @Preview
 @Composable
 fun CalendarScreenPreview() {
     MaterialTheme {
-        CalendarContent(CalendarState())
+        CalendarContent(CalendarState(), actions = createActionsProxy())
     }
 }
