@@ -23,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -78,6 +79,10 @@ private fun CalendarContent(state: CalendarState, actions: CalendarActions) {
         val currentWeek = pagerState.currentPage - PAGE_OFFSET
         val startingWeekDay: LocalDate = getFirstWeekDay(currentWeek)
 
+        LaunchedEffect(key1 = pagerState.currentPage) {
+            actions.fetchWeekCells(getFirstWeekDay(pagerState.currentPage - PAGE_OFFSET))
+        }
+
         Text(
             modifier = Modifier.padding(start = 48.dp),
             style = Typography.h5,
@@ -112,44 +117,52 @@ private fun CellsContent(
                         .height(8.dp)
                 )
 
-                val color = MaterialTheme.colors.onBackground
-                Column(
-                    Modifier
-                        .verticalScroll(verticalScroll)
-                        .background(MaterialTheme.colors.surface)
-                        .drawBehind {
-                            drawGridLines(color)
-                        }) {
-                    for (row in 0..48) {
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(if (row == 0) FIRST_ROW_HEIGHT.dp else ROW_HEIGHT.dp)
-                        ) {
-                            for (column in 0..6) {
-                                Box(modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                                    .then(if (row != 0) {
-                                        Modifier.clickable {
-                                            actions.selectCell(
-                                                row,
-                                                column
-                                            )
-                                        }
-                                    } else Modifier)
+                CalendarCells(verticalScroll, actions)
+            }
+        }
+    }
+}
+
+@Composable
+private fun CalendarCells(
+    verticalScroll: ScrollState,
+    actions: CalendarActions
+) {
+    val color = MaterialTheme.colors.onBackground
+    Column(
+        Modifier
+            .verticalScroll(verticalScroll)
+            .background(MaterialTheme.colors.surface)
+            .drawBehind {
+                drawGridLines(color)
+            }) {
+        for (row in 0..48) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .height(if (row == 0) FIRST_ROW_HEIGHT.dp else ROW_HEIGHT.dp)
+            ) {
+                for (column in 0..6) {
+                    Box(modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .then(if (row != 0) {
+                            Modifier.clickable {
+                                actions.selectCell(
+                                    row,
+                                    column
                                 )
                             }
-                        }
-                    }
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(24.dp)
+                        } else Modifier)
                     )
                 }
             }
         }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.dp)
+        )
     }
 }
 

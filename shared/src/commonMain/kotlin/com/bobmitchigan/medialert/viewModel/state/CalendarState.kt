@@ -1,22 +1,43 @@
 package com.bobmitchigan.medialert.viewModel.state
 
 import com.bobmitchigan.medialert.domain.MedicineEvent
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.plus
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 
 /**
  * A data class representing the state of the calendar.
  *
  * @property selectedHour The hour that is currently selected in the calendar.
- * @property cells A list of calendar cells.
+ * @property events Map containing calendar rows for week - key is date of first week.
  */
 data class CalendarState(
     val selectedHour: LocalDateTime? = null,
-    val cells: List<CalendarCell> = emptyList()
-)
+    private val events: Map<LocalDate, List<MedicineEvent>> = emptyMap()
+) {
+    fun getEvent(startingWeekDay: LocalDate, coordinates: CalendarCoordinates): MedicineEvent? {
+        return events[startingWeekDay]?.let {
+            val startTime = startingWeekDay.plus(coordinates.column, DateTimeUnit.DAY).atTime(
+                LocalTime(
+                    coordinates.row / 2,
+                    if (coordinates.row % 2 == 0) 0 else 30
+                )
+            )
+            val endTime = startTime.toInstant(TimeZone.currentSystemDefault())
+                .plus(30, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.currentSystemDefault())
 
-/**
- * Represents a slot cell in a calendar. May contain event of taken or to be taken medicine.
- */
-data class CalendarCell(
-    val medicine: MedicineEvent? = null
+            return it.find { event -> event.dateTime >= startTime && event.dateTime < endTime }
+        }
+    }
+}
+
+data class CalendarCoordinates(
+    val row: Int,
+    val column: Int,
 )
