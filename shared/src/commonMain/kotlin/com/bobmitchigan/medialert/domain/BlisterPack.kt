@@ -20,6 +20,12 @@ fun createNewBlisterPackRow(columns: Int): BlisterPackRow = BlisterPackRow(List(
     BlisterCavity.FILLED
 })
 
+fun List<BlisterPack>.filterAllCavities(predicate: (BlisterCavity) -> Boolean): List<BlisterCavity> {
+    return this.flatMap { pack ->
+        pack.rows.flatMap { it.value.filter(predicate) }
+    }
+}
+
 /**
  * State of single blister cavity for medicine pill.
  */

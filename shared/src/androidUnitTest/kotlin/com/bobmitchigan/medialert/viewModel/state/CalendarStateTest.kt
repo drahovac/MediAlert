@@ -19,17 +19,20 @@ class CalendarStateTest {
     private val event1 = MedicineEvent(dateTime1, medicine1)
     private val event2 = MedicineEvent(dateTime2, medicine2)
     private val event3 = MedicineEvent(dateTime3, medicine3)
+    private val event4 = MedicineEvent(dateTime2, medicine2)
 
 
     @Test
     fun `return correct cell for calendar coordinates`() {
         val state = CalendarState(
             events = mapOf(
-                date1 to listOf(event1, event2, event3)
+                date1 to listOf(event1, event2, event3, event4)
             )
         )
 
-        assertEquals(event1, state.getEvent(date1, CalendarCoordinates(0, 0)))
-        assertEquals(event2, state.getEvent(date1, CalendarCoordinates(25, 2)))
+        assertEquals(event1, state.getEvents(date1, CalendarCoordinates(0, 0))[0])
+        assertEquals(event3, state.getEvents(date1, CalendarCoordinates(0, 0))[1])
+        assertEquals(event2, state.getEvents(date1, CalendarCoordinates(25, 2))[0])
+        assertEquals(event4, state.getEvents(date1, CalendarCoordinates(25, 2))[1])
     }
 }

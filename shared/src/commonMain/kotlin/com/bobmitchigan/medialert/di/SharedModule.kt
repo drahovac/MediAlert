@@ -32,7 +32,7 @@ internal val sharedModule = module {
 
     baseViewModel { MedicineListViewModel(get()) }
 
-    baseViewModel { CalendarViewModel() }
+    baseViewModel { CalendarViewModel(get()) }
 
     baseViewModel { params -> MedicineDetailViewModel(get(), params.getOrNull()) }
 }

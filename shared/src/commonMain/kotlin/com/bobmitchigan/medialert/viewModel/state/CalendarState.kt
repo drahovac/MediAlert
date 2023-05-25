@@ -19,25 +19,33 @@ import kotlinx.datetime.toLocalDateTime
  */
 data class CalendarState(
     val selectedHour: LocalDateTime? = null,
-    private val events: Map<LocalDate, List<MedicineEvent>> = emptyMap()
+    val events: Map<LocalDate, List<MedicineEvent>> = emptyMap()
 ) {
-    fun getEvent(startingWeekDay: LocalDate, coordinates: CalendarCoordinates): MedicineEvent? {
+    fun getEvents(
+        startingWeekDay: LocalDate,
+        coordinates: CalendarCoordinates
+    ): List<MedicineEvent> {
         return events[startingWeekDay]?.let {
-            val startTime = startingWeekDay.plus(coordinates.column, DateTimeUnit.DAY).atTime(
+            val startTime = startingWeekDay.plusDays(coordinates.column).atTime(
                 LocalTime(
                     coordinates.row / 2,
-                    if (coordinates.row % 2 == 0) 0 else 30
+                    if (coordinates.row % 2 == 0) 0 else HALF_HOUR_MINUTES
                 )
             )
             val endTime = startTime.toInstant(TimeZone.currentSystemDefault())
-                .plus(30, DateTimeUnit.MINUTE).toLocalDateTime(TimeZone.currentSystemDefault())
+                .plus(HALF_HOUR_MINUTES, DateTimeUnit.MINUTE)
+                .toLocalDateTime(TimeZone.currentSystemDefault())
 
-            return it.find { event -> event.dateTime >= startTime && event.dateTime < endTime }
-        }
+            return it.filter { event -> event.dateTime >= startTime && event.dateTime < endTime }
+        } ?: emptyList()
     }
 }
+
+fun LocalDate.plusDays(days: Int) = plus(days, DateTimeUnit.DAY)
 
 data class CalendarCoordinates(
     val row: Int,
     val column: Int,
 )
+
+private const val HALF_HOUR_MINUTES = 30
