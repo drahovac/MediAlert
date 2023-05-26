@@ -6,6 +6,7 @@ import com.bobmitchigan.medialert.domain.MedicineEvent
 import com.bobmitchigan.medialert.domain.MedicineRepository
 import com.bobmitchigan.medialert.domain.filterAllCavities
 import com.bobmitchigan.medialert.viewModel.state.CalendarState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -27,11 +28,16 @@ class CalendarViewModel(repository: MedicineRepository) : BaseViewModel(), Calen
     val state = _state.asStateFlow()
     private var medicines: List<Medicine> = emptyList()
 
+    // wait to fetch medicines before mapping events
+    private var firstFetch = Job()
+
     init {
+        firstFetch.start()
         scope.launch {
             repository.allItems.collect {
                 medicines = it
                 _state.update { CalendarState() }
+                firstFetch.complete()
             }
         }
     }
@@ -42,10 +48,13 @@ class CalendarViewModel(repository: MedicineRepository) : BaseViewModel(), Calen
 
     override fun fetchWeekCells(startingWeekDay: LocalDate) {
         if (!state.value.events.containsKey(startingWeekDay)) {
-            _state.update {
-                it.copy(
-                    events = it.events.addEvent(startingWeekDay, getEvents(startingWeekDay))
-                )
+            scope.launch {
+                firstFetch.join()
+                _state.update {
+                    it.copy(
+                        events = it.events.addEvent(startingWeekDay, getEvents(startingWeekDay))
+                    )
+                }
             }
         }
     }
@@ -61,7 +70,6 @@ class CalendarViewModel(repository: MedicineRepository) : BaseViewModel(), Calen
             .atTime(LAST_DAY_HOUR, LAT_MIN_SEC, LAT_MIN_SEC)
             .toInstant(TimeZone.currentSystemDefault())
         return medicines.flatMap { medicine ->
-            println(medicine)
             medicine.blisterPacks.filterAllCavities { cavity ->
                 cavity is BlisterCavity.EATEN && cavity.taken.toInstant(
                     TimeZone.currentSystemDefault()

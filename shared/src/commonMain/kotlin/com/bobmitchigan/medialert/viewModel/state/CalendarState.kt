@@ -25,7 +25,8 @@ data class CalendarState(
         startingWeekDay: LocalDate,
         coordinates: CalendarCoordinates
     ): List<MedicineEvent> {
-        return events[startingWeekDay]?.let {
+        return events[startingWeekDay]?.takeIf { coordinates.row in 0..HAX_ROW_COUNT }?.let {
+            println(coordinates)
             val startTime = startingWeekDay.plusDays(coordinates.column).atTime(
                 LocalTime(
                     coordinates.row / 2,
@@ -49,3 +50,4 @@ data class CalendarCoordinates(
 )
 
 private const val HALF_HOUR_MINUTES = 30
+private const val HAX_ROW_COUNT = 47 // half hour per row, 0:00 is row 0 so 48 not allowed,

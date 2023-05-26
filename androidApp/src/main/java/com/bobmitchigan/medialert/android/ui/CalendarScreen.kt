@@ -41,8 +41,10 @@ import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.android.ui.ActionsInvocationHandler.Companion.createActionsProxy
+import com.bobmitchigan.medialert.domain.MedicineEvent
 import com.bobmitchigan.medialert.viewModel.CalendarActions
 import com.bobmitchigan.medialert.viewModel.CalendarViewModel
+import com.bobmitchigan.medialert.viewModel.state.CalendarCoordinates
 import com.bobmitchigan.medialert.viewModel.state.CalendarState
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -80,7 +82,7 @@ private fun CalendarContent(state: CalendarState, actions: CalendarActions) {
         val startingWeekDay: LocalDate = getFirstWeekDay(currentWeek)
 
         LaunchedEffect(key1 = pagerState.currentPage) {
-            actions.fetchWeekCells(getFirstWeekDay(pagerState.currentPage - PAGE_OFFSET))
+            actions.fetchWeekCells(firstWeekDay(pagerState))
         }
 
         Text(
@@ -88,15 +90,19 @@ private fun CalendarContent(state: CalendarState, actions: CalendarActions) {
             style = Typography.h5,
             text = startingWeekDay.month.getDisplayName(TextStyle.FULL, getLocale())
         )
-        CellsContent(pagerState, verticalScroll, actions)
+        CellsContent(pagerState, verticalScroll, actions, state)
     }
 }
+
+private fun firstWeekDay(pagerState: PagerState) =
+    getFirstWeekDay(pagerState.currentPage - PAGE_OFFSET)
 
 @Composable
 private fun CellsContent(
     pagerState: PagerState,
     verticalScroll: ScrollState,
-    actions: CalendarActions
+    actions: CalendarActions,
+    state: CalendarState,
 ) {
     Row {
         TimeLabelColumn(verticalScroll)
@@ -104,7 +110,7 @@ private fun CellsContent(
             pageCount = 10000,
             state = pagerState,
         ) {
-            val firstWeekDay = getFirstWeekDay(it - PAGE_OFFSET)
+            val firstWeekDay = firstWeekDay(pagerState)
             Column(
                 Modifier
                     .fillMaxWidth()
@@ -117,7 +123,7 @@ private fun CellsContent(
                         .height(8.dp)
                 )
 
-                CalendarCells(verticalScroll, actions)
+                CalendarCells(verticalScroll, actions, firstWeekDay, state)
             }
         }
     }
@@ -126,7 +132,9 @@ private fun CellsContent(
 @Composable
 private fun CalendarCells(
     verticalScroll: ScrollState,
-    actions: CalendarActions
+    actions: CalendarActions,
+    firstWeekDay: LocalDate,
+    state: CalendarState,
 ) {
     val color = MaterialTheme.colors.onBackground
     Column(
@@ -143,9 +151,11 @@ private fun CalendarCells(
                     .height(if (row == 0) FIRST_ROW_HEIGHT.dp else ROW_HEIGHT.dp)
             ) {
                 for (column in 0..6) {
+                    val events = state.getEvents(firstWeekDay, CalendarCoordinates(row, column))
                     Box(modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
+                        .background(getBackground(events))
                         .then(if (row != 0) {
                             Modifier.clickable {
                                 actions.selectCell(
@@ -164,6 +174,13 @@ private fun CalendarCells(
                 .height(24.dp)
         )
     }
+}
+
+@Composable
+fun getBackground(events: List<MedicineEvent>): Color {
+    return if (events.isEmpty()) {
+        Color.Unspecified
+    } else Color.Black
 }
 
 @Composable
