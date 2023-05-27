@@ -11,4 +11,5 @@ import kotlinx.datetime.LocalDateTime
 data class MedicineEvent(
     val dateTime: LocalDateTime,
     val medicine: Medicine,
+    val cavity: BlisterCavity?
 )

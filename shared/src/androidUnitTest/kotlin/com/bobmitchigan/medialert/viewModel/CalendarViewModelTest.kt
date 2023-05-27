@@ -1,6 +1,7 @@
 package com.bobmitchigan.medialert.viewModel
 
 import com.bobmitchigan.medialert.data.BlisterPackAdapter
+import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineEvent
 import com.bobmitchigan.medialert.domain.MedicineRepository
@@ -17,6 +18,7 @@ import kotlinx.datetime.LocalDateTime
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 internal class CalendarViewModelTest {
 
@@ -55,56 +57,87 @@ internal class CalendarViewModelTest {
         println(viewModel.state.value.events[date1])
         assertEquals(6, viewModel.state.value.events[date1]!!.size)
         assertEquals(
-            MedicineEvent(dateTime1, medicine1),
+            MedicineEvent(dateTime1, medicine1, BlisterCavity.EATEN(dateTime1)),
             viewModel.state.value.events[date1]?.get(0)
         )
         assertEquals(
-            MedicineEvent(dateTime2, medicine1),
+            MedicineEvent(dateTime2, medicine1, BlisterCavity.EATEN(dateTime2)),
             viewModel.state.value.events[date1]?.get(1)
         )
         assertEquals(
-            MedicineEvent(dateTime1, medicine2),
+            MedicineEvent(dateTime1, medicine2, BlisterCavity.EATEN(dateTime1)),
             viewModel.state.value.events[date1]?.get(2)
         )
         assertEquals(
-            MedicineEvent(dateTime2, medicine2),
+            MedicineEvent(dateTime2, medicine2, BlisterCavity.EATEN(dateTime2)),
             viewModel.state.value.events[date1]?.get(3)
         )
         assertEquals(
-            MedicineEvent(dateTime1, medicine3),
+            MedicineEvent(dateTime1, medicine3, BlisterCavity.EATEN(dateTime1)),
             viewModel.state.value.events[date1]?.get(4)
         )
         assertEquals(
-            MedicineEvent(dateTime2, medicine3),
+            MedicineEvent(dateTime2, medicine3, BlisterCavity.EATEN(dateTime2)),
             viewModel.state.value.events[date1]?.get(5)
         )
         assertEquals(
-            MedicineEvent(dateTime1, medicine1),
+            MedicineEvent(dateTime1, medicine1, BlisterCavity.EATEN(dateTime1)),
             viewModel.state.value.getEvents(date1, CalendarCoordinates(6, 0))[0]
         )
         assertEquals(
-            MedicineEvent(dateTime1, medicine2),
+            MedicineEvent(dateTime1, medicine2, BlisterCavity.EATEN(dateTime1)),
             viewModel.state.value.getEvents(date1, CalendarCoordinates(6, 0))[1]
         )
         assertEquals(
-            MedicineEvent(dateTime1, medicine3),
+            MedicineEvent(dateTime1, medicine3, BlisterCavity.EATEN(dateTime1)),
             viewModel.state.value.getEvents(date1, CalendarCoordinates(6, 0))[2]
         )
         assertEquals(
-            MedicineEvent(dateTime2, medicine1),
+            MedicineEvent(dateTime2, medicine1, BlisterCavity.EATEN(dateTime2)),
             viewModel.state.value.getEvents(date1, CalendarCoordinates(24, 2))[0]
         )
         assertEquals(
-            MedicineEvent(dateTime2, medicine2),
+            MedicineEvent(dateTime2, medicine2,  BlisterCavity.EATEN(dateTime2)),
             viewModel.state.value.getEvents(date1, CalendarCoordinates(24, 2))[1]
         )
         assertEquals(
-            MedicineEvent(dateTime2, medicine3),
+            MedicineEvent(dateTime2, medicine3,  BlisterCavity.EATEN(dateTime2)),
             viewModel.state.value.getEvents(date1, CalendarCoordinates(24, 2))[2]
         )
         assertEquals(
             emptyList(),
             viewModel.state.value.getEvents(date1, CalendarCoordinates(25, 2))
         )
+    }
+
+    @Test
+    fun `should set selected events`() {
+        val events = listOf(
+            MedicineEvent(
+                LocalDateTime.parse("2023-05-26T12:00"),
+                medicine3,
+                BlisterCavity.FILLED
+            )
+        )
+
+        viewModel.selectCell(events)
+
+        assertEquals(events, viewModel.state.value.selectedEvents)
+    }
+
+    @Test
+    fun `dismiss selected events`() {
+        val events = listOf(
+            MedicineEvent(
+                LocalDateTime.parse("2023-05-26T12:00"),
+                medicine3,
+                BlisterCavity.FILLED
+            )
+        )
+        viewModel.selectCell(events)
+
+        viewModel.dismissSelected()
+
+        assertTrue { viewModel.state.value.selectedEvents.isEmpty() }
     }
 }

@@ -1,5 +1,6 @@
 package com.bobmitchigan.medialert.viewModel.state
 
+import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineEvent
 import kotlinx.datetime.LocalDate
@@ -17,10 +18,10 @@ class CalendarStateTest {
     private val dateTime1 = LocalDateTime.parse("2023-05-24T00:10")
     private val dateTime2 = LocalDateTime.parse("2023-05-26T12:35")
     private val dateTime3 = LocalDateTime.parse("2023-05-24T00:00")
-    private val event1 = MedicineEvent(dateTime1, medicine1)
-    private val event2 = MedicineEvent(dateTime2, medicine2)
-    private val event3 = MedicineEvent(dateTime3, medicine3)
-    private val event4 = MedicineEvent(dateTime2, medicine2)
+    private val event1 = MedicineEvent(dateTime1, medicine1, BlisterCavity.FILLED)
+    private val event2 = MedicineEvent(dateTime2, medicine2, BlisterCavity.NONE)
+    private val event3 = MedicineEvent(dateTime3, medicine3, BlisterCavity.LOST)
+    private val event4 = MedicineEvent(dateTime2, medicine2, BlisterCavity.NONE)
 
 
     @Test

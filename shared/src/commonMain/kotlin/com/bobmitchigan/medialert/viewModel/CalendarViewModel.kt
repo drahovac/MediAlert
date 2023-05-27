@@ -42,8 +42,8 @@ class CalendarViewModel(repository: MedicineRepository) : BaseViewModel(), Calen
         }
     }
 
-    override fun selectCell(row: Int, column: Int) {
-        println("Index $row")
+    override fun selectCell(events: List<MedicineEvent>) {
+        _state.update { it.copy(selectedEvents = events) }
     }
 
     override fun fetchWeekCells(startingWeekDay: LocalDate) {
@@ -57,6 +57,10 @@ class CalendarViewModel(repository: MedicineRepository) : BaseViewModel(), Calen
                 }
             }
         }
+    }
+
+    override fun dismissSelected() {
+        _state.update { it.copy(selectedEvents = emptyList()) }
     }
 
     /**
@@ -84,7 +88,7 @@ private const val LAST_DAY_HOUR = 23
 private const val LAT_MIN_SEC = 59
 
 private fun BlisterCavity.EATEN.toEvent(medicine: Medicine): MedicineEvent {
-    return MedicineEvent(taken, medicine)
+    return MedicineEvent(taken, medicine, this)
 }
 
 private fun Map<LocalDate, List<MedicineEvent>>.addEvent(
@@ -96,7 +100,9 @@ private fun Map<LocalDate, List<MedicineEvent>>.addEvent(
 
 interface CalendarActions {
 
-    fun selectCell(row: Int, column: Int)
+    fun selectCell(events: List<MedicineEvent>)
 
     fun fetchWeekCells(startingWeekDay: LocalDate)
+
+    fun dismissSelected()
 }

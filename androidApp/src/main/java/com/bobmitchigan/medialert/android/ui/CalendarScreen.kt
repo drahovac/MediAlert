@@ -19,6 +19,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -28,6 +29,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -36,11 +38,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.android.ui.ActionsInvocationHandler.Companion.createActionsProxy
+import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.MedicineEvent
 import com.bobmitchigan.medialert.viewModel.CalendarActions
 import com.bobmitchigan.medialert.viewModel.CalendarViewModel
@@ -67,6 +71,9 @@ fun CalendarScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     CalendarContent(state, viewModel)
+    state.selectedEvents.takeUnless { it.isEmpty() }?.let {
+        SelectedEventsDialog(it, viewModel::dismissSelected)
+    }
 }
 
 @Composable
@@ -130,6 +137,22 @@ private fun CellsContent(
 }
 
 @Composable
+private fun SelectedEventsDialog(events: List<MedicineEvent>, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            Modifier
+                .clip(RoundedCornerShape(4.dp))
+                .background(MaterialTheme.colors.background)
+                .padding(8.dp)
+        ) {
+            events.forEach {
+                Text(text = "${it.medicine.name} ${it.dateTime}")
+            }
+        }
+    }
+}
+
+@Composable
 private fun CalendarCells(
     verticalScroll: ScrollState,
     actions: CalendarActions,
@@ -155,13 +178,10 @@ private fun CalendarCells(
                     Box(modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .background(getBackground(events))
-                        .then(if (row != 0) {
+                        .background(getCellBackground(events))
+                        .then(if (events.isNotEmpty()) {
                             Modifier.clickable {
-                                actions.selectCell(
-                                    row,
-                                    column
-                                )
+                                actions.selectCell(events)
                             }
                         } else Modifier)
                     )
@@ -177,10 +197,12 @@ private fun CalendarCells(
 }
 
 @Composable
-fun getBackground(events: List<MedicineEvent>): Color {
-    return if (events.isEmpty()) {
-        Color.Unspecified
-    } else Color.Black
+private fun getCellBackground(events: List<MedicineEvent>): Color {
+    return when {
+        events.isEmpty() -> Color.Unspecified
+        events.all { it.cavity is BlisterCavity.EATEN } -> MaterialTheme.colors.secondary
+        else -> Color.Unspecified
+    }
 }
 
 @Composable

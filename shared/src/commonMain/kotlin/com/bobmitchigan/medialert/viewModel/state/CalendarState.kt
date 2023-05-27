@@ -3,7 +3,6 @@ package com.bobmitchigan.medialert.viewModel.state
 import com.bobmitchigan.medialert.domain.MedicineEvent
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
@@ -14,19 +13,18 @@ import kotlinx.datetime.toLocalDateTime
 /**
  * A data class representing the state of the calendar.
  *
- * @property selectedHour The hour that is currently selected in the calendar.
+ * @property selectedEvents The events selected in the calendar.
  * @property events Map containing calendar rows for week - key is date of first week.
  */
 data class CalendarState(
-    val selectedHour: LocalDateTime? = null,
-    val events: Map<LocalDate, List<MedicineEvent>> = emptyMap()
+    val selectedEvents: List<MedicineEvent> = emptyList(),
+    val events: Map<LocalDate, List<MedicineEvent>> = emptyMap(),
 ) {
     fun getEvents(
         startingWeekDay: LocalDate,
         coordinates: CalendarCoordinates
     ): List<MedicineEvent> {
         return events[startingWeekDay]?.takeIf { coordinates.row in 0..HAX_ROW_COUNT }?.let {
-            println(coordinates)
             val startTime = startingWeekDay.plusDays(coordinates.column).atTime(
                 LocalTime(
                     coordinates.row / 2,
