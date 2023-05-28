@@ -35,6 +35,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,8 +43,10 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.android.ui.ActionsInvocationHandler.Companion.createActionsProxy
+import com.bobmitchigan.medialert.android.ui.component.SecondaryButton
 import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.MedicineEvent
 import com.bobmitchigan.medialert.viewModel.CalendarActions
@@ -146,10 +149,28 @@ private fun SelectedEventsDialog(events: List<MedicineEvent>, onDismiss: () -> U
                 .padding(8.dp)
         ) {
             events.forEach {
-                Text(text = "${it.medicine.name} ${it.dateTime}")
+                when (it.cavity) {
+                    is BlisterCavity.EATEN -> EatenCavityDialog(
+                        it.medicine.name,
+                        it.cavity as BlisterCavity.EATEN
+                    )
+
+                    else -> {}
+                }
             }
+
+            SecondaryButton(
+                modifier = Modifier.align(Alignment.End),
+                onClick = onDismiss,
+                text = stringResource(id = MR.strings.medicine_list_cancel.resourceId)
+            )
         }
     }
+}
+
+@Composable
+private fun EatenCavityDialog(medicineName: String, cavity: BlisterCavity.EATEN) {
+    Text(text = "$medicineName ${stringResource(MR.strings.medicine_calendar_eaten_at.resourceId)} ${cavity.taken}")
 }
 
 @Composable
@@ -174,7 +195,8 @@ private fun CalendarCells(
                     .height(if (row == 0) FIRST_ROW_HEIGHT.dp else ROW_HEIGHT.dp)
             ) {
                 for (column in 0..6) {
-                    val events = state.getEvents(firstWeekDay, CalendarCoordinates(row, column))
+                    // skipping first row
+                    val events = state.getEvents(firstWeekDay, CalendarCoordinates(row + 1, column))
                     Box(modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
