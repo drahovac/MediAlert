@@ -2,6 +2,7 @@ package com.bobmitchigan.medialert.viewModel
 
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineRepository
+import com.bobmitchigan.medialert.domain.dateTimeNow
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -49,13 +50,15 @@ internal class MedicineListViewModelTest {
         val MEDICINE_1 = Medicine(
             "Name1",
             listOf(),
-            listOf()
+            listOf(),
+            dateTimeNow()
         )
 
         val MEDICINE_2 = Medicine(
             "Name2",
             listOf(),
-            listOf()
+            listOf(),
+            dateTimeNow()
         )
 
         const val MEDICINE_ID = 2

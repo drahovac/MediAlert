@@ -4,6 +4,7 @@ import com.bobmitchigan.medialert.data.MockMedicineRepository.Companion.PREVIEW_
 import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineRepository
+import com.bobmitchigan.medialert.domain.dateTimeNow
 import com.bobmitchigan.medialert.viewModel.state.CavityCoordinates
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
@@ -112,6 +113,6 @@ internal class MedicineDetailViewModelTest {
 
     private companion object {
         const val DETAIL_ID = 23
-        val MEDICINE = Medicine("Name", PREVIEW_BLISTER_PACKS, listOf())
+        val MEDICINE = Medicine("Name", PREVIEW_BLISTER_PACKS, listOf(), dateTimeNow())
     }
 }

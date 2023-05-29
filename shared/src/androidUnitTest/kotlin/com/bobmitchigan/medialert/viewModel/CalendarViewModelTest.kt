@@ -5,6 +5,7 @@ import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineEvent
 import com.bobmitchigan.medialert.domain.MedicineRepository
+import com.bobmitchigan.medialert.domain.dateTimeNow
 import com.bobmitchigan.medialert.viewModel.state.CalendarCoordinates
 import io.mockk.every
 import io.mockk.mockk
@@ -28,9 +29,10 @@ internal class CalendarViewModelTest {
         "F.F.N.L,E2023-05-24T03:06.E2023-12-25T05:35.F.F;F.F,F.F.F.F,F.F.F.F;" +
                 "F.F.N.L,E2023-05-26T12:00.E2023-12-25T03:06.F.F"
     )
-    private val medicine1 = Medicine("Medicine 1", blisterPacks, listOf())
-    private val medicine2 = Medicine("Medicine 2", blisterPacks, listOf())
-    private val medicine3 = Medicine("Medicine 3", blisterPacks, listOf())
+    private val firstPillDate = dateTimeNow()
+    private val medicine1 = Medicine("Medicine 1", blisterPacks, listOf(), firstPillDate)
+    private val medicine2 = Medicine("Medicine 2", blisterPacks, listOf(), firstPillDate)
+    private val medicine3 = Medicine("Medicine 3", blisterPacks, listOf(), firstPillDate)
     private val date1 = LocalDate.parse("2023-05-24")
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -97,11 +99,11 @@ internal class CalendarViewModelTest {
             viewModel.state.value.getEvents(date1, CalendarCoordinates(24, 2))[0]
         )
         assertEquals(
-            MedicineEvent(dateTime2, medicine2,  BlisterCavity.EATEN(dateTime2)),
+            MedicineEvent(dateTime2, medicine2, BlisterCavity.EATEN(dateTime2)),
             viewModel.state.value.getEvents(date1, CalendarCoordinates(24, 2))[1]
         )
         assertEquals(
-            MedicineEvent(dateTime2, medicine3,  BlisterCavity.EATEN(dateTime2)),
+            MedicineEvent(dateTime2, medicine3, BlisterCavity.EATEN(dateTime2)),
             viewModel.state.value.getEvents(date1, CalendarCoordinates(24, 2))[2]
         )
         assertEquals(

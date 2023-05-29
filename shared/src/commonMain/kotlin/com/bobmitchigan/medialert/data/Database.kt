@@ -20,9 +20,14 @@ internal class Database(databaseDriverFactory: DatabaseDriver) {
     internal fun getAllMedicines(): Flow<List<com.bobmitchigan.medialert.Medicine>> =
         dbQuery.selectAllMedicines().asFlow().mapToList()
 
-    internal fun insertMedicine(name: String, blisterPacks: String, schedule: String) {
+    internal fun insertMedicine(
+        name: String,
+        blisterPacks: String,
+        schedule: String,
+        firstPillDateTime: String
+    ) {
         dbQuery.transaction {
-            dbQuery.insertMedicine(name, blisterPacks, schedule)
+            dbQuery.insertMedicine(name, blisterPacks, schedule, firstPillDateTime)
         }
     }
 

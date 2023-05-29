@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDateTime
 
 internal class MedicineRepositoryImpl(private val database: Database) : MedicineRepository {
 
@@ -19,6 +20,7 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
                 it.name,
                 deserializeBlisterPacks(it.blisterPacks),
                 listOf(),
+                LocalDateTime.parse(it.firstPillDateTime),
                 it.id.toInt()
             )
         }
@@ -30,7 +32,8 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
                 database.insertMedicine(
                     medicine.name,
                     medicine.blisterPacks.serialize(),
-                    medicine.schedule.serialize()
+                    medicine.schedule.serialize(),
+                    medicine.firstPillDateTime.toString(),
                 )
             }
         }
@@ -55,6 +58,7 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
                     it.name,
                     deserializeBlisterPacks(it.blisterPacks),
                     listOf(),
+                    LocalDateTime.parse(it.firstPillDateTime),
                     it.id.toInt()
                 )
             }

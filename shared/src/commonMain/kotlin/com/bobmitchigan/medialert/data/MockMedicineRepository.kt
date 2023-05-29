@@ -2,6 +2,7 @@ package com.bobmitchigan.medialert.data
 
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineRepository
+import com.bobmitchigan.medialert.domain.dateTimeNow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -25,7 +26,12 @@ class MockMedicineRepository(
     override fun getMedicineDetail(id: Int?): Flow<Medicine?> {
         return flow {
             delay(1000)
-            Medicine("Mock medicine", PREVIEW_BLISTER_PACKS, listOf())
+            Medicine(
+                "Mock medicine",
+                PREVIEW_BLISTER_PACKS,
+                listOf(),
+                dateTimeNow()
+            )
         }
     }
 

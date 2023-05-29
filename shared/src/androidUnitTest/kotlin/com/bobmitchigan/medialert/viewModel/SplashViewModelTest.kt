@@ -5,6 +5,7 @@ package com.bobmitchigan.medialert.viewModel
 import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineRepository
+import com.bobmitchigan.medialert.domain.dateTimeNow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +20,7 @@ import kotlin.test.assertEquals
 
 internal class SplashViewModelTest {
 
-    private val medicine = Medicine("Medicine", emptyList(), emptyList())
+    private val medicine = Medicine("Medicine", emptyList(), emptyList(), dateTimeNow())
     private var allItemsFlow: MutableStateFlow<List<Medicine>> = MutableStateFlow(emptyList())
     private val repository: MedicineRepository = object : MedicineRepository {
         override val allItems: Flow<List<Medicine>> = allItemsFlow

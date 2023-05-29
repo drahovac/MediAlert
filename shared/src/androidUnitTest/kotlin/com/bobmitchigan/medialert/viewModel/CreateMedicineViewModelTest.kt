@@ -9,6 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import org.junit.Before
 import org.junit.Test
@@ -20,13 +23,18 @@ import kotlin.test.assertTrue
 internal class CreateMedicineViewModelTest {
 
     private val medicineRepository: MedicineRepository = mockk(relaxUnitFun = true)
+    private val clock = object : Clock {
+        override fun now(): Instant {
+            return Instant.parse(INSTANT)
+        }
+    }
     private lateinit var createMedicineViewModel: CreateMedicineViewModel
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
-        createMedicineViewModel = CreateMedicineViewModel(medicineRepository)
+        createMedicineViewModel = CreateMedicineViewModel(medicineRepository, clock)
     }
 
     @Test
@@ -262,7 +270,8 @@ internal class CreateMedicineViewModelTest {
                         BlisterPack(listOf(blisterPackRow, blisterPackRow)),
                         BlisterPack(listOf(blisterPackRow, blisterPackRow)),
                     ),
-                    listOf()
+                    listOf(),
+                    dateTimeNow(clock),
                 )
             )
         }
@@ -321,7 +330,7 @@ internal class CreateMedicineViewModelTest {
         createMedicineViewModel.updateTimesPerDay("3")
         createMedicineViewModel.updateTimeSchedule(0, TIME_1)
         createMedicineViewModel.updateTimeSchedule(1, TIME_2)
-        createMedicineViewModel.updateTimeSchedule(2, TIME_2)
+        createMedicineViewModel.updateTimeSchedule(2, TIME_3)
 
         createMedicineViewModel.submit()
 
@@ -335,7 +344,9 @@ internal class CreateMedicineViewModelTest {
                         BlisterPack(listOf(blisterPackRowLarge)),
                         BlisterPack(listOf(blisterPackRow, blisterPackRow)),
                     ),
-                    listOf(TIME_1, TIME_2, TIME_3)
+                    listOf(TIME_3, TIME_1, TIME_2),
+                    // Date time now of fixed clock and first time of schedule
+                    LocalDateTime.parse("2023-05-11T01:00:00"),
                 )
             )
         }
@@ -361,7 +372,8 @@ internal class CreateMedicineViewModelTest {
 
     private companion object {
         val TIME_1 = LocalTime(10, 30)
-        val TIME_2 = LocalTime(10, 30)
-        val TIME_3 = LocalTime(10, 30)
+        val TIME_2 = LocalTime(16, 30)
+        val TIME_3 = LocalTime(1, 0)
+        const val INSTANT = "2023-05-11T00:00:00Z"
     }
 }

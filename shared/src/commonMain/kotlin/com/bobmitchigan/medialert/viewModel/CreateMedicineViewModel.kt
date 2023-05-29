@@ -10,10 +10,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalTime
 
 open class CreateMedicineViewModel(
-    private val medicineRepository: MedicineRepository
+    private val medicineRepository: MedicineRepository,
+    private val clock: Clock = Clock.System,
 ) : NavigationViewModel(), CreateMedicineActions {
 
     private val _state = MutableStateFlow(CreateMedicineState())
@@ -76,7 +78,7 @@ open class CreateMedicineViewModel(
     override fun submit() {
         updateState { it.validate() }
         viewModelScope.coroutineScope.launch {
-            state.value.toMedicine()?.let {
+            state.value.toMedicine(clock)?.let {
                 medicineRepository.saveMedicine(it)
                 navigate()
             }

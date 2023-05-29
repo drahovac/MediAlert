@@ -3,6 +3,7 @@ package com.bobmitchigan.medialert.viewModel.state
 import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineEvent
+import com.bobmitchigan.medialert.domain.dateTimeNow
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import org.junit.Test
@@ -11,9 +12,9 @@ import kotlin.test.assertTrue
 
 class CalendarStateTest {
 
-    private val medicine1: Medicine = Medicine("Name1", listOf(), listOf())
-    private val medicine2: Medicine = Medicine("Name2", listOf(), listOf())
-    private val medicine3: Medicine = Medicine("Name3", listOf(), listOf())
+    private val medicine1: Medicine = Medicine("Name1", listOf(), listOf(), dateTimeNow())
+    private val medicine2: Medicine = Medicine("Name2", listOf(), listOf(), dateTimeNow())
+    private val medicine3: Medicine = Medicine("Name3", listOf(), listOf(), dateTimeNow())
     private val date1 = LocalDate.parse("2023-05-24")
     private val dateTime1 = LocalDateTime.parse("2023-05-24T00:10")
     private val dateTime2 = LocalDateTime.parse("2023-05-26T12:35")
@@ -46,8 +47,8 @@ class CalendarStateTest {
             )
         )
 
-        assertTrue { state.getEvents(date1, CalendarCoordinates(48, 2)).isEmpty()}
-        assertTrue { state.getEvents(date1, CalendarCoordinates(-1, 2)).isEmpty()}
-        assertTrue { state.getEvents(date1, CalendarCoordinates(120, 2)).isEmpty()}
+        assertTrue { state.getEvents(date1, CalendarCoordinates(48, 2)).isEmpty() }
+        assertTrue { state.getEvents(date1, CalendarCoordinates(-1, 2)).isEmpty() }
+        assertTrue { state.getEvents(date1, CalendarCoordinates(120, 2)).isEmpty() }
     }
 }

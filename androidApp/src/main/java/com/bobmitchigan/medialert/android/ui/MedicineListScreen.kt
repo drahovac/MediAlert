@@ -39,6 +39,7 @@ import com.bobmitchigan.medialert.android.ui.component.navigate
 import com.bobmitchigan.medialert.data.MockMedicineRepository
 import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.domain.Medicine
+import com.bobmitchigan.medialert.domain.dateTimeNow
 import com.bobmitchigan.medialert.viewModel.MedicineListViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -164,7 +165,12 @@ private fun LazyListScope.spacerItem(height: Dp) {
 fun MedicineListScreenPreview() {
     MedicineListContent(
         (0..1).map {
-            Medicine("Name $it", MockMedicineRepository.PREVIEW_BLISTER_PACKS, listOf())
+            Medicine(
+                "Name $it",
+                MockMedicineRepository.PREVIEW_BLISTER_PACKS,
+                listOf(),
+                dateTimeNow()
+            )
         },
         {}, {},
     )

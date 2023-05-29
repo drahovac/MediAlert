@@ -35,7 +35,7 @@ internal class MedicineTest {
     }
 
     private companion object {
-        val MEDICINE = Medicine("Prototype", listOf(), listOf())
+        val MEDICINE = Medicine("Prototype", listOf(), listOf(), dateTimeNow())
         val NOTHING_EATEN_PACKS = BlisterPackAdapter.deserializeBlisterPacks(
             "F.F.N.L,F.F.F;F.F,F.F.F.F,F.F.F.F;" +
                     "F.F.N.L,N.F.F"

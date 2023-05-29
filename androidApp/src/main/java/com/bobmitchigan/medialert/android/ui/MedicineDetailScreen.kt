@@ -35,9 +35,10 @@ import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.BlisterPack
 import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.domain.Medicine
-import com.bobmitchigan.medialert.viewModel.state.CavityCoordinates
+import com.bobmitchigan.medialert.domain.dateTimeNow
 import com.bobmitchigan.medialert.viewModel.MedicineDetailActions
 import com.bobmitchigan.medialert.viewModel.MedicineDetailViewModel
+import com.bobmitchigan.medialert.viewModel.state.CavityCoordinates
 import kotlinx.datetime.toJavaLocalDateTime
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -100,6 +101,7 @@ private fun BlisterCavity.desc(): String {
             id = MR.strings.medicine_detail_eaten_desc.resourceId,
             this.taken.toJavaLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE)
         )
+
         BlisterCavity.FILLED -> stringResource(id = MR.strings.medicine_detail_filled_desc.resourceId)
         BlisterCavity.LOST -> stringResource(id = MR.strings.medicine_detail_marked_as_lost.resourceId)
         BlisterCavity.NONE -> ""
@@ -196,7 +198,8 @@ internal fun MedicineDetailScreenPreview() {
         medicine = Medicine(
             name = "Name",
             blisterPacks = PREVIEW_BLISTER_PACKS,
-            schedule = listOf()
+            schedule = listOf(),
+            firstPillDateTime = dateTimeNow()
         ),
         actions = ActionsInvocationHandler.createActionsProxy(),
         navigate = {}

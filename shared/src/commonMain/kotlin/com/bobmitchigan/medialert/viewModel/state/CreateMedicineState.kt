@@ -4,8 +4,12 @@ import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.domain.BlisterPack
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.createNewBlisterPack
+import com.bobmitchigan.medialert.domain.dateTimeNow
 import com.bobmitchigan.medialert.viewModel.CommonSerializable
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.atTime
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,11 +22,13 @@ data class CreateMedicineState(
     val timeSchedule: List<InputState<LocalTime>> = emptyList()
 ) : CommonSerializable {
 
-    fun toMedicine() = runCatching {
+    fun toMedicine(clock: Clock) = runCatching {
+        val schedule = timeSchedule.mapNotNull { it.value }.sorted()
         Medicine(
             name = name.value!!,
             blisterPacks = if (areAllPacksIdentical) mapFirstDimension() else mapDimensionsToFilledPacks(),
-            schedule = timeSchedule.mapNotNull { it.value }
+            schedule = schedule,
+            firstPillDateTime = dateTimeNow(clock).withTime(schedule.firstOrNull()),
         )
     }.getOrNull()
 
@@ -66,6 +72,10 @@ data class CreateMedicineState(
             return CreateMedicineState()
         }
     }
+}
+
+private fun LocalDateTime.withTime(time: LocalTime?): LocalDateTime {
+    return time?.let { this.date.atTime(time) } ?: this
 }
 
 private fun List<BlisterPack>.isValid(): Boolean {
