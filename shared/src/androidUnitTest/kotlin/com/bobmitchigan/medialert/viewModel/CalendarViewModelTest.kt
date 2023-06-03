@@ -14,8 +14,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -54,9 +59,12 @@ internal class CalendarViewModelTest {
     fun `update state with filled cavities for week`() {
         viewModel.fetchWeekCells(date1)
 
+        medicine1.blisterPacks.sumBy { it.rows.sumBy { it.value.count { it is BlisterCavity.EATEN } } }
+            .let {
+                println(it)
+            }
         val dateTime1 = LocalDateTime.parse("2023-05-24T03:06")
         val dateTime2 = LocalDateTime.parse("2023-05-26T12:00")
-        println(viewModel.state.value.events[date1])
         assertEquals(6, viewModel.state.value.events[date1]!!.size)
         assertEquals(
             MedicineEvent(dateTime1, medicine1, BlisterCavity.EATEN(dateTime1)),
@@ -110,6 +118,38 @@ internal class CalendarViewModelTest {
             emptyList(),
             viewModel.state.value.getEvents(date1, CalendarCoordinates(25, 2))
         )
+    }
+
+
+    @Suppress("MagicNumber")
+    @Test
+    fun `generate missing pills`() {
+        val today = LocalDateTime.parse("2023-06-02T04:30")
+        val firstPillDate = LocalDateTime.parse("2023-05-31T03:06")
+        val firstWeekDay = LocalDate.parse("2023-05-29")
+        val blisterPacks = BlisterPackAdapter.deserializeBlisterPacks(
+            "F.E2023-05-31T03:06.E2023-05-31T05:35.F.F.F.F.F.F.F.F"
+        )
+        val medicine = Medicine(
+            "Medicine 1", blisterPacks, listOf(
+                LocalTime(1, 0),
+                LocalTime(4, 30),
+                LocalTime(18, 0)
+            ), firstPillDate
+        )
+        every { medicineRepository.allItems } returns flowOf(
+            listOf(medicine)
+        )
+        viewModel = CalendarViewModel(medicineRepository, clock = object : Clock {
+            override fun now(): Instant {
+                return today.toInstant(TimeZone.currentSystemDefault())
+            }
+        })
+
+        viewModel.fetchWeekCells(firstWeekDay)
+
+        // 2 eaten + 5 missing (1 for 31.5., 3 for 1.6., 2 for 2.6.)
+        assertEquals(2 + 6, viewModel.state.value.events[firstWeekDay]!!.size)
     }
 
     @Test

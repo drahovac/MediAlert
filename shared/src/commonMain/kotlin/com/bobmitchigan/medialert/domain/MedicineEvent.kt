@@ -11,5 +11,10 @@ import kotlinx.datetime.LocalDateTime
 data class MedicineEvent(
     val dateTime: LocalDateTime,
     val medicine: Medicine,
-    val cavity: BlisterCavity?
+    val cavity: BlisterCavity?,
+    val eventType: EventType = EventType.EATEN,
 )
+
+enum class EventType {
+    EATEN, PLANNED, MISSING
+}

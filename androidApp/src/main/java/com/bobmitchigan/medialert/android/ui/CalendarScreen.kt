@@ -196,7 +196,7 @@ private fun CalendarCells(
             ) {
                 for (column in 0..6) {
                     // skipping first row
-                    val events = state.getEvents(firstWeekDay, CalendarCoordinates(row + 1, column))
+                    val events = state.getEvents(firstWeekDay, CalendarCoordinates(row - 1, column))
                     Box(modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()

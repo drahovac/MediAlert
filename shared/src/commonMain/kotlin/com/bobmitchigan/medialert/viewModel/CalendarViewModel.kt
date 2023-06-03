@@ -4,22 +4,29 @@ import com.bobmitchigan.medialert.domain.BlisterCavity
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineEvent
 import com.bobmitchigan.medialert.domain.MedicineRepository
+import com.bobmitchigan.medialert.domain.dateTimeNow
 import com.bobmitchigan.medialert.domain.filterAllCavities
 import com.bobmitchigan.medialert.viewModel.state.CalendarState
+import com.bobmitchigan.medialert.viewModel.state.plusDays
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.atTime
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 
-class CalendarViewModel(repository: MedicineRepository) : BaseViewModel(), CalendarActions {
+class CalendarViewModel(
+    repository: MedicineRepository,
+    private val clock: Clock = Clock.System
+) : BaseViewModel(), CalendarActions {
 
     private val _state: MutableStateFlow<CalendarState> =
         MutableStateFlow(
@@ -69,6 +76,35 @@ class CalendarViewModel(repository: MedicineRepository) : BaseViewModel(), Calen
     @return A list of [MedicineEvent] objects representing the medicine events.
      */
     private fun getEvents(startingWeekDay: LocalDate): List<MedicineEvent> {
+        return mutableListOf<MedicineEvent>().apply {
+            addAll(generateEatenEvents(startingWeekDay))
+            addAll(generateMissingEvents(startingWeekDay))
+        }
+    }
+
+    private fun generateMissingEvents(startingWeekDay: LocalDate): List<MedicineEvent> {
+        val dateNow = dateTimeNow(clock).date
+        return medicines.flatMap { medicine ->
+            // no missing medicine possible if first pill after current week
+            if (medicine.remainingCount() == 0 || medicine.firstPillDateTime.date > startingWeekDay.plus(
+                    1,
+                    DateTimeUnit.WEEK
+                )
+            ) return@flatMap emptyList()
+            val start = maxOf(medicine.firstPillDateTime, startingWeekDay.atTime(0, 0))
+            val daysCount = start.date.daysUntil(dateNow)
+            val result = mutableListOf<MedicineEvent>()
+            for (i in 0..daysCount) {
+                println(start.date.plusDays(i))
+
+                // TODO slots
+            }
+
+            return result
+        }
+    }
+
+    private fun generateEatenEvents(startingWeekDay: LocalDate): List<MedicineEvent> {
         val start = startingWeekDay.atStartOfDayIn(TimeZone.currentSystemDefault())
         val end = startingWeekDay.plus(DAYS_IN_WEEK, DateTimeUnit.DAY)
             .atTime(LAST_DAY_HOUR, LAT_MIN_SEC, LAT_MIN_SEC)
