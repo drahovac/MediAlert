@@ -48,6 +48,7 @@ import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.android.ui.ActionsInvocationHandler.Companion.createActionsProxy
 import com.bobmitchigan.medialert.android.ui.component.SecondaryButton
 import com.bobmitchigan.medialert.domain.BlisterCavity
+import com.bobmitchigan.medialert.domain.EventType
 import com.bobmitchigan.medialert.domain.MedicineEvent
 import com.bobmitchigan.medialert.viewModel.CalendarActions
 import com.bobmitchigan.medialert.viewModel.CalendarViewModel
@@ -223,6 +224,7 @@ private fun getCellBackground(events: List<MedicineEvent>): Color {
     return when {
         events.isEmpty() -> Color.Unspecified
         events.all { it.cavity is BlisterCavity.EATEN } -> MaterialTheme.colors.secondary
+        events.all { it.eventType == EventType.MISSING } -> MaterialTheme.colors.error
         else -> Color.Unspecified
     }
 }

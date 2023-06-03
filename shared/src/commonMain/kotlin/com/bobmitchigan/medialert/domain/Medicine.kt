@@ -1,5 +1,6 @@
 package com.bobmitchigan.medialert.domain
 
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 
@@ -19,9 +20,24 @@ data class Medicine(
     val firstPillDateTime: LocalDateTime,
     val id: Int? = null
 ) {
+    /**
+     * Returns linear list of blister cavities.
+     */
+    private val blisterCavities: List<BlisterCavity> =
+        blisterPacks.flatMap { it.rows.flatMap { row -> row.value } }
+
     fun eatenCount(): Int = sumCavity(::increaseIfEaten)
 
     fun remainingCount(): Int = sumCavity(::increaseIfFilled)
+
+    /**
+     * Return all eaten pills during day.
+     */
+    fun eatenPills(day: LocalDate): List<BlisterCavity.EATEN> {
+        return blisterCavities.filterIsInstance<BlisterCavity.EATEN>().filter {
+            it.taken.date == day
+        }
+    }
 
     private fun sumCavity(increase: (BlisterCavity) -> Int): Int {
         return blisterPacks.sumOf { blisterPack ->

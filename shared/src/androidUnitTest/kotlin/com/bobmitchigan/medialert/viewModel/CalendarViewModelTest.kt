@@ -2,6 +2,7 @@ package com.bobmitchigan.medialert.viewModel
 
 import com.bobmitchigan.medialert.data.BlisterPackAdapter
 import com.bobmitchigan.medialert.domain.BlisterCavity
+import com.bobmitchigan.medialert.domain.EventType
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineEvent
 import com.bobmitchigan.medialert.domain.MedicineRepository
@@ -59,10 +60,6 @@ internal class CalendarViewModelTest {
     fun `update state with filled cavities for week`() {
         viewModel.fetchWeekCells(date1)
 
-        medicine1.blisterPacks.sumBy { it.rows.sumBy { it.value.count { it is BlisterCavity.EATEN } } }
-            .let {
-                println(it)
-            }
         val dateTime1 = LocalDateTime.parse("2023-05-24T03:06")
         val dateTime2 = LocalDateTime.parse("2023-05-26T12:00")
         assertEquals(6, viewModel.state.value.events[date1]!!.size)
@@ -124,11 +121,11 @@ internal class CalendarViewModelTest {
     @Suppress("MagicNumber")
     @Test
     fun `generate missing pills`() {
-        val today = LocalDateTime.parse("2023-06-02T04:30")
+        val today = LocalDateTime.parse("2023-06-02T12:30")
         val firstPillDate = LocalDateTime.parse("2023-05-31T03:06")
         val firstWeekDay = LocalDate.parse("2023-05-29")
         val blisterPacks = BlisterPackAdapter.deserializeBlisterPacks(
-            "F.E2023-05-31T03:06.E2023-05-31T05:35.F.F.F.F.F.F.F.F"
+            "F.E2023-05-31T03:06.E2023-05-31T05:35.F.F.E2023-06-01T03:06.F.F.F.F.F"
         )
         val medicine = Medicine(
             "Medicine 1", blisterPacks, listOf(
@@ -148,8 +145,23 @@ internal class CalendarViewModelTest {
 
         viewModel.fetchWeekCells(firstWeekDay)
 
-        // 2 eaten + 5 missing (1 for 31.5., 3 for 1.6., 2 for 2.6.)
-        assertEquals(2 + 6, viewModel.state.value.events[firstWeekDay]!!.size)
+        viewModel.state.value.events[firstWeekDay]!!.let { events ->
+            // 2 eaten + 5 missing (1 for 31.5., 3 for 1.6., 2 for 2.6.)
+            assertEquals(2 + 6, events.size)
+            assertTrue { events[0].cavity is BlisterCavity.EATEN }
+            assertTrue { events[1].cavity is BlisterCavity.EATEN }
+            assertTrue { events[2].cavity is BlisterCavity.EATEN }
+            assertEquals(LocalDateTime.parse("2023-05-31T18:00"), events[3].dateTime)
+            assertTrue { events[3].eventType == EventType.MISSING }
+            assertEquals(LocalDateTime.parse("2023-06-01T01:00"), events[4].dateTime)
+            assertTrue { events[4].eventType == EventType.MISSING }
+            assertEquals(LocalDateTime.parse("2023-06-01T18:00"), events[5].dateTime)
+            assertTrue { events[5].eventType == EventType.MISSING }
+            assertEquals(LocalDateTime.parse("2023-06-02T01:00"), events[6].dateTime)
+            assertTrue { events[6].eventType == EventType.MISSING }
+            assertEquals(LocalDateTime.parse("2023-06-02T04:30"), events[7].dateTime)
+            assertTrue { events[7].eventType == EventType.MISSING }
+        }
     }
 
     @Test

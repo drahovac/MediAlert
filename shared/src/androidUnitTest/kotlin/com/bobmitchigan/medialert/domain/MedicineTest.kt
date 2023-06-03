@@ -1,6 +1,7 @@
 package com.bobmitchigan.medialert.domain
 
 import com.bobmitchigan.medialert.data.BlisterPackAdapter
+import kotlinx.datetime.LocalDate
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -32,6 +33,14 @@ internal class MedicineTest {
         val medicine = MEDICINE.copy(blisterPacks = SOME_EATEN)
 
         assertEquals(18, medicine.remainingCount())
+    }
+
+    @Test
+    fun `return all eaten pill in day`() {
+        MEDICINE.copy(blisterPacks = SOME_EATEN).eatenPills(LocalDate.parse("2022-04-03")).let {
+
+            assertEquals(2, it.size)
+        }
     }
 
     private companion object {

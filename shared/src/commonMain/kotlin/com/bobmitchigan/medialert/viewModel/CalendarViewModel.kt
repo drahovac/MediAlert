@@ -1,6 +1,7 @@
 package com.bobmitchigan.medialert.viewModel
 
 import com.bobmitchigan.medialert.domain.BlisterCavity
+import com.bobmitchigan.medialert.domain.EventType
 import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineEvent
 import com.bobmitchigan.medialert.domain.MedicineRepository
@@ -16,12 +17,14 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.atTime
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
+import kotlin.math.abs
 
 class CalendarViewModel(
     repository: MedicineRepository,
@@ -82,8 +85,13 @@ class CalendarViewModel(
         }
     }
 
+    /**
+     * Generates a list of missing medicine events for the given starting week day.
+     *
+     * @param startingWeekDay The starting week day of the period to generate missing events for.
+     * @return A list of missing medicine events.
+     */
     private fun generateMissingEvents(startingWeekDay: LocalDate): List<MedicineEvent> {
-        val dateNow = dateTimeNow(clock).date
         return medicines.flatMap { medicine ->
             // no missing medicine possible if first pill after current week
             if (medicine.remainingCount() == 0 || medicine.firstPillDateTime.date > startingWeekDay.plus(
@@ -91,18 +99,56 @@ class CalendarViewModel(
                     DateTimeUnit.WEEK
                 )
             ) return@flatMap emptyList()
+            val dateNow = dateTimeNow(clock).date
+            // Find the start date of the period - either start of week
+            // if first pill was taken before this week or fist pill date
             val start = maxOf(medicine.firstPillDateTime, startingWeekDay.atTime(0, 0))
+            // how many days with missing events
             val daysCount = start.date.daysUntil(dateNow)
             val result = mutableListOf<MedicineEvent>()
             for (i in 0..daysCount) {
-                println(start.date.plusDays(i))
-
-                // TODO slots
+                val eaten = medicine.eatenPills(start.date.plusDays(i))
+                if (eaten.size < medicine.schedule.size) {
+                    result.addAll(
+                        findMissingEvents(
+                            medicine.schedule,
+                            eaten,
+                            dateTimeNow(clock).time.takeIf { dateNow == start.date.plusDays(i) }
+                        ).mapToMissingEvents(start.date.plusDays(i), medicine))
+                }
             }
 
             return result
         }
     }
+
+    /**
+     * Find missing events for current day.
+     * If search should be only to concrete time time until is not null.
+     */
+    private fun findMissingEvents(
+        schedule: List<LocalTime>,
+        eaten: List<BlisterCavity.EATEN>,
+        timeUntil: LocalTime?
+    ): List<LocalTime> {
+        schedule.filter { timeUntil == null || it < timeUntil }.toMutableList().let { mutated ->
+            eaten.forEach { eaten ->
+                mutated.sortBy { abs(it.toSecondOfDay() - eaten.taken.time.toSecondOfDay()) }
+                mutated.removeFirst()
+            }
+            return mutated
+        }
+    }
+
+    private fun List<LocalTime>.mapToMissingEvents(date: LocalDate, medicine: Medicine) =
+        map { timeSlot ->
+            MedicineEvent(
+                date.atTime(timeSlot),
+                medicine,
+                null,
+                EventType.MISSING
+            )
+        }
 
     private fun generateEatenEvents(startingWeekDay: LocalDate): List<MedicineEvent> {
         val start = startingWeekDay.atStartOfDayIn(TimeZone.currentSystemDefault())
