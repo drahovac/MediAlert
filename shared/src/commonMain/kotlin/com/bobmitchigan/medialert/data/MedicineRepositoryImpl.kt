@@ -19,7 +19,7 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
             Medicine(
                 it.name,
                 deserializeBlisterPacks(it.blisterPacks),
-                listOf(),
+                ScheduleAdapter.deserializeSchedule(it.schedule),
                 LocalDateTime.parse(it.firstPillDateTime),
                 it.id.toInt()
             )
@@ -45,7 +45,7 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
                 database.updateMedicine(
                     medicine.id!!,
                     medicine.name,
-                    medicine.blisterPacks.serialize()
+                    medicine.blisterPacks.serialize(),
                 )
             }
         }
@@ -57,7 +57,7 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
                 Medicine(
                     it.name,
                     deserializeBlisterPacks(it.blisterPacks),
-                    listOf(),
+                    ScheduleAdapter.deserializeSchedule(it.schedule),
                     LocalDateTime.parse(it.firstPillDateTime),
                     it.id.toInt()
                 )

@@ -1,6 +1,6 @@
 package com.bobmitchigan.medialert.data
 
-import com.bobmitchigan.medialert.data.ScheduleAdapter.deserialize
+import com.bobmitchigan.medialert.data.ScheduleAdapter.deserializeSchedule
 import com.bobmitchigan.medialert.data.ScheduleAdapter.serialize
 import kotlinx.datetime.LocalTime
 import org.junit.Test
@@ -21,7 +21,7 @@ internal class ScheduleAdapterTest {
     @Test
     fun `deserialize dates list`() {
         val list =
-            deserialize("01:04;03:34;04:15:06;15:55")
+            deserializeSchedule("01:04;03:34;04:15:06;15:55")
 
         assertEquals(listOf(TIME_1, TIME_2, TIME_3, TIME_4), list)
     }

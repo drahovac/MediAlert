@@ -117,8 +117,7 @@ class CalendarViewModel(
                         ).mapToMissingEvents(start.date.plusDays(i), medicine))
                 }
             }
-
-            return result
+            result
         }
     }
 

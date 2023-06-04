@@ -10,7 +10,7 @@ object ScheduleAdapter {
         return joinToString(SEPARATOR) { it.toString() }
     }
 
-    fun deserialize(value: String): List<LocalTime> {
+    fun deserializeSchedule(value: String): List<LocalTime> {
         return value.split(SEPARATOR).map { LocalTime.parse(it) }
     }
 }
