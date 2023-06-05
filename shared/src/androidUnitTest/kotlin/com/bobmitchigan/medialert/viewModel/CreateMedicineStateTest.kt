@@ -5,6 +5,7 @@ import com.bobmitchigan.medialert.viewModel.state.BlisterPackDimension
 import com.bobmitchigan.medialert.viewModel.state.CreateMedicineState
 import com.bobmitchigan.medialert.viewModel.state.InputState
 import com.bobmitchigan.medialert.viewModel.state.toInputState
+import kotlinx.datetime.LocalTime
 import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -26,7 +27,9 @@ class CreateMedicineStateTest {
         val state = CreateMedicineState(
             name = "3".toInputState(),
             blisterPackCount = 3.toInputState(),
-            dimensions = listOf(BlisterPackDimension(3.toInputState(), 6.toInputState()))
+            dimensions = listOf(BlisterPackDimension(3.toInputState(), 6.toInputState())),
+            timesPerDay = 4.toInputState(),
+            timeSchedule = listOf(LocalTime(3, 4).toString().toInputState())
         )
         val serialized = serialize(state)
 

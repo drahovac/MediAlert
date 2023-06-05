@@ -6,6 +6,7 @@ import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.createNewBlisterPack
 import com.bobmitchigan.medialert.domain.dateTimeNow
 import com.bobmitchigan.medialert.viewModel.CommonSerializable
+import com.bobmitchigan.medialert.viewModel.tryParse
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -19,11 +20,12 @@ data class CreateMedicineState(
     val areAllPacksIdentical: Boolean = true,
     val dimensions: List<BlisterPackDimension> = emptyList(),
     val timesPerDay: InputState<Int> = InputState(),
-    val timeSchedule: List<InputState<LocalTime>> = emptyList()
+    // String used because cannot use java serializable for LocalTime in KMP
+    val timeSchedule: List<InputState<String>> = emptyList()
 ) : CommonSerializable {
 
     fun toMedicine(clock: Clock) = runCatching {
-        val schedule = timeSchedule.mapNotNull { it.value }.sorted()
+        val schedule = timeSchedule.mapNotNull { LocalTime.tryParse(it.value) }.sorted()
         Medicine(
             name = name.value!!,
             blisterPacks = if (areAllPacksIdentical) mapFirstDimension() else mapDimensionsToFilledPacks(),
@@ -66,12 +68,6 @@ data class CreateMedicineState(
         timesPerDay = timesPerDay,
         timeSchedule = timeSchedule,
     )
-
-    companion object {
-        fun initCreateMedicineState(): CreateMedicineState {
-            return CreateMedicineState()
-        }
-    }
 }
 
 private fun LocalDateTime.withTime(time: LocalTime?): LocalDateTime {

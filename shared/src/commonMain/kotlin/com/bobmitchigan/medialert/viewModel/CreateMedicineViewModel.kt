@@ -59,7 +59,7 @@ open class CreateMedicineViewModel(
         updateState {
             it.copy(timesPerDay = times.toIntOrNull().toInputState(),
                 timeSchedule = List(times.toIntOrNull() ?: 0) {
-                    LocalTime(0, 0).toInputState()
+                    LocalTime(0, 0).toString().toInputState()
                 })
         }
     }
@@ -85,10 +85,15 @@ open class CreateMedicineViewModel(
         }
     }
 
-    override fun updateTimeSchedule(index: Int, value: LocalTime) {
+    override fun updateTimeSchedule(index: Int, hour: Int, minute: Int) {
         updateState {
             it.copy(
-                timeSchedule = it.timeSchedule.mapItemWithIndex(index) { value.toInputState() }
+                timeSchedule = it.timeSchedule.mapItemWithIndex(index) {
+                    LocalTime(
+                        hour,
+                        minute
+                    ).toString().toInputState()
+                }
             )
         }
     }
@@ -124,5 +129,9 @@ interface CreateMedicineActions {
 
     fun submit()
 
-    fun updateTimeSchedule(index: Int, value: LocalTime)
+    fun updateTimeSchedule(index: Int, hour: Int, minute: Int)
+}
+
+fun LocalTime.Companion.tryParse(value: String?): LocalTime? {
+    return runCatching { value?.let { LocalTime.parse(it) } }.getOrNull()
 }

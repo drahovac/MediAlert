@@ -4,11 +4,19 @@ package com.bobmitchigan.medialert.android.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.Checkbox
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePickerState
@@ -30,9 +38,11 @@ import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.android.ui.component.OutlinedIntInput
 import com.bobmitchigan.medialert.android.ui.component.OutlinedStringInput
 import com.bobmitchigan.medialert.domain.Destination
-import com.bobmitchigan.medialert.viewModel.*
+import com.bobmitchigan.medialert.viewModel.CreateMedicineActions
+import com.bobmitchigan.medialert.viewModel.CreateMedicineSaveStateViewModel
 import com.bobmitchigan.medialert.viewModel.state.CreateMedicineState
 import com.bobmitchigan.medialert.viewModel.state.toInputState
+import com.bobmitchigan.medialert.viewModel.tryParse
 import kotlinx.datetime.LocalTime
 import org.koin.androidx.compose.getViewModel
 
@@ -228,12 +238,13 @@ fun ScheduleInputs(state: CreateMedicineState, actions: CreateMedicineActions) {
             label = stringResource(id = MR.strings.create_medicine_daily_intake.resourceId)
         )
 
-        state.timeSchedule.forEachIndexed { index, time ->
+        state.timeSchedule.forEachIndexed { index, _time ->
             val ordinal = "${index + 1}" // TODO ordinal numbers
+            val time = LocalTime.tryParse(_time.value)
             val timePickerState =
                 rememberTimePickerState(
-                    time.value?.hour ?: 0,
-                    time.value?.minute ?: 0,
+                    time?.hour ?: 0,
+                    time?.minute ?: 0,
                     is24Hour = true
                 )
             ObserveTimeSelected(timePickerState, actions, index)
@@ -265,7 +276,8 @@ private fun ObserveTimeSelected(
     LaunchedEffect(key1 = timePickerState.hour, timePickerState.minute) {
         actions.updateTimeSchedule(
             index,
-            LocalTime(timePickerState.hour, timePickerState.minute)
+            timePickerState.hour,
+            timePickerState.minute,
         )
     }
 }

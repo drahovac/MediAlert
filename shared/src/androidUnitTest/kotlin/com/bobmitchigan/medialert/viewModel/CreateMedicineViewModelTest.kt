@@ -328,9 +328,9 @@ internal class CreateMedicineViewModelTest {
         createMedicineViewModel.updateColumnCount("4", 2)
         createMedicineViewModel.updateRowCount("1", 2)
         createMedicineViewModel.updateTimesPerDay("3")
-        createMedicineViewModel.updateTimeSchedule(0, TIME_1)
-        createMedicineViewModel.updateTimeSchedule(1, TIME_2)
-        createMedicineViewModel.updateTimeSchedule(2, TIME_3)
+        createMedicineViewModel.updateTimeSchedule(0, TIME_1.hour, TIME_1.minute)
+        createMedicineViewModel.updateTimeSchedule(1, TIME_2.hour, TIME_2.minute)
+        createMedicineViewModel.updateTimeSchedule(2, TIME_3.hour, TIME_3.minute)
 
         createMedicineViewModel.submit()
 
