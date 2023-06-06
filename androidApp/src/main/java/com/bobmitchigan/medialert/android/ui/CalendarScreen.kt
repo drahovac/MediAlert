@@ -57,6 +57,7 @@ import com.bobmitchigan.medialert.viewModel.state.CalendarState
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
@@ -150,10 +151,15 @@ private fun SelectedEventsDialog(events: List<MedicineEvent>, onDismiss: () -> U
                 .padding(8.dp)
         ) {
             events.forEach {
-                when (it.cavity) {
-                    is BlisterCavity.EATEN -> EatenCavityDialog(
+                when {
+                    it.cavity is BlisterCavity.EATEN -> EatenCavityDialogMessage(
                         it.medicine.name,
                         it.cavity as BlisterCavity.EATEN
+                    )
+
+                    it.eventType == EventType.MISSING -> MissingDialogMessage(
+                        it.medicine.name,
+                        it.dateTime
                     )
 
                     else -> {}
@@ -170,8 +176,13 @@ private fun SelectedEventsDialog(events: List<MedicineEvent>, onDismiss: () -> U
 }
 
 @Composable
-private fun EatenCavityDialog(medicineName: String, cavity: BlisterCavity.EATEN) {
+private fun EatenCavityDialogMessage(medicineName: String, cavity: BlisterCavity.EATEN) {
     Text(text = "$medicineName ${stringResource(MR.strings.medicine_calendar_eaten_at.resourceId)} ${cavity.taken}")
+}
+
+@Composable
+private fun MissingDialogMessage(medicineName: String, dateTime: LocalDateTime) {
+    Text(text = "$medicineName ${stringResource(MR.strings.medicine_calendar_missed_at.resourceId)} $dateTime")
 }
 
 @Composable
