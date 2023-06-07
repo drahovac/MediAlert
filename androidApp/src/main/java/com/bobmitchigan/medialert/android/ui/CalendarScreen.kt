@@ -54,6 +54,7 @@ import com.bobmitchigan.medialert.viewModel.CalendarActions
 import com.bobmitchigan.medialert.viewModel.CalendarViewModel
 import com.bobmitchigan.medialert.viewModel.state.CalendarCoordinates
 import com.bobmitchigan.medialert.viewModel.state.CalendarState
+import com.bobmitchigan.medialert.viewModel.toFormattedDateTime
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -177,12 +178,20 @@ private fun SelectedEventsDialog(events: List<MedicineEvent>, onDismiss: () -> U
 
 @Composable
 private fun EatenCavityDialogMessage(medicineName: String, cavity: BlisterCavity.EATEN) {
-    Text(text = "$medicineName ${stringResource(MR.strings.medicine_calendar_eaten_at.resourceId)} ${cavity.taken}")
+    Text(
+        text = "$medicineName ${
+            stringResource(MR.strings.medicine_calendar_eaten_at.resourceId)
+        } ${cavity.taken.toFormattedDateTime()}"
+    )
 }
 
 @Composable
 private fun MissingDialogMessage(medicineName: String, dateTime: LocalDateTime) {
-    Text(text = "$medicineName ${stringResource(MR.strings.medicine_calendar_missed_at.resourceId)} $dateTime")
+    Text(
+        text = "$medicineName ${
+            stringResource(MR.strings.medicine_calendar_missed_at.resourceId)
+        } ${dateTime.toFormattedDateTime()}"
+    )
 }
 
 @Composable
