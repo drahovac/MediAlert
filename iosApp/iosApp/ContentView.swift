@@ -4,7 +4,6 @@ import shared
 
 struct ContentView: View {
     @StateViewModel var viewModel: CreateMedicineViewModel = CreateMedicineViewModel(medicineRepository: CreateMedicineViewModelHelper().medicineRepository)
-    let greet = Greeting().greet()
     let titleResource = MR.strings().create_medicine_title
     
     

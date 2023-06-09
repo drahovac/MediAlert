@@ -18,6 +18,8 @@ open class CreateMedicineViewModel(
     private val clock: Clock = Clock.System,
 ) : NavigationViewModel(), CreateMedicineActions {
 
+    constructor(medicineRepository: MedicineRepository) : this(medicineRepository, Clock.System)
+
     private val _state = MutableStateFlow(CreateMedicineState())
 
     @NativeCoroutines
