@@ -18,12 +18,12 @@ open class CreateMedicineViewModel(
     private val clock: Clock = Clock.System,
 ) : NavigationViewModel(), CreateMedicineActions {
 
-    constructor(medicineRepository: MedicineRepository) : this(medicineRepository, Clock.System)
-
     private val _state = MutableStateFlow(CreateMedicineState())
-
     @NativeCoroutines
     open val state = _state.asStateFlow()
+
+    // For swift overload
+    constructor(medicineRepository: MedicineRepository) : this(medicineRepository, Clock.System)
 
     override fun updateName(name: String) = updateState { it.copy(name = name.toInputState()) }
 

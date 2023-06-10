@@ -39,6 +39,13 @@ data class Medicine(
         }
     }
 
+    /**
+     * Return all filled pills.
+     */
+    fun filledPills(): List<BlisterCavity.FILLED> {
+        return blisterCavities.filterIsInstance<BlisterCavity.FILLED>()
+    }
+
     private fun sumCavity(increase: (BlisterCavity) -> Int): Int {
         return blisterPacks.sumOf { blisterPack ->
             blisterPack.rows.sumOf { row ->

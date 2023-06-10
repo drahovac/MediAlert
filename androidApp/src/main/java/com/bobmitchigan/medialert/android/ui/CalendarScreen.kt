@@ -245,7 +245,8 @@ private fun getCellBackground(events: List<MedicineEvent>): Color {
         events.isEmpty() -> Color.Unspecified
         events.all { it.cavity is BlisterCavity.EATEN } -> MaterialTheme.colors.secondary
         events.all { it.eventType == EventType.MISSING } -> MaterialTheme.colors.error
-        else -> Color.Unspecified
+        events.all { it.eventType == EventType.PLANNED } -> MaterialTheme.colors.primary
+        else -> MaterialTheme.colors.primaryVariant
     }
 }
 

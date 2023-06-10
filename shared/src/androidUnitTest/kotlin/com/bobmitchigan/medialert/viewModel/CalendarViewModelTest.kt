@@ -146,8 +146,8 @@ internal class CalendarViewModelTest {
         viewModel.fetchWeekCells(firstWeekDay)
 
         viewModel.state.value.events[firstWeekDay]!!.let { events ->
-            // 2 eaten + 5 missing (1 for 31.5., 3 for 1.6., 2 for 2.6.)
-            assertEquals(2 + 6, events.size)
+            // 2 eaten + 5 missing (1 for 31.5., 3 for 1.6., 2 for 2.6.) + 8 planned
+            assertEquals(2 + 6 + 8, events.size)
             assertTrue { events[0].cavity is BlisterCavity.EATEN }
             assertTrue { events[1].cavity is BlisterCavity.EATEN }
             assertTrue { events[2].cavity is BlisterCavity.EATEN }
@@ -161,6 +161,7 @@ internal class CalendarViewModelTest {
             assertTrue { events[6].eventType == EventType.MISSING }
             assertEquals(LocalDateTime.parse("2023-06-02T04:30"), events[7].dateTime)
             assertTrue { events[7].eventType == EventType.MISSING }
+            assertTrue { events.subList(8, events.size).all { it.eventType == EventType.PLANNED } }
         }
     }
 
@@ -193,5 +194,77 @@ internal class CalendarViewModelTest {
         viewModel.dismissSelected()
 
         assertTrue { viewModel.state.value.selectedEvents.isEmpty() }
+    }
+
+    @Suppress("MagicNumber")
+    @Test
+    fun `do not generate planned future events if week in past`() {
+        val today = LocalDateTime.parse("2023-06-02T12:30")
+        val firstPillDate = LocalDateTime.parse("2023-05-31T03:06")
+        val firstWeekDay = LocalDate.parse("2023-05-25")
+        val blisterPacks = BlisterPackAdapter.deserializeBlisterPacks(
+            "F.E2023-05-31T03:06.E2023-05-31T05:35.F.F.E2023-06-01T03:06.F.F.F.F.F"
+        )
+        val medicine = Medicine(
+            "Medicine 1", blisterPacks, listOf(
+                LocalTime(1, 0),
+                LocalTime(4, 30),
+                LocalTime(18, 0)
+            ), firstPillDate
+        )
+        every { medicineRepository.allItems } returns flowOf(
+            listOf(medicine)
+        )
+        viewModel = CalendarViewModel(medicineRepository, clock = object : Clock {
+            override fun now(): Instant {
+                return today.toInstant(TimeZone.currentSystemDefault())
+            }
+        })
+
+        viewModel.fetchWeekCells(firstWeekDay)
+
+        viewModel.state.value.events[firstWeekDay]!!.let { events ->
+            assertTrue(events.none { it.eventType == EventType.PLANNED })
+        }
+    }
+
+    @Suppress("MagicNumber")
+    @Test
+    fun `generate planned future events`() {
+        val today = LocalDateTime.parse("2023-06-02T12:30")
+        val firstPillDate = LocalDateTime.parse("2023-05-31T03:06")
+        val firstWeekDay = LocalDate.parse("2023-06-03")
+        val blisterPacks = BlisterPackAdapter.deserializeBlisterPacks(
+            "E2023-06-03T03:06.E2023-06-03T05:35.F.F.E2023-06-04T03:06.F.F.F.F.F"
+        )
+        val medicine = Medicine(
+            "Medicine 1", blisterPacks, listOf(
+                LocalTime(1, 0),
+                LocalTime(4, 30),
+                LocalTime(18, 0)
+            ), firstPillDate
+        )
+        every { medicineRepository.allItems } returns flowOf(
+            listOf(medicine)
+        )
+        viewModel = CalendarViewModel(medicineRepository, clock = object : Clock {
+            override fun now(): Instant {
+                return today.toInstant(TimeZone.currentSystemDefault())
+            }
+        })
+
+        viewModel.fetchWeekCells(firstWeekDay)
+
+        viewModel.state.value.events[firstWeekDay]!!.filter { it.eventType == EventType.PLANNED }
+            .let { events ->
+                assertEquals(7, events.size)
+                assertEquals("2023-06-03T18:00", events[0].dateTime.toString())
+                assertEquals("2023-06-04T01:00", events[1].dateTime.toString())
+                assertEquals("2023-06-04T18:00", events[2].dateTime.toString())
+                assertEquals("2023-06-05T01:00", events[3].dateTime.toString())
+                assertEquals("2023-06-05T04:30", events[4].dateTime.toString())
+                assertEquals("2023-06-05T18:00", events[5].dateTime.toString())
+                assertEquals("2023-06-06T01:00", events[6].dateTime.toString())
+            }
     }
 }

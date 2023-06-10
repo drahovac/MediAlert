@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -82,6 +83,45 @@ class CalendarViewModel(
         return mutableListOf<MedicineEvent>().apply {
             addAll(generateEatenEvents(startingWeekDay))
             addAll(generateMissingEvents(startingWeekDay))
+            addAll(generatePlannedFutureEvents(startingWeekDay))
+        }
+    }
+
+    private fun generatePlannedFutureEvents(startingWeekDay: LocalDate): List<MedicineEvent> {
+        return medicines.flatMap { medicine ->
+            val dateNow = dateTimeNow(clock).date
+            val start = listOf(dateNow, startingWeekDay).max()
+            val result = mutableListOf<MedicineEvent>()
+            val endOfWeek = startingWeekDay.plus(1, DateTimeUnit.WEEK)
+
+            // check if there are filled pills for planned events
+            var remainingPills = medicine.filledPills().size
+            for (i in 0..start.daysUntil(endOfWeek)) {
+                if (remainingPills <= 0) continue
+                getFreeSlotsForDay(medicine, start.plusDays(i)).take(remainingPills)
+                    .let { slots ->
+                        remainingPills -= slots.size
+                        result.addAll(slots.map {
+                            MedicineEvent(it, medicine, null, EventType.PLANNED)
+                        })
+                    }
+            }
+
+            result
+        }
+    }
+
+    private fun getFreeSlotsForDay(medicine: Medicine, day: LocalDate): List<LocalDateTime> {
+        return medicine.eatenPills(day).let { eaten ->
+            val schedule = medicine.schedule
+            when {
+                eaten.isEmpty() -> schedule.map {
+                    day.atTime(it)
+                }
+
+                eaten.size == schedule.size -> emptyList()
+                else -> findMissingEvents(schedule, eaten, null).map { day.atTime(it) }
+            }
         }
     }
 
