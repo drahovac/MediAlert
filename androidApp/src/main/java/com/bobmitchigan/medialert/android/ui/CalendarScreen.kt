@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -163,6 +164,11 @@ private fun SelectedEventsDialog(events: List<MedicineEvent>, onDismiss: () -> U
                         it.dateTime
                     )
 
+                    it.eventType == EventType.PLANNED -> PlannedDialogMessage(
+                        it.medicine.name,
+                        it.dateTime
+                    )
+
                     else -> {}
                 }
             }
@@ -174,6 +180,15 @@ private fun SelectedEventsDialog(events: List<MedicineEvent>, onDismiss: () -> U
             )
         }
     }
+}
+
+@Composable
+private fun PlannedDialogMessage(name: String, dateTime: LocalDateTime) {
+    Text(
+        text = "$name ${
+            stringResource(MR.strings.medicine_calendar_planned_at.resourceId)
+        } ${dateTime.toFormattedDateTime()}"
+    )
 }
 
 @Composable
@@ -227,7 +242,17 @@ private fun CalendarCells(
                                 actions.selectCell(events)
                             }
                         } else Modifier)
-                    )
+                    ) {
+                        Text(
+                            modifier = Modifier.align(Alignment.Center),
+                            text = getCellCaption(events),
+                            style = MaterialTheme.typography.body1,
+                            textAlign = TextAlign.Center,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = MaterialTheme.colors.onBackground
+                        )
+                    }
                 }
             }
         }
@@ -236,6 +261,26 @@ private fun CalendarCells(
                 .fillMaxWidth()
                 .height(24.dp)
         )
+    }
+}
+
+@Composable
+fun getCellCaption(events: List<MedicineEvent>): String {
+    return when {
+        events.isEmpty() -> ""
+        events.all { it.cavity is BlisterCavity.EATEN } -> stringResource(
+            id = MR.strings.medicine_calendar_eaten_caption.resourceId
+        )
+
+        events.all { it.eventType == EventType.MISSING } -> stringResource(
+            id = MR.strings.medicine_calendar_missed_caption.resourceId
+        )
+
+        events.all { it.eventType == EventType.PLANNED } -> stringResource(
+            id = MR.strings.medicine_calendar_planned_caption.resourceId
+        )
+
+        else -> stringResource(id = MR.strings.medicine_calendar_mixed_caption.resourceId)
     }
 }
 

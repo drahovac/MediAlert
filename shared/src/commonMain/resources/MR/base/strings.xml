@@ -43,5 +43,10 @@
     <string name="medicine_list">Medicines</string>
     <string name="medicine_calendar">Calendar</string>
     <string name="medicine_calendar_eaten_at">eaten at:</string>
+    <string name="medicine_calendar_planned_at">planned at:</string>
     <string name="medicine_calendar_missed_at">missed at:</string>
+    <string name="medicine_calendar_missed_caption">Missed</string>
+    <string name="medicine_calendar_eaten_caption">Eaten</string>
+    <string name="medicine_calendar_planned_caption">Planned</string>
+    <string name="medicine_calendar_mixed_caption">Mixed</string>
 </resources>

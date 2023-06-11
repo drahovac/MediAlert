@@ -267,4 +267,42 @@ internal class CalendarViewModelTest {
                 assertEquals("2023-06-06T01:00", events[6].dateTime.toString())
             }
     }
+
+    @Suppress("MagicNumber")
+    @Test
+    fun `generate planned future events from today`() {
+        val today = LocalDateTime.parse("2023-06-02T04:29")
+        val firstPillDate = LocalDateTime.parse("2023-05-31T03:06")
+        val firstWeekDay = LocalDate.parse("2023-05-31")
+        val blisterPacks = BlisterPackAdapter.deserializeBlisterPacks(
+            "F.F.F.F.F"
+        )
+        val medicine = Medicine(
+            "Medicine 1", blisterPacks, listOf(
+                LocalTime(1, 0),
+                LocalTime(4, 30),
+                LocalTime(18, 0)
+            ), firstPillDate
+        )
+        every { medicineRepository.allItems } returns flowOf(
+            listOf(medicine)
+        )
+        viewModel = CalendarViewModel(medicineRepository, clock = object : Clock {
+            override fun now(): Instant {
+                return today.toInstant(TimeZone.currentSystemDefault())
+            }
+        })
+
+        viewModel.fetchWeekCells(firstWeekDay)
+
+        viewModel.state.value.events[firstWeekDay]!!.filter { it.eventType == EventType.PLANNED }
+            .let { events ->
+                assertEquals(5, events.size)
+                assertEquals("2023-06-02T04:30", events[0].dateTime.toString())
+                assertEquals("2023-06-02T18:00", events[1].dateTime.toString())
+                assertEquals("2023-06-03T01:00", events[2].dateTime.toString())
+                assertEquals("2023-06-03T04:30", events[3].dateTime.toString())
+                assertEquals("2023-06-03T18:00", events[4].dateTime.toString())
+            }
+    }
 }

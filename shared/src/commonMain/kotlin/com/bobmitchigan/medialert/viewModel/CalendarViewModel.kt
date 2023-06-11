@@ -98,29 +98,45 @@ class CalendarViewModel(
             var remainingPills = medicine.filledPills().size
             for (i in 0..start.daysUntil(endOfWeek)) {
                 if (remainingPills <= 0) continue
-                getFreeSlotsForDay(medicine, start.plusDays(i)).take(remainingPills)
-                    .let { slots ->
-                        remainingPills -= slots.size
-                        result.addAll(slots.map {
-                            MedicineEvent(it, medicine, null, EventType.PLANNED)
-                        })
-                    }
+                getFreeSlotsForDay(
+                    medicine,
+                    day = start.plusDays(i),
+                    dateNow = dateTimeNow(clock)
+                ).take(
+                    remainingPills
+                ).let { slots ->
+                    remainingPills -= slots.size
+                    result.addAll(slots.map {
+                        MedicineEvent(it, medicine, null, EventType.PLANNED)
+                    })
+                }
             }
 
             result
         }
     }
 
-    private fun getFreeSlotsForDay(medicine: Medicine, day: LocalDate): List<LocalDateTime> {
+    private fun getFreeSlotsForDay(
+        medicine: Medicine,
+        dateNow: LocalDateTime,
+        day: LocalDate
+    ): List<LocalDateTime> {
         return medicine.eatenPills(day).let { eaten ->
             val schedule = medicine.schedule
             when {
-                eaten.isEmpty() -> schedule.map {
-                    day.atTime(it)
-                }
+                eaten.isEmpty() -> schedule.filter { day != dateNow.date || it > dateNow.time }
+                    .map {
+                        day.atTime(it)
+                    }
 
                 eaten.size == schedule.size -> emptyList()
-                else -> findMissingEvents(schedule, eaten, null).map { day.atTime(it) }
+                else -> findMissingEvents(
+                    schedule,
+                    eaten,
+                    timeUntil = null,
+                    timeFrom = dateTimeNow(clock).time.takeIf { dateNow.date == day }).map {
+                    day.atTime(it)
+                }
             }
         }
     }
@@ -153,8 +169,10 @@ class CalendarViewModel(
                         findMissingEvents(
                             medicine.schedule,
                             eaten,
-                            dateTimeNow(clock).time.takeIf { dateNow == start.date.plusDays(i) }
-                        ).mapToMissingEvents(start.date.plusDays(i), medicine))
+                            dateTimeNow(clock).time.takeIf { dateNow == start.date.plusDays(i) },
+                            null
+                        ).mapToMissingEvents(start.date.plusDays(i), medicine)
+                    )
                 }
             }
             result
@@ -164,19 +182,22 @@ class CalendarViewModel(
     /**
      * Find missing events for current day.
      * If search should be only to concrete time time until is not null.
+     * If search should be only from concrete time time from is not null.
      */
     private fun findMissingEvents(
         schedule: List<LocalTime>,
         eaten: List<BlisterCavity.EATEN>,
-        timeUntil: LocalTime?
+        timeUntil: LocalTime?,
+        timeFrom: LocalTime?,
     ): List<LocalTime> {
-        schedule.filter { timeUntil == null || it < timeUntil }.toMutableList().let { mutated ->
-            eaten.forEach { eaten ->
-                mutated.sortBy { abs(it.toSecondOfDay() - eaten.taken.time.toSecondOfDay()) }
-                mutated.removeFirst()
+        schedule.filter { (timeUntil == null || it < timeUntil) && (timeFrom == null || it > timeFrom) }
+            .toMutableList().let { mutated ->
+                eaten.forEach { eaten ->
+                    mutated.sortBy { abs(it.toSecondOfDay() - eaten.taken.time.toSecondOfDay()) }
+                    mutated.removeFirst()
+                }
+                return mutated
             }
-            return mutated
-        }
     }
 
     private fun List<LocalTime>.mapToMissingEvents(date: LocalDate, medicine: Medicine) =
