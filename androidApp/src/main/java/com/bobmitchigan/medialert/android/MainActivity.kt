@@ -195,7 +195,7 @@ class MainActivity : ComponentActivity() {
                     MedicineListScreen(navController)
                 }
                 composable(Destination.Calendar.destination()) {
-                    CalendarScreen()
+                    CalendarScreen(navController)
                 }
             }
         }

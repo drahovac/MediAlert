@@ -194,7 +194,7 @@ class CalendarViewModel(
             .toMutableList().let { mutated ->
                 eaten.forEach { eaten ->
                     mutated.sortBy { abs(it.toSecondOfDay() - eaten.taken.time.toSecondOfDay()) }
-                    mutated.removeFirst()
+                    mutated.removeFirstOrNull()
                 }
                 return mutated
             }

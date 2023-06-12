@@ -1,5 +1,6 @@
 package com.bobmitchigan.medialert.domain
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 
 /**
@@ -13,7 +14,13 @@ data class MedicineEvent(
     val medicine: Medicine,
     val cavity: BlisterCavity?,
     val eventType: EventType = EventType.EATEN,
-)
+) {
+    fun hasTakeAction(clock: Clock = Clock.System): Boolean {
+        return eventType == EventType.PLANNED || (eventType == EventType.MISSING && dateTime.date == dateTimeNow(
+            clock
+        ).date)
+    }
+}
 
 enum class EventType {
     EATEN, PLANNED, MISSING

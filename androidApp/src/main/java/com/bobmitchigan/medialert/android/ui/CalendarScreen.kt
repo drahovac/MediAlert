@@ -44,12 +44,17 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.android.design.theme.Typography
 import com.bobmitchigan.medialert.android.ui.ActionsInvocationHandler.Companion.createActionsProxy
+import com.bobmitchigan.medialert.android.ui.component.PrimaryButton
 import com.bobmitchigan.medialert.android.ui.component.SecondaryButton
+import com.bobmitchigan.medialert.android.ui.component.navigate
 import com.bobmitchigan.medialert.domain.BlisterCavity
+import com.bobmitchigan.medialert.domain.Destination
 import com.bobmitchigan.medialert.domain.EventType
+import com.bobmitchigan.medialert.domain.Medicine
 import com.bobmitchigan.medialert.domain.MedicineEvent
 import com.bobmitchigan.medialert.viewModel.CalendarActions
 import com.bobmitchigan.medialert.viewModel.CalendarViewModel
@@ -73,13 +78,16 @@ import java.util.Locale
 
 @Composable
 fun CalendarScreen(
+    navController: NavController,
     viewModel: CalendarViewModel = getViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     CalendarContent(state, viewModel)
     state.selectedEvents.takeUnless { it.isEmpty() }?.let {
-        SelectedEventsDialog(it, viewModel::dismissSelected)
+        SelectedEventsDialog(it, viewModel::dismissSelected) {
+            navController.navigate(Destination.SingleMedicine(it.id))
+        }
     }
 }
 
@@ -143,8 +151,19 @@ private fun CellsContent(
     }
 }
 
+/**
+ * Dialog shown when clicking/selecting events cell.
+ *
+ * @param events Events in selected cell
+ * @param onDismiss Cancel dialog
+ * @param onTakePill Navigation to medicine detail
+ */
 @Composable
-private fun SelectedEventsDialog(events: List<MedicineEvent>, onDismiss: () -> Unit) {
+private fun SelectedEventsDialog(
+    events: List<MedicineEvent>,
+    onDismiss: () -> Unit,
+    onTakePill: (Medicine) -> Unit
+) {
     Dialog(onDismissRequest = onDismiss) {
         Column(
             Modifier
@@ -152,34 +171,62 @@ private fun SelectedEventsDialog(events: List<MedicineEvent>, onDismiss: () -> U
                 .background(MaterialTheme.colors.background)
                 .padding(8.dp)
         ) {
-            events.forEach {
+            events.forEachIndexed { index, event ->
                 when {
-                    it.cavity is BlisterCavity.EATEN -> EatenCavityDialogMessage(
-                        it.medicine.name,
-                        it.cavity as BlisterCavity.EATEN
+                    event.cavity is BlisterCavity.EATEN -> EatenCavityDialogMessage(
+                        event.medicine.name,
+                        event.cavity as BlisterCavity.EATEN
                     )
 
-                    it.eventType == EventType.MISSING -> MissingDialogMessage(
-                        it.medicine.name,
-                        it.dateTime
+                    event.eventType == EventType.MISSING -> MissingDialogMessage(
+                        event.medicine.name,
+                        event.dateTime
                     )
 
-                    it.eventType == EventType.PLANNED -> PlannedDialogMessage(
-                        it.medicine.name,
-                        it.dateTime
+                    event.eventType == EventType.PLANNED -> PlannedDialogMessage(
+                        event.medicine.name,
+                        event.dateTime
                     )
 
                     else -> {}
                 }
+                // Last button is aligned with cancel button at bottom of dialog
+                if (event.hasTakeAction() && index != events.lastIndex) {
+                    TakePillButton(
+                        modifier = Modifier.align(Alignment.End),
+                        onTakePill = onTakePill,
+                        event = event
+                    )
+                }
             }
 
-            SecondaryButton(
-                modifier = Modifier.align(Alignment.End),
-                onClick = onDismiss,
-                text = stringResource(id = MR.strings.medicine_list_cancel.resourceId)
-            )
+            Row(Modifier.align(Alignment.End)) {
+                // Show primary button at bottom if last event
+                // has take action, else it is shown after every event cell
+                events.lastOrNull { it.hasTakeAction() }?.let {
+                    TakePillButton(onTakePill = onTakePill, event = it)
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
+                SecondaryButton(
+                    onClick = onDismiss,
+                    text = stringResource(id = MR.strings.medicine_list_cancel.resourceId)
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun TakePillButton(
+    onTakePill: (Medicine) -> Unit,
+    event: MedicineEvent,
+    modifier: Modifier = Modifier,
+) {
+    PrimaryButton(
+        modifier = modifier,
+        onClick = { onTakePill(event.medicine) },
+        text = stringResource(id = MR.strings.medicine_calendar_take_pill.resourceId)
+    )
 }
 
 @Composable

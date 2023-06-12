@@ -49,4 +49,5 @@
     <string name="medicine_calendar_eaten_caption">Eaten</string>
     <string name="medicine_calendar_planned_caption">Planned</string>
     <string name="medicine_calendar_mixed_caption">Mixed</string>
+    <string name="medicine_calendar_take_pill">Mark as eaten</string>
 </resources>
