@@ -34,6 +34,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.bobmitchigan.medialert.MR
+import com.bobmitchigan.medialert.android.ui.BlisterPacksScreen
 import com.bobmitchigan.medialert.android.ui.CalendarScreen
 import com.bobmitchigan.medialert.android.ui.CreateMedicineScreen
 import com.bobmitchigan.medialert.android.ui.MedicineDetailScreen
@@ -187,6 +188,19 @@ class MainActivity : ComponentActivity() {
                     })
                 ) {
                     MedicineDetailScreen(
+                        it.arguments?.getString("medicineId")?.toIntOrNull(),
+                        navController
+                    )
+                }
+                composable(
+                    Destination.BlisterPacks.detailDestination(),
+                    arguments = listOf(navArgument("medicineId") {
+                        nullable = true
+                        type = NavType.StringType
+                        defaultValue = (dest as? Destination.BlisterPacks)?.medicineId
+                    })
+                ) {
+                    BlisterPacksScreen(
                         it.arguments?.getString("medicineId")?.toIntOrNull(),
                         navController
                     )

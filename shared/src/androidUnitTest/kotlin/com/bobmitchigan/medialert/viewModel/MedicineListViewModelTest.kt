@@ -8,11 +8,8 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Test
@@ -32,11 +29,8 @@ internal class MedicineListViewModelTest {
     }
 
     @Test
-    fun `set medicines as state`() = runTest(UnconfinedTestDispatcher()) {
-        val job = launch { medicineListViewModel.state.collect() }
-
+    fun `set medicines as state`() = whileStateObserved(medicineListViewModel.state) {
         assertEquals(listOf(MEDICINE_1, MEDICINE_2), medicineListViewModel.state.value)
-        job.cancel()
     }
 
     @Test

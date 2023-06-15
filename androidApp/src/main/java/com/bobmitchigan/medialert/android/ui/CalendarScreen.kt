@@ -86,7 +86,8 @@ fun CalendarScreen(
     CalendarContent(state, viewModel)
     state.selectedEvents.takeUnless { it.isEmpty() }?.let {
         SelectedEventsDialog(it, viewModel::dismissSelected) {
-            navController.navigate(Destination.SingleMedicine(it.id))
+            viewModel.dismissSelected()
+            navController.navigate(Destination.BlisterPacks(it.id))
         }
     }
 }

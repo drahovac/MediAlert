@@ -18,6 +18,17 @@ sealed interface Destination {
         }
     }
 
+    data class BlisterPacks(val medicineId: Int?) : Destination {
+
+        override fun destination(): String =
+            detailDestination(medicineId?.toString() ?: MEDICINE_ID)
+
+        companion object {
+            fun detailDestination(id: String = MEDICINE_ID) =
+                "${BlisterPacks::class.qualifiedName}/$id"
+        }
+    }
+
     object MedicineList : Destination
 
     object Calendar : Destination
