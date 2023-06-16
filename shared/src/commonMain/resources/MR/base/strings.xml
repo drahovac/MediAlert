@@ -50,4 +50,9 @@
     <string name="medicine_calendar_planned_caption">Planned</string>
     <string name="medicine_calendar_mixed_caption">Mixed</string>
     <string name="medicine_calendar_take_pill">Mark as eaten</string>
+
+    <string name="medicine_detail">Medicine detail</string>
+    <string name="medicine_detail_name">Name:</string>
+    <string name="medicine_detail_pills_take_at">Take at:</string>
+    <string name="medicine_detail_take_pill">Eat pill</string>
 </resources>
