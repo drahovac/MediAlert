@@ -2,7 +2,9 @@ package com.bobmitchigan.medialert.di
 
 import com.bobmitchigan.medialert.data.Database
 import com.bobmitchigan.medialert.data.MedicineRepositoryImpl
+import com.bobmitchigan.medialert.data.NotificationSchedulerImpl
 import com.bobmitchigan.medialert.domain.MedicineRepository
+import com.bobmitchigan.medialert.domain.NotificationScheduler
 import com.bobmitchigan.medialert.viewModel.BaseViewModel
 import com.bobmitchigan.medialert.viewModel.BlisterPacksViewModel
 import com.bobmitchigan.medialert.viewModel.CalendarViewModel
@@ -25,6 +27,10 @@ internal val sharedModule = module {
         MedicineRepositoryImpl(get())
     }
 
+    factory<NotificationScheduler> {
+        NotificationSchedulerImpl()
+    }
+
     single { Database(get()) }
 
     baseViewModel { SplashViewModel(get()) }
@@ -37,7 +43,7 @@ internal val sharedModule = module {
 
     baseViewModel { params -> BlisterPacksViewModel(get(), params.getOrNull()) }
 
-    baseViewModel { params -> MedicineDetailViewModel(get(), params.getOrNull()) }
+    baseViewModel { params -> MedicineDetailViewModel(get(), get(), params.getOrNull()) }
 }
 
 internal expect inline fun <reified T : BaseViewModel> Module.baseViewModel(

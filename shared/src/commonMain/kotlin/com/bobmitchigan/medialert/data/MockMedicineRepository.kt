@@ -43,7 +43,7 @@ class MockMedicineRepository(
         // Used in preview and in tests
         val PREVIEW_BLISTER_PACKS = BlisterPackAdapter.deserializeBlisterPacks(
             "F.F.N.L,E2022-04-03T03:06.E2023-12-25T03:06.F.F;F.F,F.F.F.F,F.F.F.F;" +
-                    "F.F.N.L,E2022-04-03T03:06.E2023-12-25T03:06.F.F"
+                    "F.F.N.L,E2022-04-03T04:06.E2023-12-25T03:06.F.F"
         )
     }
 }

@@ -1,10 +1,12 @@
 package com.bobmitchigan.medialert.android.ui
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
@@ -21,6 +23,7 @@ import androidx.navigation.NavHostController
 import com.bobmitchigan.medialert.MR
 import com.bobmitchigan.medialert.android.ui.component.LabelValue
 import com.bobmitchigan.medialert.android.ui.component.PrimaryButton
+import com.bobmitchigan.medialert.android.ui.component.SecondaryButton
 import com.bobmitchigan.medialert.android.ui.component.navigateSingleTop
 import com.bobmitchigan.medialert.data.MockMedicineRepository
 import com.bobmitchigan.medialert.domain.Destination
@@ -39,14 +42,22 @@ internal fun MedicineDetailScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     state?.let {
-        DetailContent(it) {
-            navigationController.navigateSingleTop(Destination.BlisterPacks(medicineId))
-        }
+        DetailContent(
+            it,
+            onTakePill = {
+                navigationController.navigateSingleTop(Destination.BlisterPacks(medicineId))
+            },
+            onScheduleNotification = viewModel::scheduleNotification
+        )
     }
 }
 
 @Composable
-fun DetailContent(state: Medicine, onTakePill: () -> Unit) {
+fun DetailContent(
+    state: Medicine,
+    onTakePill: () -> Unit,
+    onScheduleNotification: () -> Unit,
+) {
     Card(
         Modifier
             .fillMaxWidth()
@@ -79,10 +90,17 @@ fun DetailContent(state: Medicine, onTakePill: () -> Unit) {
                 state.eatenCount().toString()
             )
             VerticalSpacer()
-            PrimaryButton(
-                text = stringResource(id = MR.strings.medicine_detail_take_pill.resourceId),
-                onClick = onTakePill
-            )
+            Row {
+                PrimaryButton(
+                    text = stringResource(id = MR.strings.medicine_detail_take_pill.resourceId),
+                    onClick = onTakePill
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                SecondaryButton(
+                    text = stringResource(id = MR.strings.medicine_detail_schedule_notifications.resourceId),
+                    onClick = onScheduleNotification,
+                )
+            }
         }
     }
 }
@@ -101,6 +119,5 @@ internal fun MedicineDetailPreview() {
             blisterPacks = MockMedicineRepository.PREVIEW_BLISTER_PACKS,
             schedule = listOf(),
             firstPillDateTime = dateTimeNow()
-        )
-    ) {}
+        ), {}) {}
 }
