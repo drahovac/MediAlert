@@ -3,16 +3,17 @@ CREATE TABLE Medicine (
     name TEXT NOT NULL,
     blisterPacks TEXT NOT NULL,
     schedule TEXT NOT NULL,
-    firstPillDateTime TEXT NOT NULL
+    firstPillDateTime TEXT NOT NULL,
+    lastScheduledNotificationTime TEXT
 );
 
 insertMedicine:
-INSERT INTO Medicine(name, blisterPacks, schedule, firstPillDateTime)
-VALUES(?, ?, ?, ?);
+INSERT INTO Medicine(name, blisterPacks, schedule, firstPillDateTime,lastScheduledNotificationTime)
+VALUES(?, ?, ?, ?,?);
 
 updateMedicine:
 UPDATE Medicine
-SET name = ?, blisterPacks = ?
+SET name = ?, blisterPacks = ?, lastScheduledNotificationTime = ?
 WHERE id = ?;
 
 removeAllMedicines:

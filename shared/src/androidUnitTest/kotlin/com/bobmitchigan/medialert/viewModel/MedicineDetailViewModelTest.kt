@@ -8,6 +8,7 @@ import com.bobmitchigan.medialert.domain.dateTimeNow
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,10 +52,16 @@ class MedicineDetailViewModelTest {
 
     @Test
     fun `schedule notifications`() {
+        val slot = slot<Medicine>()
         whileStateObserved(medicineDetailViewModel.state) {
             medicineDetailViewModel.scheduleNotification()
 
             verify { scheduler.scheduleNotifications(schedule, 6) }
+            coVerify { medicineRepository.updateMedicine(capture(slot)) }
+            assertEquals(
+                "2022-04-09T01:01",
+                slot.captured.lastScheduledNotificationTime.toString()
+            )
         }
     }
 

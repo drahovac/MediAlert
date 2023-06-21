@@ -11,14 +11,17 @@ import kotlinx.datetime.LocalTime
  * @property blisterPacks list of blister packs with pill,
  * contains info about eaten and remaining pills
  * @property schedule list of date times when to take pills in future
+ * @property firstPillDateTime date time when first pill was taken
  * @property id unique generated id
+ * @property lastScheduledNotificationTime time of last scheduled notification
  */
 data class Medicine(
     val name: String,
     val blisterPacks: List<BlisterPack>,
     val schedule: List<LocalTime>,
     val firstPillDateTime: LocalDateTime,
-    val id: Int? = null
+    val id: Int? = null,
+    val lastScheduledNotificationTime: LocalDateTime? = null,
 ) {
     /**
      * Returns linear list of blister cavities.

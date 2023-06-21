@@ -47,7 +47,7 @@ internal class BlisterPacksViewModelTest {
         assertEquals(MEDICINE, blisterPacksViewModel.state.value!!.medicine)
         assertEquals("E", blisterPacksViewModel.state.value!!.selectedCavity!!.shortName)
         assertEquals(
-            "EATEN(taken=2022-04-03T03:06)",
+            "EATEN(taken=2022-04-03T04:06)",
             blisterPacksViewModel.state.value!!.selectedCavity!!.toString()
         )
     }

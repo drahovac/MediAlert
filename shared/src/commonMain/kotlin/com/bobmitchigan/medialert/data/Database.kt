@@ -24,16 +24,33 @@ internal class Database(databaseDriverFactory: DatabaseDriver) {
         name: String,
         blisterPacks: String,
         schedule: String,
-        firstPillDateTime: String
+        firstPillDateTime: String,
+        lastScheduledNotificationTime: String?
     ) {
         dbQuery.transaction {
-            dbQuery.insertMedicine(name, blisterPacks, schedule, firstPillDateTime)
+            dbQuery.insertMedicine(
+                name,
+                blisterPacks,
+                schedule,
+                firstPillDateTime,
+                lastScheduledNotificationTime
+            )
         }
     }
 
-    internal fun updateMedicine(id: Int, name: String, blisterPacks: String) {
+    internal fun updateMedicine(
+        id: Int,
+        name: String,
+        blisterPacks: String,
+        lastScheduledNotificationTime: String?
+    ) {
         dbQuery.transaction {
-            dbQuery.updateMedicine(name = name, blisterPacks = blisterPacks, id = id.toLong())
+            dbQuery.updateMedicine(
+                name = name,
+                blisterPacks = blisterPacks,
+                id = id.toLong(),
+                lastScheduledNotificationTime = lastScheduledNotificationTime
+            )
         }
     }
 

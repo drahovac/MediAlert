@@ -15,15 +15,7 @@ import kotlinx.datetime.LocalDateTime
 internal class MedicineRepositoryImpl(private val database: Database) : MedicineRepository {
 
     override val allItems: Flow<List<Medicine>> = database.getAllMedicines().map { list ->
-        list.map {
-            Medicine(
-                it.name,
-                deserializeBlisterPacks(it.blisterPacks),
-                ScheduleAdapter.deserializeSchedule(it.schedule),
-                LocalDateTime.parse(it.firstPillDateTime),
-                it.id.toInt()
-            )
-        }
+        list.map { deserializeMedicine(it) }
     }
 
     override suspend fun saveMedicine(medicine: Medicine) {
@@ -34,6 +26,7 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
                     medicine.blisterPacks.serialize(),
                     medicine.schedule.serialize(),
                     medicine.firstPillDateTime.toString(),
+                    medicine.lastScheduledNotificationTime?.toString()
                 )
             }
         }
@@ -46,6 +39,7 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
                     medicine.id!!,
                     medicine.name,
                     medicine.blisterPacks.serialize(),
+                    medicine.lastScheduledNotificationTime?.toString()
                 )
             }
         }
@@ -53,17 +47,18 @@ internal class MedicineRepositoryImpl(private val database: Database) : Medicine
 
     override fun getMedicineDetail(id: Int?): Flow<Medicine?> {
         return database.getMedicineByIdOrFirst(id).map {
-            it?.let {
-                Medicine(
-                    it.name,
-                    deserializeBlisterPacks(it.blisterPacks),
-                    ScheduleAdapter.deserializeSchedule(it.schedule),
-                    LocalDateTime.parse(it.firstPillDateTime),
-                    it.id.toInt()
-                )
-            }
+            it?.let { deserializeMedicine(it) }
         }
     }
+
+    private fun deserializeMedicine(data: com.bobmitchigan.medialert.Medicine) = Medicine(
+        data.name,
+        deserializeBlisterPacks(data.blisterPacks),
+        ScheduleAdapter.deserializeSchedule(data.schedule),
+        LocalDateTime.parse(data.firstPillDateTime),
+        data.id.toInt(),
+        data.lastScheduledNotificationTime?.let { LocalDateTime.parse(it) }
+    )
 
     override suspend fun deleteMedicine(medicineId: Int) {
         withContext(Dispatchers.Default) {
