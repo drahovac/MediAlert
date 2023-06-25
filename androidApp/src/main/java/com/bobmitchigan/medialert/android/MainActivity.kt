@@ -41,6 +41,7 @@ import com.bobmitchigan.medialert.android.ui.MedicineDetailScreen
 import com.bobmitchigan.medialert.android.ui.MedicineListScreen
 import com.bobmitchigan.medialert.android.ui.component.navigateSingleTop
 import com.bobmitchigan.medialert.domain.Destination
+import com.bobmitchigan.medialert.domain.Destination.MedicineList.getStaticDestinationRoute
 import com.bobmitchigan.medialert.viewModel.SplashViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -136,10 +137,11 @@ class MainActivity : ComponentActivity() {
      */
     @Composable
     private fun isBottomNavigationVisible(navController: NavHostController): Boolean {
-        return currentRouteAsState(navController) in listOf(
+        return currentRouteAsState(navController)?.getStaticDestinationRoute() in listOf(
             Destination.MedicineList,
-            Destination.Calendar
-        ).map { it.destination() }
+            Destination.Calendar,
+            Destination.SingleMedicine(null)
+        ).map { it.destination().getStaticDestinationRoute() }
     }
 
     /**

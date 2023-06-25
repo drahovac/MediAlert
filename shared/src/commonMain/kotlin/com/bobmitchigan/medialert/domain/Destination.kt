@@ -38,6 +38,11 @@ sealed interface Destination {
      */
     fun destination(): String = this::class.qualifiedName.orEmpty()
 
+    /**
+     * Get static part of route - ignore dynamic params.
+     */
+    fun String.getStaticDestinationRoute(): String = substringBefore("/")
+
     private companion object {
         const val MEDICINE_ID = "{medicineId}"
     }
