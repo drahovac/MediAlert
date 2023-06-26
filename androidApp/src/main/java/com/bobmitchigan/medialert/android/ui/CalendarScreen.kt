@@ -35,6 +35,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -103,9 +104,15 @@ private fun CalendarContent(state: CalendarState, actions: CalendarActions) {
         val pagerState = rememberPagerState(initialPage = PAGE_OFFSET)
         val currentWeek = pagerState.currentPage - PAGE_OFFSET
         val startingWeekDay: LocalDate = getFirstWeekDay(currentWeek)
+        val rowHeight = with(LocalDensity.current) { ROW_HEIGHT.dp.toPx() }.toInt()
 
         LaunchedEffect(key1 = pagerState.currentPage) {
             actions.fetchWeekCells(firstWeekDay(pagerState))
+        }
+        LaunchedEffect(key1 = state.events.values.isNotEmpty()) {
+            if (state.events.values.isNotEmpty()) {
+                verticalScroll.scrollTo(getFirstEventScroll(state, rowHeight))
+            }
         }
 
         Text(
@@ -115,6 +122,21 @@ private fun CalendarContent(state: CalendarState, actions: CalendarActions) {
         )
         CellsContent(pagerState, verticalScroll, actions, state)
     }
+}
+
+/**
+ * Returns scroll position for the calendar of the first event in calendar.
+ *
+ * @param state The current state of the calendar.
+ * @param rowHeight The height of each row in the calendar.
+ * @return The scroll position, in pixels.
+ */
+private fun getFirstEventScroll(state: CalendarState, rowHeight: Int): Int {
+    return state.events.values.flatten().minByOrNull { it.dateTime.time }?.let {
+        val time = it.dateTime.time
+        val rowIndex = time.hour * 2 + if (time.minute >= 30) 1 else 0
+        (rowIndex * rowHeight)
+    } ?: 0
 }
 
 private fun firstWeekDay(pagerState: PagerState) =
