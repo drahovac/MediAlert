@@ -47,6 +47,9 @@ internal fun MedicineDetailScreen(
             onTakePill = {
                 navigationController.navigateSingleTop(Destination.BlisterPacks(medicineId))
             },
+            onEdit = {
+                navigationController.navigateSingleTop(Destination.EditMedicine(medicineId))
+            },
             onScheduleNotification = viewModel::scheduleNotification
         )
     }
@@ -56,6 +59,7 @@ internal fun MedicineDetailScreen(
 fun DetailContent(
     state: Medicine,
     onTakePill: () -> Unit,
+    onEdit: () -> Unit,
     onScheduleNotification: () -> Unit,
 ) {
     Card(
@@ -97,6 +101,11 @@ fun DetailContent(
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 SecondaryButton(
+                    text = stringResource(id = MR.strings.medicine_detail_edit.resourceId),
+                    onClick = onEdit,
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                SecondaryButton(
                     text = stringResource(id = MR.strings.medicine_detail_schedule_notifications.resourceId),
                     onClick = onScheduleNotification,
                 )
@@ -119,5 +128,5 @@ internal fun MedicineDetailPreview() {
             blisterPacks = MockMedicineRepository.PREVIEW_BLISTER_PACKS,
             schedule = listOf(),
             firstPillDateTime = dateTimeNow()
-        ), {}) {}
+        ), {}, {}) {}
 }

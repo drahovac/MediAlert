@@ -45,11 +45,22 @@ import com.bobmitchigan.medialert.viewModel.state.toInputState
 import com.bobmitchigan.medialert.viewModel.tryParse
 import kotlinx.datetime.LocalTime
 import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
+/**
+ * A screen for creating or updating a medicine.
+ *
+ * @param navController The NavController to use to navigate back to the previous screen.
+ * @param medicineId The ID of the medicine to be updated, if any.
+ * @param viewModel The CreateMedicineSaveStateViewModel to use to save the medicine.
+ *
+ * @returns A composable function that displays the create or update medicine screen.
+ */
 @Composable
 fun CreateMedicineScreen(
     navController: NavController,
-    viewModel: CreateMedicineSaveStateViewModel = getViewModel(),
+    medicineId: Int? = null,
+    viewModel: CreateMedicineSaveStateViewModel = getViewModel { parametersOf(medicineId) },
 ) {
     val state: CreateMedicineState by viewModel.state.collectAsStateWithLifecycle()
     val navEvent: Boolean by viewModel.navigationEvent.collectAsStateWithLifecycle()
@@ -73,7 +84,7 @@ private fun CreateMedicineContent(
 ) {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Text(
-            text = stringResource(MR.strings.create_medicine_title.resourceId),
+            text = stringResource(getTitleResourceId(state.medicineId != null)),
             style = Typography.h4,
             modifier = Modifier.padding(16.dp)
         )
@@ -84,6 +95,11 @@ private fun CreateMedicineContent(
         SubmitButton(actions)
     }
 }
+
+@Composable
+private fun getTitleResourceId(isEditForm: Boolean) = if (isEditForm) {
+    MR.strings.edit_medicine_title.resourceId
+} else MR.strings.create_medicine_title.resourceId
 
 @Composable
 private fun AllIdenticalCheckBox(

@@ -13,6 +13,17 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.atTime
 import kotlinx.serialization.Serializable
 
+/**
+ * Data class representing the state of the create/update medicine form.
+ *
+ * @param name The name of the medicine.
+ * @param blisterPackCount The number of blister packs.
+ * @param areAllPacksIdentical Whether all the blister packs are identical.
+ * @param dimensions The dimensions of the blister packs.
+ * @param timesPerDay The number of times per day to take the medicine.
+ * @param timeSchedule The time schedule for taking the medicine.
+ * @param medicineId The ID of the updated medicine, if it already exists (null if creating new).
+ */
 @Serializable
 data class CreateMedicineState(
     val name: InputState<String> = InputState(),
@@ -21,12 +32,14 @@ data class CreateMedicineState(
     val dimensions: List<BlisterPackDimension> = emptyList(),
     val timesPerDay: InputState<Int> = InputState(),
     // String used because cannot use java serializable for LocalTime in KMP
-    val timeSchedule: List<InputState<String>> = emptyList()
+    val timeSchedule: List<InputState<String>> = emptyList(),
+    val medicineId: Int? = null
 ) : CommonSerializable {
 
     fun toMedicine(clock: Clock) = runCatching {
         val schedule = timeSchedule.mapNotNull { LocalTime.tryParse(it.value) }.sorted()
         Medicine(
+            id = medicineId,
             name = name.value!!,
             blisterPacks = if (areAllPacksIdentical) mapFirstDimension() else mapDimensionsToFilledPacks(),
             schedule = schedule,

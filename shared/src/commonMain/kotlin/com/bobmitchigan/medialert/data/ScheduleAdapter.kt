@@ -11,6 +11,8 @@ object ScheduleAdapter {
     }
 
     fun deserializeSchedule(value: String): List<LocalTime> {
-        return value.split(SEPARATOR).map { LocalTime.parse(it) }
+        return runCatching {
+            value.split(SEPARATOR).map { LocalTime.parse(it) }
+        }.getOrElse { emptyList() }
     }
 }

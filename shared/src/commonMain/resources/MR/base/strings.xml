@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">MediAlert</string>
 
-    <string name="create_medicine_title">Medication details</string>
-    <string name="create_medicine_title">Add new medicine</string>
+    <string name="create_medicine_title">Create new medicine</string>
+    <string name="edit_medicine_title">Edit medicine</string>
     <string name="create_medicine_name">Name</string>
     <string name="create_medicine_enter_name">Enter medicine name</string>
     <string name="create_medicine_blister_pack_count">Blister Pack Count</string>
@@ -56,4 +56,5 @@
     <string name="medicine_detail_pills_take_at">Take at:</string>
     <string name="medicine_detail_take_pill">Eat pill</string>
     <string name="medicine_detail_schedule_notifications">Schedule notifications</string>
+    <string name="medicine_detail_edit">Edit</string>
 </resources>

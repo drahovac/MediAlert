@@ -182,6 +182,20 @@ class MainActivity : ComponentActivity() {
                     CreateMedicineScreen(navController)
                 }
                 composable(
+                    Destination.EditMedicine.editDestination(),
+                    arguments = listOf(navArgument("medicineId") {
+                        nullable = true
+                        type = NavType.StringType
+                        defaultValue = (dest as? Destination.EditMedicine)?.medicineId
+                    })
+                ) {
+                    CreateMedicineScreen(
+                        navController = navController,
+                        medicineId = it.arguments?.getString("medicineId")?.toIntOrNull(),
+                    )
+                }
+
+                composable(
                     Destination.SingleMedicine.detailDestination(),
                     arguments = listOf(navArgument("medicineId") {
                         nullable = true

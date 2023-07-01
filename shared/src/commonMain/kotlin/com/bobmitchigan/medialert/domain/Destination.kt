@@ -1,11 +1,23 @@
 package com.bobmitchigan.medialert.domain
 
 /**
+ * TODO refactor - exctract destination with medicineId
  * Destination where to navigate.
  */
 sealed interface Destination {
 
     object CreateMedicine : Destination
+
+    data class EditMedicine(val medicineId: Int?) : Destination {
+
+        override fun destination(): String =
+            editDestination(medicineId?.toString() ?: MEDICINE_ID)
+
+        companion object {
+            fun editDestination(id: String = MEDICINE_ID) =
+                "${EditMedicine::class.qualifiedName}/$id"
+        }
+    }
 
     data class SingleMedicine(val medicineId: Int?) : Destination {
 

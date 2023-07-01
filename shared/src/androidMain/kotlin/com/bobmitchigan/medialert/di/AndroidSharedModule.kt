@@ -27,5 +27,5 @@ actual inline fun <reified T : KMMViewModel> Module.kmmViewModel(
 actual val platformModule: Module = module {
     single { DatabaseDriver(androidContext()) }
 
-    kmmViewModel { CreateMedicineSaveStateViewModel(get(), get()) }
+    kmmViewModel { params -> CreateMedicineSaveStateViewModel(get(), params.getOrNull(), get()) }
 }

@@ -134,7 +134,7 @@ private fun CalendarContent(state: CalendarState, actions: CalendarActions) {
 private fun getFirstEventScroll(state: CalendarState, rowHeight: Int): Int {
     return state.events.values.flatten().minByOrNull { it.dateTime.time }?.let {
         val time = it.dateTime.time
-        val rowIndex = time.hour * 2 + if (time.minute >= 30) 1 else 0
+        val rowIndex = time.hour * 2 + if (time.minute >= HALF_HOUR_MINUTES) 1 else 0
         (rowIndex * rowHeight)
     } ?: 0
 }
@@ -515,6 +515,7 @@ private const val LINE_COUNT = 23
 private const val DAYS_IN_WEEK = 7
 private const val FIRST_ROW_HEIGHT = 48
 private const val ROW_HEIGHT = 40
+private const val HALF_HOUR_MINUTES = 30
 
 @Preview
 @Composable

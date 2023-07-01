@@ -1,10 +1,13 @@
 package com.bobmitchigan.medialert.viewModel
 
 import com.bobmitchigan.medialert.MR
+import com.bobmitchigan.medialert.data.BlisterPackAdapter.serialize
 import com.bobmitchigan.medialert.viewModel.state.BlisterPackDimension
 import com.bobmitchigan.medialert.viewModel.state.CreateMedicineState
 import com.bobmitchigan.medialert.viewModel.state.InputState
 import com.bobmitchigan.medialert.viewModel.state.toInputState
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalTime
 import org.junit.Test
 import java.io.ByteArrayInputStream
@@ -25,6 +28,7 @@ class CreateMedicineStateTest {
     @Test
     fun `serialize a deserialize create medicine state without error`() {
         val state = CreateMedicineState(
+            medicineId = 4,
             name = "3".toInputState(),
             blisterPackCount = 3.toInputState(),
             dimensions = listOf(BlisterPackDimension(3.toInputState(), 6.toInputState())),
@@ -48,6 +52,34 @@ class CreateMedicineStateTest {
         assertEquals(state.copy(blisterPackCount = InputState()), deserialize(serialized))
     }
 
+    @Test
+    fun `create medicine from state`() {
+        val time = LocalTime(3, 4)
+        val state = CreateMedicineState(
+            medicineId = 4,
+            name = "Name".toInputState(),
+            blisterPackCount = 3.toInputState(),
+            dimensions = listOf(BlisterPackDimension(3.toInputState(), 6.toInputState())),
+            timesPerDay = 4.toInputState(),
+            timeSchedule = listOf(time.toString().toInputState())
+        )
+
+        val medicine = state.toMedicine(object : Clock {
+            override fun now(): Instant {
+                return Instant.parse(INSTANT)
+            }
+        })!!
+
+        assertEquals(time, medicine.schedule.first())
+        assertEquals(4, medicine.id)
+        assertEquals("Name", medicine.name)
+        assertEquals(
+            "F.F.F.F.F.F,F.F.F.F.F.F,F.F.F.F.F.F;F.F.F.F.F.F,F.F.F.F.F.F,F.F.F" +
+                    ".F.F.F;F.F.F.F.F.F,F.F.F.F.F.F,F.F.F.F.F.F",
+            medicine.blisterPacks.serialize()
+        )
+    }
+
     private fun serialize(obj: Any): ByteArray {
         return ByteArrayOutputStream().apply {
             ObjectOutputStream(this).writeObject(obj)
@@ -58,5 +90,9 @@ class CreateMedicineStateTest {
         return ByteArrayInputStream(bytes).run {
             ObjectInputStream(this).readObject()
         }
+    }
+
+    private companion object {
+        const val INSTANT = "2022-04-03T03:06:00Z"
     }
 }
